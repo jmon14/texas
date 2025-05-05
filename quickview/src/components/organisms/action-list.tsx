@@ -1,18 +1,14 @@
-import { useState } from 'react';
 import { Box } from '@mui/material';
 import { Action } from '../../../vision-api';
 import ActionComponent from '../molecules/action';
 import Panel from '../atoms/panel';
 
 type ActionListProps = {
-  initialActions: Action[];
-  onActionChange?: (actions: Action[]) => void;
+  actions: Action[];
+  onActionChange: (actions: Action[]) => void;
 };
 
-const ActionList = ({ initialActions, onActionChange }: ActionListProps) => {
-  // Handle actions as state
-  const [actions, setActions] = useState(initialActions);
-
+const ActionList = ({ actions, onActionChange }: ActionListProps) => {
   const handleActionChange = (index: number, updatedAction: Action) => {
     // Create a new array with new instances of the objects
     const newActions = actions.map((action, i) => (i === index ? updatedAction : { ...action }));
@@ -66,8 +62,7 @@ const ActionList = ({ initialActions, onActionChange }: ActionListProps) => {
       if (action.percentage < 0) action.percentage = 0;
     });
 
-    onActionChange?.(newActions);
-    setActions(newActions);
+    onActionChange(newActions);
   };
 
   return (

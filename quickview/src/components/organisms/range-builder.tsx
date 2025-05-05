@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Box } from '@mui/material';
 
 import { defaultHandRange } from '../../constants';
@@ -6,25 +7,34 @@ import RangeGrid from './range-grid';
 import ActionList from './action-list';
 
 const RangeBuilder = () => {
-  const range: Range = {
+  const [range, setRange] = useState<Range>({
     name: 'UTG',
     handsRange: defaultHandRange,
-  };
+  });
 
-  const actions: Action[] = [
+  const [actions, setActions] = useState<Action[]>([
     { type: ActionTypeEnum.Fold, percentage: 50 },
     { type: ActionTypeEnum.Call, percentage: 30 },
     { type: ActionTypeEnum.Raise, percentage: 20 },
-  ];
+  ]);
 
-  const handleActionChange = (actions: Action[]) => {
-    console.log(actions);
+  const handleActionChange = (updatedActions: Action[]) => {
+    setActions(updatedActions);
+  };
+
+  const handleCellClick = (cellIndex: number) => {
+    const updatedHandsRange = [...range.handsRange];
+    updatedHandsRange[cellIndex] = {
+      ...updatedHandsRange[cellIndex],
+      actions: [...actions],
+    };
+    setRange({ ...range, handsRange: updatedHandsRange });
   };
 
   return (
     <Box sx={{ display: 'flex', gap: 3, height: '100%', alignItems: 'flex-start' }}>
-      <RangeGrid range={range}></RangeGrid>
-      <ActionList initialActions={actions} onActionChange={handleActionChange}></ActionList>
+      <RangeGrid range={range} onCellClick={handleCellClick} />
+      <ActionList actions={actions} onActionChange={handleActionChange} />
     </Box>
   );
 };

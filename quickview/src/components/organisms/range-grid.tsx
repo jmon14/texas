@@ -5,9 +5,10 @@ import Panel from '../atoms/panel';
 
 type RangeGridProps = {
   range: Range;
+  onCellClick?: (index: number) => void;
 };
 
-const RangeGrid = ({ range }: RangeGridProps) => {
+const RangeGrid = ({ range, onCellClick }: RangeGridProps) => {
   const theme = useTheme();
   const rangeCardinality = Math.sqrt(range.handsRange.length);
 
@@ -25,7 +26,13 @@ const RangeGrid = ({ range }: RangeGridProps) => {
       }}
     >
       {range.handsRange.map(({ rangeFraction, actions, label }, index) => (
-        <RangeCell key={index} rangeFraction={rangeFraction} actions={actions} label={label} />
+        <RangeCell 
+          key={index} 
+          rangeFraction={rangeFraction} 
+          actions={actions} 
+          label={label}
+          onClick={() => onCellClick?.(index)}
+        />
       ))}
     </Panel>
   );

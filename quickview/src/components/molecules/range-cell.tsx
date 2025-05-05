@@ -3,7 +3,11 @@ import { Box, Tooltip } from '@mui/material';
 import Cell, { CellProps } from '../atoms/cell';
 import { ActionColor } from '../../constants';
 
-const RangeCell = (props: CellProps) => {
+type RangeCellProps = CellProps & {
+  onClick?: () => void;
+};
+
+const RangeCell = ({ onClick, ...props }: RangeCellProps) => {
   return (
     <Tooltip
       arrow
@@ -35,7 +39,7 @@ const RangeCell = (props: CellProps) => {
         )
       }
     >
-      <Cell {...props} />
+      <Cell {...props} onClick={onClick} />
     </Tooltip>
   );
 };
