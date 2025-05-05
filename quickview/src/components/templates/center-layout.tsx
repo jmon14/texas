@@ -25,7 +25,7 @@ const CenterLayout = ({ renderToolbar, children }: CenterLayoutProps) => {
         {renderToolbar()}
       </Toolbar>
       <FullCenter>
-        <Panel>{children}</Panel>
+        <Panel sx={{ width: '600px' }}>{children}</Panel>
       </FullCenter>
     </Box>
   );
