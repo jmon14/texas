@@ -72,6 +72,12 @@ export const CardLabel: CardLabelType = {
   [CardValueEnum.Two]: '2',
 };
 
+export const defaultActions = [
+  { type: ActionTypeEnum.Fold, percentage: 50 },
+  { type: ActionTypeEnum.Call, percentage: 30 },
+  { type: ActionTypeEnum.Raise, percentage: 20 },
+]
+
 export const defaultHandRange: HandRange[] = [
   {
     rangeFraction: 1,

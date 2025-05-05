@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Box } from '@mui/material';
 
-import { defaultHandRange } from '../../constants';
-import { Action, ActionTypeEnum, Range } from '../../../vision-api';
+import { defaultActions, defaultHandRange } from '../../constants';
+import { Action, Range } from '../../../vision-api';
 import RangeGrid from './range-grid';
 import ActionList from './action-list';
 
@@ -12,11 +12,7 @@ const RangeBuilder = () => {
     handsRange: defaultHandRange,
   });
 
-  const [actions, setActions] = useState<Action[]>([
-    { type: ActionTypeEnum.Fold, percentage: 50 },
-    { type: ActionTypeEnum.Call, percentage: 30 },
-    { type: ActionTypeEnum.Raise, percentage: 20 },
-  ]);
+  const [actions, setActions] = useState<Action[]>(defaultActions);
 
   const handleActionChange = (updatedActions: Action[]) => {
     setActions(updatedActions);
