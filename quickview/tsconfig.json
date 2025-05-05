@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "ES5",
+    "noImplicitThis": true
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonJS"
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

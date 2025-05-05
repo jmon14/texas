@@ -1,0 +1,98 @@
+services:
+  # MongoDB service for Vision
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - texas-network
+    
+
+  # Vision service (Java Spring Boot)
+  vision:
+    build:
+      context: ./vision
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    networks:
+      - texas-network
+
+  # Ultron service (NestJS)
+  ultron:
+    build:
+      context: ./ultron
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ultron:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    networks:
+      - texas-network
+
+  # PostgreSQL for Ultron
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=ultron
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - texas-network
+
+  # pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - texas-network
+
+  # Quickview frontend
+  quickview:
+    build:
+      context: ./quickview
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - REACT_APP_ULTRON_API_URL=http://ultron:3000
+      - REACT_APP_VISION_API_URL=http://vision:3001
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./quickview:/app
+      - /app/node_modules
+    command: npm start
+    depends_on:
+      - ultron
+      - vision
+    networks:
+      - texas-network
+
+volumes:
+  mongodb_data:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  texas-network:
+    driver: bridge

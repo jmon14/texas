@@ -1,0 +1,6 @@
+dist
+node_modules
+ultron-api/*
+vision-api/*
+package.json
+package-lock.json

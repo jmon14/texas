@@ -1,0 +1,14 @@
+# External libraries
+node_modules
+
+# Build app
+dist
+
+# Env files
+.env*
+
+# Jest coverage
+coverage
+
+# IDE
+.vscode/

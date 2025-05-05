@@ -1,0 +1,210 @@
+{
+	"info": {
+		"_postman_id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+		"name": "Ultron API",
+		"description": "Collection for Ultron API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"your_username\",\n    \"password\": \"your_password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "refresh_token={{refresh_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "refresh"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "logout"]
+						}
+					}
+				},
+				{
+					"name": "Reset Password Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"your_email@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/reset",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "reset"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"new_user\",\n    \"email\": \"new_user@example.com\",\n    \"password\": \"your_password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/create",
+							"host": ["{{base_url}}"],
+							"path": ["users", "create"]
+						}
+					}
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"your_reset_token\",\n    \"password\": \"new_password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/reset-pwd",
+							"host": ["{{base_url}}"],
+							"path": ["users", "reset-pwd"]
+						}
+					}
+				},
+				{
+					"name": "Confirm Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"your_confirmation_token\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/confirm",
+							"host": ["{{base_url}}"],
+							"path": ["users", "confirm"]
+						}
+					}
+				},
+				{
+					"name": "Get User Files",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/files",
+							"host": ["{{base_url}}"],
+							"path": ["users", "files"]
+						}
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/:id",
+							"host": ["{{base_url}}"],
+							"path": ["users", ":id"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "your_access_token",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "your_refresh_token",
+			"type": "string"
+		}
+	]
+} 
