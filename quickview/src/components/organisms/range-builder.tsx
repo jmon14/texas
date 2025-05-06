@@ -27,9 +27,24 @@ const RangeBuilder = () => {
     setRange({ ...range, handsRange: updatedHandsRange });
   };
 
+  const handleCellsSelect = (indices: number[]) => {
+    const updatedHandsRange = [...range.handsRange];
+    indices.forEach(index => {
+      updatedHandsRange[index] = {
+        ...updatedHandsRange[index],
+        actions: [...actions],
+      };
+    });
+    setRange({ ...range, handsRange: updatedHandsRange });
+  };
+
   return (
     <Box sx={{ display: 'flex', gap: 3, height: '100%', alignItems: 'flex-start' }}>
-      <RangeGrid range={range} onCellClick={handleCellClick} />
+      <RangeGrid 
+        range={range} 
+        onCellClick={handleCellClick}
+        onCellsSelect={handleCellsSelect}
+      />
       <ActionList actions={actions} onActionChange={handleActionChange} />
     </Box>
   );

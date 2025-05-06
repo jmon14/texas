@@ -1,4 +1,5 @@
 import { useTheme } from '@mui/material';
+import { useState, useCallback, useEffect } from 'react';
 import { Range } from '../../../vision-api';
 import RangeCell from '../molecules/range-cell';
 import Panel from '../atoms/panel';
@@ -6,13 +7,41 @@ import Panel from '../atoms/panel';
 type RangeGridProps = {
   range: Range;
   onCellClick?: (index: number) => void;
+  onCellsSelect?: (indices: number[]) => void;
 };
 
-const RangeGrid = ({ range, onCellClick }: RangeGridProps) => {
+const RangeGrid = ({ range, onCellClick, onCellsSelect }: RangeGridProps) => {
   const theme = useTheme();
   const rangeCardinality = Math.sqrt(range.handsRange.length);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [selectedCells, setSelectedCells] = useState<Set<number>>(new Set());
 
   const spacing = theme.spacing(0.5);
+
+  // Reset selection when mouse is released outside
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isMouseDown) {
+        setIsMouseDown(false);
+        onCellsSelect?.(Array.from(selectedCells));
+        setSelectedCells(new Set());
+      }
+    };
+
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, [isMouseDown, selectedCells, onCellsSelect]);
+
+  const handleMouseDown = useCallback((index: number) => {
+    setIsMouseDown(true);
+    setSelectedCells(new Set([index]));
+  }, []);
+
+  const handleMouseEnter = useCallback((index: number) => {
+    if (isMouseDown) {
+      setSelectedCells(prev => new Set([...Array.from(prev), index]));
+    }
+  }, [isMouseDown]);
 
   return (
     <Panel
@@ -23,6 +52,7 @@ const RangeGrid = ({ range, onCellClick }: RangeGridProps) => {
         gridTemplateColumns: `repeat(${rangeCardinality}, 1fr)`,
         aspectRatio: '1.2',
         gridGap: spacing,
+        userSelect: 'none', // Prevent text selection during drag
       }}
     >
       {range.handsRange.map(({ rangeFraction, actions, label }, index) => (
@@ -32,6 +62,9 @@ const RangeGrid = ({ range, onCellClick }: RangeGridProps) => {
           actions={actions} 
           label={label}
           onClick={() => onCellClick?.(index)}
+          onMouseDown={() => handleMouseDown(index)}
+          onMouseEnter={() => handleMouseEnter(index)}
+          isSelected={selectedCells.has(index)}
         />
       ))}
     </Panel>

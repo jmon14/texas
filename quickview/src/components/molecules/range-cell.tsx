@@ -5,42 +5,62 @@ import { ActionColor } from '../../constants';
 
 type RangeCellProps = CellProps & {
   onClick?: () => void;
+  onMouseDown?: () => void;
+  onMouseEnter?: () => void;
+  isSelected?: boolean;
 };
 
-const RangeCell = ({ onClick, ...props }: RangeCellProps) => {
+const RangeCell = ({ onClick, onMouseDown, onMouseEnter, isSelected, ...props }: RangeCellProps) => {
   return (
-    <Tooltip
-      arrow
-      placement="top"
-      title={
-        props.actions.length > 0 ? (
-          <Box>
-            {props.actions.map((action, index) => (
-              <Box
-                key={index}
-                sx={{
-                  gap: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Box
-                  component="span"
-                  sx={{ backgroundColor: ActionColor[action.type], width: '5px', height: '5px' }}
-                />
-                <Box component="span">
-                  {action.type} {action.percentage * 100}%
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        ) : (
-          ''
-        )
-      }
+    <Box
+      sx={{
+        height: '100%',
+        position: 'relative',
+        ...(isSelected && {
+          outline: '2px solid',
+          outlineColor: 'primary.main',
+          outlineOffset: '-1px',
+        }),
+      }}
+      onMouseDown={onMouseDown}
+      onMouseEnter={onMouseEnter}
     >
-      <Cell {...props} onClick={onClick} />
-    </Tooltip>
+      <Tooltip
+        arrow
+        placement="top"
+        title={
+          props.actions.length > 0 ? (
+            <Box>
+              {props.actions.map((action, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    gap: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Box
+                    component="span"
+                    sx={{ backgroundColor: ActionColor[action.type], width: '5px', height: '5px' }}
+                  />
+                  <Box component="span">
+                    {action.type} {action.percentage}%
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            ''
+          )
+        }
+      >
+        <Cell 
+          {...props} 
+          onClick={onClick}
+        />
+      </Tooltip>
+    </Box>
   );
 };
 
