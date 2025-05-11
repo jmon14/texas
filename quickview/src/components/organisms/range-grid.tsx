@@ -65,6 +65,7 @@ const RangeGrid = ({ range, onCellClick, onCellsSelect }: RangeGridProps) => {
           onMouseDown={() => handleMouseDown(index)}
           onMouseEnter={() => handleMouseEnter(index)}
           isSelected={selectedCells.has(index)}
+          isDragging={isMouseDown}
         />
       ))}
     </Panel>

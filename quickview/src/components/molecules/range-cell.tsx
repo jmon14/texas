@@ -1,4 +1,5 @@
 import { Box, Tooltip } from '@mui/material';
+import { useState } from 'react';
 
 import Cell, { CellProps } from '../atoms/cell';
 import { ActionColor } from '../../constants';
@@ -8,9 +9,12 @@ type RangeCellProps = CellProps & {
   onMouseDown?: () => void;
   onMouseEnter?: () => void;
   isSelected?: boolean;
+  isDragging?: boolean;
 };
 
-const RangeCell = ({ onClick, onMouseDown, onMouseEnter, isSelected, ...props }: RangeCellProps) => {
+const RangeCell = ({ onClick, onMouseDown, onMouseEnter, isSelected, isDragging, ...props }: RangeCellProps) => {
+  const [isHovering, setIsHovering] = useState(false);
+
   return (
     <Box
       sx={{
@@ -23,11 +27,16 @@ const RangeCell = ({ onClick, onMouseDown, onMouseEnter, isSelected, ...props }:
         }),
       }}
       onMouseDown={onMouseDown}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={() => {
+        setIsHovering(true);
+        onMouseEnter?.();
+      }}
+      onMouseLeave={() => setIsHovering(false)}
     >
       <Tooltip
         arrow
         placement="top"
+        open={isHovering && !isDragging}
         title={
           props.actions.length > 0 ? (
             <Box>
