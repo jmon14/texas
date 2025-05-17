@@ -14,10 +14,11 @@ type Story = StoryObj<typeof ActionList>;
 
 export const Default: Story = {
   args: {
-    initialActions: [
+    actions: [
       { type: ActionTypeEnum.Fold, percentage: 50 },
       { type: ActionTypeEnum.Call, percentage: 30 },
       { type: ActionTypeEnum.Raise, percentage: 20 },
     ],
+    onActionChange: (actions) => console.log('Actions changed:', actions),
   },
 };
