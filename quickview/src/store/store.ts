@@ -4,11 +4,13 @@ import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolki
 // Slices
 import userReducer from './slices/user-slice';
 import themeReducer from './slices/theme-slice';
+import rangeReducer from './slices/range-slice';
 
 // Create the root reducer independently to obtain the RootState type
 const rootReducer = combineReducers({
   user: userReducer,
   theme: themeReducer,
+  range: rangeReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

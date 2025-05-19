@@ -4,15 +4,22 @@ import Cookies from 'js-cookie';
 
 // Api
 import { AuthApi, FilesApi, UsersApi } from '../../ultron-api/api';
+import { RangeControllerApi } from '../../vision-api';
 
 // Create new axios instance
-export const defaultInstance = axios.create({
-  baseURL: process.env.API_URL,
+export const ultronInstance = axios.create({
+  baseURL: process.env.REACT_APP_ULTRON_API_URL,
+  withCredentials: true,
+});
+
+// Create vision API instance with its own axios instance
+const visionInstance = axios.create({
+  baseURL: process.env.REACT_APP_VISION_API_URL,
   withCredentials: true,
 });
 
 // Apply interceptors for refresh token flow
-defaultInstance.interceptors.response.use(
+ultronInstance.interceptors.response.use(
   (response) => response,
   async (err) => {
     const refreshCookie = Cookies.get('RefreshExist');
@@ -20,7 +27,7 @@ defaultInstance.interceptors.response.use(
     // If it is a new request that failed with unauthorized status,
     // and a refresh cookie exists, fetch refresh token and try again
     if (
-      originalConfig.url !== `${process.env.API_URL}/auth/refresh` &&
+      originalConfig.url !== `${process.env.REACT_APP_ULTRON_API_URL}/auth/refresh` &&
       err.response.status === 401 &&
       !originalConfig._retry &&
       refreshCookie
@@ -29,9 +36,9 @@ defaultInstance.interceptors.response.use(
       originalConfig._retry = true;
       try {
         // Fetch refresh token
-        await defaultInstance.get(`${process.env.API_URL}/auth/refresh`);
+        await ultronInstance.get(`${process.env.REACT_APP_ULTRON_API_URL}/auth/refresh`);
         // Try request again
-        return defaultInstance(originalConfig);
+        return ultronInstance(originalConfig);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -40,6 +47,7 @@ defaultInstance.interceptors.response.use(
   },
 );
 
-export const authApi = new AuthApi(undefined, process.env.API_URL, defaultInstance);
-export const userApi = new UsersApi(undefined, process.env.API_URL, defaultInstance);
-export const filesApi = new FilesApi(undefined, process.env.API_URL, defaultInstance);
+export const authApi = new AuthApi(undefined, process.env.REACT_APP_ULTRON_API_URL, ultronInstance);
+export const userApi = new UsersApi(undefined, process.env.REACT_APP_ULTRON_API_URL, ultronInstance);
+export const filesApi = new FilesApi(undefined, process.env.REACT_APP_ULTRON_API_URL, ultronInstance);
+export const rangeApi = new RangeControllerApi(undefined, process.env.REACT_APP_VISION_API_URL, visionInstance);

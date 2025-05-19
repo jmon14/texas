@@ -322,3 +322,38 @@ export const getResetConfigForm: GetConfigForm<ResetControls> = (
     success: options?.status === FetchStatus.SUCCEDED ? 'Link sent succesfully.' : undefined,
   };
 };
+
+// Range form utils
+export type RangeControls = {
+  name: string;
+};
+
+export const getRangeConfigForm: GetConfigForm<RangeControls> = (
+  options?: FormConfigOptions<RangeControls>,
+): FormConfig<RangeControls> => {
+  return {
+    title: {
+      text: 'Range Details',
+      props: {
+        variant: 'h6',
+      },
+    },
+    controls: [
+      {
+        initialValue: options?.initialValues?.name || '',
+        controlType: 'input',
+        label: 'Range Name',
+        name: 'name',
+        validation: {
+          required: 'Range name is required',
+        },
+      },
+      {
+        controlType: 'button',
+        text: 'Save Range',
+      },
+    ],
+    success: options?.status === FetchStatus.SUCCEDED ? 'Range saved successfully!' : undefined,
+    error: options?.error,
+  };
+};

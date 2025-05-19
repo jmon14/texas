@@ -1,0 +1,147 @@
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { Range, RangeControllerApi } from '../../../vision-api';
+import { FetchStatus } from '../../constants';
+import { AxiosError } from 'axios';
+import { RootState } from '../store';
+import { rangeApi } from '../../api/api';
+
+// Range state structure
+export type RangeState = {
+  error: unknown;
+  status: FetchStatus;
+  currentRange: Range | null;
+};
+
+// Initial state on load
+const initialState: RangeState = {
+  status: FetchStatus.IDDLE,
+  currentRange: null,
+  error: null,
+};
+
+// Async thunk for creating range
+export const createRange = createAsyncThunk(
+  'range/create',
+  async (range: Range, { rejectWithValue }) => {
+    try {
+      await rangeApi.createRange(range);
+      return range;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+      }
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create range');
+    }
+  }
+);
+
+// Async thunk for getting range by id
+export const getRangeById = createAsyncThunk(
+  'range/getById',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await rangeApi.getRangeById(id);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+      }
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to get range');
+    }
+  }
+);
+
+// Async thunk for updating range
+export const updateRange = createAsyncThunk(
+  'range/update',
+  async ({ id, range }: { id: string; range: Range }, { rejectWithValue }) => {
+    try {
+      await rangeApi.updateRange(id, range);
+      return range;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+      }
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update range');
+    }
+  }
+);
+
+// Async thunk for deleting range
+export const deleteRange = createAsyncThunk(
+  'range/delete',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await rangeApi.deleteRange(id);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+      }
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete range');
+    }
+  }
+);
+
+// Loading reducer
+const loadingReducer = (state: RangeState) => {
+  state.status = FetchStatus.LOADING;
+};
+
+// Rejected reducer
+const rejectedReducer = (state: RangeState, action: PayloadAction<unknown>) => {
+  state.status = FetchStatus.FAILED;
+  state.error = action.payload;
+};
+
+// Fulfill reducer
+const fulfillReducer = (state: RangeState) => {
+  state.status = FetchStatus.SUCCEDED;
+  state.error = null;
+};
+
+// Range reducer
+const rangeReducer = (state: RangeState, action: PayloadAction<Range>) => {
+  state.status = FetchStatus.SUCCEDED;
+  state.currentRange = action.payload;
+  state.error = null;
+};
+
+// Slice for range related data
+export const rangeSlice = createSlice({
+  name: 'range',
+  initialState,
+  reducers: {
+    setCurrentRange: (state, action) => {
+      state.currentRange = action.payload;
+    },
+    clearState: (state) => {
+      state.error = null;
+      state.status = FetchStatus.IDDLE;
+    },
+  },
+  extraReducers(builder) {
+    builder
+      // Create range
+      .addCase(createRange.pending, loadingReducer)
+      .addCase(createRange.rejected, rejectedReducer)
+      .addCase(createRange.fulfilled, rangeReducer)
+      // Get range by id
+      .addCase(getRangeById.pending, loadingReducer)
+      .addCase(getRangeById.rejected, rejectedReducer)
+      .addCase(getRangeById.fulfilled, rangeReducer)
+      // Update range
+      .addCase(updateRange.pending, loadingReducer)
+      .addCase(updateRange.rejected, rejectedReducer)
+      .addCase(updateRange.fulfilled, rangeReducer)
+      // Delete range
+      .addCase(deleteRange.pending, loadingReducer)
+      .addCase(deleteRange.rejected, rejectedReducer)
+      .addCase(deleteRange.fulfilled, fulfillReducer);
+  },
+});
+
+export const { setCurrentRange, clearState } = rangeSlice.actions;
+
+export const selectRange = (state: RootState) => state.range;
+
+export default rangeSlice.reducer; 

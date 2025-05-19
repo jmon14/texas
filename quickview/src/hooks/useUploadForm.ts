@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { defaultInstance } from '../api/api';
+import { ultronInstance } from '../api/api';
 import { FetchStatus } from '../constants';
 
 export const useUploadForm = (url: string) => {
@@ -9,7 +9,7 @@ export const useUploadForm = (url: string) => {
   const uploadForm = useCallback(
     async (formData: FormData) => {
       try {
-        await defaultInstance.post(url, formData, {
+        await ultronInstance.post(url, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
