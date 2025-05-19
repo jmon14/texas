@@ -4,6 +4,13 @@ FROM node:18
 # Create and change to the app directory
 WORKDIR /usr/src/app
 
+# Install system dependencies for pg
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
