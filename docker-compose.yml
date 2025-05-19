@@ -75,9 +75,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - REACT_APP_ULTRON_API_URL=http://ultron:3000
-      - REACT_APP_VISION_API_URL=http://vision:3001
-      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
     volumes:
       - ./quickview:/app
       - /app/node_modules
