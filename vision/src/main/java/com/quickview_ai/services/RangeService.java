@@ -12,4 +12,6 @@ public interface RangeService {
     List<Range> getAllRanges();
 
     void deleteRange(String id);
+
+    List<Range> getRangesByUserId(String userId);
 }

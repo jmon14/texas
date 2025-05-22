@@ -23,4 +23,8 @@ public class Range {
     @Valid
     @Field("hands_range")
     private HandRange[] handsRange;
+
+    @NotNull
+    @Field("user_id")
+    private String userId;
 }

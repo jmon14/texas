@@ -38,4 +38,8 @@ public class RangeServiceImpl implements RangeService {
     public void updateRange(String id, Range range) {
         rangeRepository.save(range);
     }
+
+    public List<Range> getRangesByUserId(String userId) {
+        return rangeRepository.findByUserId(userId);
+    }
 }

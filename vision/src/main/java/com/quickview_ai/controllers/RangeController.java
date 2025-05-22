@@ -29,6 +29,11 @@ public class RangeController {
         return this.rangeServiceImpl.getAllRanges();
     }
 
+    @GetMapping("/ranges/user/{userId}")
+    public List<Range> getRangesByUserId(@PathVariable("userId") String userId) {
+        return this.rangeServiceImpl.getRangesByUserId(userId);
+    }
+
     @PostMapping("/ranges")
     public String createRange(@Valid @RequestBody Range range) {
         try {
