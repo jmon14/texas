@@ -11,7 +11,7 @@
     "openapi:spec-ultron": "curl http://localhost:3000/api-json -o openapi-ultron-spec.json",
     "openapi:pretty-ultron": "prettier --write openapi-ultron-spec.json",
     "openapi:generate-ultron": "openapi-generator-cli generate -i openapi-ultron-spec.json -o ultron-api -g typescript-axios --additional-properties=supportsES6=true",
-    "openapi:spec-vision": "curl http://localhost:8080/v3/api-docs -o openapi-vision-spec.json",
+    "openapi:spec-vision": "curl http://localhost:3001/v3/api-docs -o openapi-vision-spec.json",
     "openapi:pretty-vision": "prettier --write openapi-vision-spec.json",
     "openapi:generate-vision": "openapi-generator-cli generate -i openapi-vision-spec.json -o vision-api -g typescript-axios --additional-properties=supportsES6=true",
     "start": "webpack serve --env ENVIRONMENT=development",
