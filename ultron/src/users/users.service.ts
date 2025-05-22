@@ -32,8 +32,8 @@ export class UsersService {
     return this.userRepository.delete({});
   }
 
-  deleteUserById(id: string) {
-    return this.userRepository.delete({ id });
+  deleteUserById(uuid: string) {
+    return this.userRepository.delete({ uuid });
   }
 
   /**
@@ -53,9 +53,9 @@ export class UsersService {
    * @param id - Get user with id
    * @returns - User with id and refresh token if matched
    */
-  async getByIdRefresh(refreshToken: string, id: string): Promise<UserEntity> {
+  async getByIdRefresh(refreshToken: string, uuid: string): Promise<UserEntity> {
     // Fetch user by id
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { uuid } });
     // Return null if user not found
     if (!user) {
       return null;
@@ -109,8 +109,8 @@ export class UsersService {
    * @param refreshToken - Refresh token in DB
    * @param id - Find user by id
    */
-  async setCurrentRefreshToken(refreshToken: string, id: string) {
-    await this.userRepository.update({ id }, { refreshToken });
+  async setCurrentRefreshToken(refreshToken: string, uuid: string) {
+    await this.userRepository.update({ uuid }, { refreshToken });
   }
 
   /**
@@ -118,8 +118,8 @@ export class UsersService {
    *
    * @param id - id from user to be updated
    */
-  async removeRefreshToken(id: string) {
-    await this.userRepository.update({ id }, { refreshToken: null });
+  async removeRefreshToken(uuid: string) {
+    await this.userRepository.update({ uuid }, { refreshToken: null });
   }
 
   /**
@@ -132,8 +132,8 @@ export class UsersService {
     await this.userRepository.update({ email }, { password: pwd });
   }
 
-  async getUserFiles(id: string): Promise<FileEntity[]> {
-    const user = await this.userRepository.findOne({ where: { id }, relations: ['files'] });
+  async getUserFiles(uuid: string): Promise<FileEntity[]> {
+    const user = await this.userRepository.findOne({ where: { uuid }, relations: ['files'] });
     return user.files;
   }
 }

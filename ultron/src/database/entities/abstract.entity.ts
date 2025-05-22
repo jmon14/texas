@@ -11,8 +11,7 @@ import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'type
 export abstract class AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiHideProperty()
-  @Exclude()
-  public id: string;
+  public uuid: string;
 
   @CreateDateColumn()
   @ApiHideProperty()

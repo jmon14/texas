@@ -70,7 +70,7 @@ export const mockedEmailService: Partial<EmailService> = {
  * Mock objects
  */
 export const mockTokenPayload: TokenPayload = {
-  id: 'id',
+  uuid: 'uuid',
 };
 
 export const mockResponse = {
@@ -100,6 +100,7 @@ export const mockUserDto: UserDto = {
   email: testEmail,
   username: 'testuser',
   password: 'testpwrd',
+  uuid: 'uuid',
 };
 
 export const mockResetPwdData: ResetPwdDto = {

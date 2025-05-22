@@ -24,8 +24,8 @@ export class FilesService {
     return this.publicFilesRepository.find({ relations: ['user'] });
   }
 
-  getFilesById(id) {
-    return this.publicFilesRepository.findOneBy({ id });
+  getFilesById(uuid) {
+    return this.publicFilesRepository.findOneBy({ uuid });
   }
 
   async uploadFile(dataBuffer: Buffer, filename: string, size, userId) {
@@ -55,7 +55,7 @@ export class FilesService {
   }
 
   async deleteFilesById(fileId: string) {
-    const file = await this.publicFilesRepository.findOne({ where: { id: fileId } });
+    const file = await this.publicFilesRepository.findOne({ where: { uuid: fileId } });
     await this.publicFilesRepository.remove(file);
   }
 }

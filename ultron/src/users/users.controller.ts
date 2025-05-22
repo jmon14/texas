@@ -61,9 +61,9 @@ export class UsersController {
     return this.userService.deleteUsers();
   }
 
-  @Delete(':id')
-  deleteUserById(@Param() { id }) {
-    return this.userService.deleteUserById(id);
+  @Delete(':uuid')
+  deleteUserByUuid(@Param() { uuid }) {
+    return this.userService.deleteUserById(uuid);
   }
 
   @Post('create')
@@ -75,7 +75,7 @@ export class UsersController {
     try {
       const user = await this.userService.createUser(createUserDto);
       // Set Auth cookies to authenticate user
-      await this.authService.setAuthCookies(req.res, { id: user.id });
+      await this.authService.setAuthCookies(req.res, { uuid: user.uuid });
       // Send verification email
       this.authService.sendEmailLink({ email: user.email }, LinkMail.confirm);
       // Return user data
@@ -142,6 +142,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('files')
   async getUserFiles(@Request() { user }: PayloadRequest): Promise<FileEntity[]> {
-    return this.userService.getUserFiles(user.id);
+    return this.userService.getUserFiles(user.uuid);
   }
 }

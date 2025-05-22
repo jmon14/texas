@@ -53,6 +53,6 @@ export class FilesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Request() { user }: PayloadRequest) {
-    return this.filesService.uploadFile(file.buffer, file.originalname, file.size, user.id);
+    return this.filesService.uploadFile(file.buffer, file.originalname, file.size, user.uuid);
   }
 }

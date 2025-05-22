@@ -112,7 +112,7 @@ export class AuthService {
     );
     res.setHeader('Set-Cookie', [authCookie, refreshCookie, refreshExistCookie]);
     // Update refresh token in DB
-    return this.usersService.setCurrentRefreshToken(refreshToken, payload.id);
+    return this.usersService.setCurrentRefreshToken(refreshToken, payload.uuid);
   }
 
   removeAuthCookies(res: Response, payload: TokenPayload): Promise<void> {
@@ -126,7 +126,7 @@ export class AuthService {
     ];
     res.setHeader('Set-Cookie', logoutCookies);
     // Remove refreshToken from user
-    return this.usersService.removeRefreshToken(payload.id);
+    return this.usersService.removeRefreshToken(payload.uuid);
   }
 
   sendEmailLink(payload: EmailDto, type: LinkMail) {

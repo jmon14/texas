@@ -1,5 +1,5 @@
 // External libraries
-import { IsEmail, IsNotEmpty, Length, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUUID, Length, MinLength } from 'class-validator';
 
 /**
  * Login Dto
@@ -20,4 +20,8 @@ export class LoginDto {
 export class UserDto extends LoginDto {
   @IsEmail()
   email: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  uuid: string;
 }

@@ -34,7 +34,7 @@ describe('AuthController', () => {
     it('should return user provided in request and set auth cookies', () => {
       expect(authController.login(mockUserReq)).resolves.toEqual(mockUserReq.user);
 
-      const payload = { id: mockUserReq.user.id };
+      const payload = { id: mockUserReq.user.uuid };
       expect(authService.setAuthCookies).toHaveBeenCalledWith(mockUserReq.res, payload);
     });
 
@@ -48,7 +48,7 @@ describe('AuthController', () => {
     it('should return user provided in request and set auth cookies', () => {
       expect(authController.refresh(mockUserReq)).resolves.toEqual(mockUserReq.user);
 
-      const payload = { id: mockUserReq.user.id };
+      const payload = { id: mockUserReq.user.uuid };
       expect(authService.setAuthCookies).toHaveBeenCalledWith(mockUserReq.res, payload);
     });
 

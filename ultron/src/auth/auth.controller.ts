@@ -41,7 +41,7 @@ export class AuthController {
   async login(@Request() req: UserRequest): Promise<UserEntity> {
     // User fetched
     const { user, res } = req;
-    await this.authService.setAuthCookies(res, { id: user.id });
+    await this.authService.setAuthCookies(res, { uuid: user.uuid });
     return user;
   }
 
@@ -55,7 +55,7 @@ export class AuthController {
   @Get('refresh')
   async refresh(@Request() req: UserRequest): Promise<UserEntity> {
     const { user, res } = req;
-    await this.authService.setAuthCookies(res, { id: user.id });
+    await this.authService.setAuthCookies(res, { uuid: user.uuid });
     return user;
   }
 
