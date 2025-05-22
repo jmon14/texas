@@ -193,5 +193,12 @@ export const userSlice = createSlice({
 export const { setUser, clearState } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
+export const selectAuthenticatedUser = (state: RootState): UserEntity => {
+  const user = state.user.user;
+  if (!user) {
+    throw new Error('User must be authenticated to access this resource');
+  }
+  return user;
+};
 
 export default userSlice.reducer;

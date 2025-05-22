@@ -8,11 +8,15 @@ import ActionList from './action-list';
 import RangeForm from './range-form';
 import useRange from '../../hooks/useRange';
 import { createRange } from '../../store/slices/range-slice';
+import { useAppSelector } from '../../hooks/store-hooks';
+import { selectAuthenticatedUser } from '../../store/slices/user-slice';
 
 const RangeBuilder = () => {
+  const user = useAppSelector(selectAuthenticatedUser);
   const [range, setRange] = useState<Range>({
     name: 'UTG',
     handsRange: defaultHandRange,
+    userId: user.uuid,
   });
 
   const [actions, setActions] = useState<Action[]>(defaultActions);
@@ -42,13 +46,13 @@ const RangeBuilder = () => {
     setRange({ ...range, handsRange: updatedHandsRange });
   };
 
-  const handleRangeSubmit = async (data: { name: string }) => {
+  const handleRangeSubmit = (data: { name: string }) => {
     const updatedRange = {
       ...range,
       name: data.name,
     };
     setRange(updatedRange);
-    await dispatch(createRange(updatedRange));
+    dispatch(createRange(updatedRange));
   };
 
   return (
