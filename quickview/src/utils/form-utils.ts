@@ -51,7 +51,7 @@ export const buildValidate = <TControls extends FieldValues>(
 };
 
 // Form controls types
-export type FormControl<TControls extends FieldValues> = InputFormControl<TControls> | ButtonForm;
+export type FormControl<TControls extends FieldValues> = InputFormControl<TControls> | SelectFormControl<TControls> | ButtonForm;
 
 export type InitialValue<TControls extends FieldValues> = { [v in Path<TControls>]?: string };
 
@@ -71,6 +71,15 @@ type InputFormControl<TControls extends FieldValues> = {
   initialValue?: string;
   controlType: 'input';
   label: string;
+};
+
+type SelectFormControl<TControls extends FieldValues> = {
+  validation?: RegisterOptions<TControls> | CustomValidation<TControls>;
+  name: Path<TControls>;
+  initialValue?: string;
+  controlType: 'select';
+  label: string;
+  options: { value: string; label: string }[];
 };
 
 type ButtonForm = {

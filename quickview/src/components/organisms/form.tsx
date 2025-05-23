@@ -7,6 +7,7 @@ import { Button, styled, Typography } from '@mui/material';
 
 // Components
 import FormInput from '../molecules/form-input';
+import FormSelect from '../molecules/form-select';
 
 // Utils
 import { FormConfig } from '../../utils/form-utils';
@@ -58,6 +59,20 @@ const Form = <TFormFields extends FieldValues>({
                 register={register}
                 name={control.name}
                 errors={errors}
+                key={index}
+              />
+            );
+          } else if (control.controlType === 'select') {
+            return (
+              <FormSelect
+                initialValue={control.initialValue}
+                validation={control.validation}
+                label={control.label}
+                getValues={getValues}
+                register={register}
+                name={control.name}
+                errors={errors}
+                selectOptions={control.options}
                 key={index}
               />
             );
