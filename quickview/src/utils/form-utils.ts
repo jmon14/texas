@@ -14,6 +14,7 @@ import {
   Path,
 } from 'react-hook-form';
 import { TypographyProps } from '@mui/material';
+import { Range } from '../../vision-api';
 
 // Constants
 import { EMAIL_REGEX, FetchStatus, PWD_REGEX, USER_REGEX } from '../constants';
@@ -80,6 +81,7 @@ type SelectFormControl<TControls extends FieldValues> = {
   controlType: 'select';
   label: string;
   options: { value: string; label: string }[];
+  defaultValue?: string;
 };
 
 type ButtonForm = {
@@ -105,8 +107,9 @@ type FormConfigOptions<TControls extends FieldValues> = {
   error?: unknown;
 };
 
-type GetConfigForm<TControls extends FieldValues> = (
+type GetConfigForm<TControls extends FieldValues, TOptions = unknown> = (
   options?: FormConfigOptions<TControls>,
+  additionalOptions?: TOptions,
 ) => FormConfig<TControls>;
 
 // Login form utils
@@ -359,10 +362,34 @@ export const getRangeConfigForm: GetConfigForm<RangeControls> = (
       },
       {
         controlType: 'button',
-        text: 'Save Range',
+        text: 'Save',
       },
     ],
-    success: options?.status === FetchStatus.SUCCEDED ? 'Range saved successfully!' : undefined,
     error: options?.error,
+  };
+};
+
+export type RangeSelectorControls = {
+  selectedRangeId: string;
+};
+
+export const getRangeSelectorConfigForm: GetConfigForm<RangeSelectorControls, Range[]> = (
+  options?: FormConfigOptions<RangeSelectorControls>,
+  additionalOptions?: Range[],
+): FormConfig<RangeSelectorControls> => {
+  return {
+    controls: [
+      {
+        controlType: 'select',
+        label: 'Range selector',
+        name: 'selectedRangeId',
+        initialValue: options?.initialValues?.selectedRangeId || 'Default selection',
+        options: [
+          { value: 'Default selection', label: 'New range' },
+          ...(additionalOptions?.map(range => ({ value: range.id!, label: range.name })) || []),
+        ],
+      },
+    ],
+    error: options?.error
   };
 };

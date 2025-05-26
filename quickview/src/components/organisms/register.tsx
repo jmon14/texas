@@ -7,7 +7,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { signup } from '../../store/slices/user-slice';
 
 // Components
-import Form from './form';
+import Form, { useFormMethods } from './form';
 
 // Hooks
 import useUser from '../../hooks/useUser';
@@ -22,16 +22,19 @@ type RegisterProps = {
 const Register = ({ initialValues }: RegisterProps) => {
   const [dispatch, { error, status }] = useUser();
 
+  // Get register form configuration
+  const config = getRegisterConfigForm({ error, initialValues, status });
+
+  // Initialize form methods
+  const methods = useFormMethods<RegisterControls>(config);
+
   // Handle submit of register form
   const onSubmit: SubmitHandler<RegisterControls> = async (data) => {
     dispatch(signup(data));
   };
 
-  // Get register form configuration
-  const config = getRegisterConfigForm({ error, initialValues, status });
-
   return (
-    <Form noValidate config={config} onSubmit={onSubmit}>
+    <Form noValidate config={config} onSubmit={onSubmit} methods={methods}>
       <Box sx={{ display: 'flex', gap: '5px' }}>
         <Typography>
           Already registered?{' '}

@@ -7,7 +7,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { login } from '../../store/slices/user-slice';
 
 // Components
-import Form from './form';
+import Form, { useFormMethods } from './form';
 
 // Hooks
 import useUser from '../../hooks/useUser';
@@ -23,17 +23,20 @@ type LoginProps = {
 const Login = ({ initialValues = {} }: LoginProps) => {
   const [dispatch, { error, status }] = useUser();
 
+  // Get login form configuration
+  const config = getLoginConfigForm({ error, initialValues, status });
+
+  // Initialize form methods
+  const methods = useFormMethods<LoginControls>(config);
+
   // Handle submition of form
   const onSubmit: SubmitHandler<LoginControls> = (data) => {
     dispatch(login(data));
   };
 
-  // Get login form configuration
-  const config = getLoginConfigForm({ error, initialValues, status });
-
   // If user logs in succesfully navigate to home
   return (
-    <Form noValidate config={config} onSubmit={onSubmit}>
+    <Form noValidate config={config} onSubmit={onSubmit} methods={methods}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="body1">
           Don&apos;t have an account?{' '}

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Range, RangeControllerApi } from '../../../vision-api';
+import { Range } from '../../../vision-api';
 import { FetchStatus } from '../../constants';
 import { AxiosError } from 'axios';
 import { RootState } from '../store';
@@ -9,7 +9,8 @@ import { rangeApi } from '../../api/api';
 export type RangeState = {
   error: unknown;
   status: FetchStatus;
-  currentRange: Range | null;
+  currentRange: Range | null; // TODO - Either commit to state here or in the range builder
+  ranges: Range[];
 };
 
 // Initial state on load
@@ -17,12 +18,13 @@ const initialState: RangeState = {
   status: FetchStatus.IDDLE,
   currentRange: null,
   error: null,
+  ranges: [],
 };
 
 // Async thunk for creating range
 export const createRange = createAsyncThunk(
   'range/create',
-  async (range: Range, { rejectWithValue }) => {
+  async (range: Omit<Range, 'id'>, { rejectWithValue }) => {
     try {
       await rangeApi.createRange(range);
       return range;
@@ -82,6 +84,22 @@ export const deleteRange = createAsyncThunk(
   }
 );
 
+// Async thunk for getting ranges by user id
+export const getRangesByUserId = createAsyncThunk(
+  'range/getByUserId',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await rangeApi.getRangesByUserId(userId);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+      }
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to get ranges');
+    }
+  }
+);
+
 // Loading reducer
 const loadingReducer = (state: RangeState) => {
   state.status = FetchStatus.LOADING;
@@ -103,6 +121,13 @@ const fulfillReducer = (state: RangeState) => {
 const rangeReducer = (state: RangeState, action: PayloadAction<Range>) => {
   state.status = FetchStatus.SUCCEDED;
   state.currentRange = action.payload;
+  state.error = null;
+};
+
+// Ranges reducer
+const rangesReducer = (state: RangeState, action: PayloadAction<Range[]>) => {
+  state.status = FetchStatus.SUCCEDED;
+  state.ranges = action.payload;
   state.error = null;
 };
 
@@ -136,7 +161,11 @@ export const rangeSlice = createSlice({
       // Delete range
       .addCase(deleteRange.pending, loadingReducer)
       .addCase(deleteRange.rejected, rejectedReducer)
-      .addCase(deleteRange.fulfilled, fulfillReducer);
+      .addCase(deleteRange.fulfilled, fulfillReducer)
+      // Get ranges by user id
+      .addCase(getRangesByUserId.pending, loadingReducer)
+      .addCase(getRangesByUserId.rejected, rejectedReducer)
+      .addCase(getRangesByUserId.fulfilled, rangesReducer);
   },
 });
 

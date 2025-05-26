@@ -6,7 +6,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { newPassword } from '../../store/slices/user-slice';
 
 // Components
-import Form from './form';
+import Form, { useFormMethods } from './form';
 
 // Hooks
 import useUser from '../../hooks/useUser';
@@ -25,15 +25,18 @@ const NewPassword = ({ initialValues = {} }: NewPwdProps) => {
 
   const [dispatch, { error, status }] = useUser();
 
+  // Get login form configuration
+  const config = getNewPwdConfigForm({ error, initialValues, status });
+
+  // Initialize form methods
+  const methods = useFormMethods<NewPasswordControls>(config);
+
   // Handle submit of register form
   const onSubmit: SubmitHandler<NewPasswordControls> = (data) => {
     dispatch(newPassword({ password: data.password, token }));
   };
 
-  // Get login form configuration
-  const config = getNewPwdConfigForm({ error, initialValues, status });
-
-  return <Form noValidate config={config} onSubmit={onSubmit} />;
+  return <Form noValidate config={config} onSubmit={onSubmit} methods={methods} />;
 };
 
 export default NewPassword;
