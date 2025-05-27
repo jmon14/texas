@@ -104,8 +104,10 @@ const Form = <TFormFields extends FieldValues>({
           return (
             <Button
               key={index}
-              type="submit"
+              type={control.onClick ? 'button' : 'submit'}
               variant="contained"
+              color={control.color}
+              onClick={control.onClick}
             >
               {control.text}
             </Button>

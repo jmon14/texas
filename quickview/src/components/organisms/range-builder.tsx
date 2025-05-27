@@ -9,7 +9,7 @@ import ActionList from './action-list';
 import RangeForm from './range-form';
 import { useAppSelector, useAppDispatch } from '../../hooks/store-hooks';
 import { selectAuthenticatedUser } from '../../store/slices/user-slice';
-import { createRange, getRangesByUserId, selectRange, updateRange } from '../../store/slices/range-slice';
+import { createRange, deleteRange, getRangesByUserId, selectRange, updateRange } from '../../store/slices/range-slice';
 import RangeSelector from './range-selector';
 import { RangeControls, RangeSelectorControls } from '../../utils/form-utils';
 import { SubmitHandler } from 'react-hook-form';
@@ -78,8 +78,6 @@ const RangeBuilder = () => {
     }
   };
 
-  const [rangeSelectorKey, setRangeSelectorKey] = useState(0);
-
   const handleRangeSelectChange = (rangeId: string) => {
     const range = ranges.find(range => range.id === rangeId);
     if (range) {
@@ -93,6 +91,13 @@ const RangeBuilder = () => {
     setRange(prev => ({ ...prev, name }));
   };
 
+  const handleRangeDelete = () => {
+    if (range.id) {
+      dispatch(deleteRange({ id: range.id, userId: user.uuid }));
+      setRange(defaultRange);
+    }
+  };
+
   return (
     <Box sx={{ display: 'flex', gap: 3, height: '100%', alignItems: 'flex-start' }}>
       <RangeGrid
@@ -102,14 +107,15 @@ const RangeBuilder = () => {
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
         <ActionList actions={actions} onActionChange={handleActionChange} />
-        <RangeSelector 
-          key={rangeSelectorKey}
+        <RangeSelector
           initialValues={{ selectedRangeId: range.id }} 
           onRangeSelectChange={(rangeId) => handleRangeSelectChange(rangeId)} 
         />
         <RangeForm 
+          id={range.id}
           initialValues={{ name: range.name }} 
           onSubmit={handleRangeSubmit}
+          onDelete={handleRangeDelete}
           onNameChange={handleRangeNameChange}
         />
       </Box>

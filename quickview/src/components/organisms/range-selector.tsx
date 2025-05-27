@@ -42,18 +42,16 @@ const RangeSelector = ({ initialValues, onRangeSelectChange }: RangeSelectorProp
 
   // Set the value when it changes
   useEffect(() => {
-    if (initialValues?.selectedRangeId !== undefined) {
-      methods.setValue('selectedRangeId', initialValues.selectedRangeId, {
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true
-      });
-    }
+    methods.setValue('selectedRangeId', initialValues?.selectedRangeId || 'Default selection', {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
   }, [initialValues?.selectedRangeId, methods]);
 
   return (
-    <Form 
-      config={config} 
+    <Form
+      config={config}
       methods={methods}
     />
   );

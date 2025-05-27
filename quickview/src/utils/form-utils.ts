@@ -87,6 +87,8 @@ type SelectFormControl<TControls extends FieldValues> = {
 type ButtonForm = {
   controlType: 'button';
   text: string;
+  color?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+  onClick?: () => void;
 };
 
 // Form configuration utils
@@ -105,6 +107,7 @@ type FormConfigOptions<TControls extends FieldValues> = {
   initialValues?: InitialValue<TControls>;
   status?: FetchStatus;
   error?: unknown;
+  onDelete?: () => void;
 };
 
 type GetConfigForm<TControls extends FieldValues, TOptions = unknown> = (
@@ -340,9 +343,35 @@ export type RangeControls = {
   name: string;
 };
 
-export const getRangeConfigForm: GetConfigForm<RangeControls> = (
+export const getRangeConfigForm: GetConfigForm<RangeControls, { id?: string }> = (
   options?: FormConfigOptions<RangeControls>,
+  additionalOptions?: { id?: string },
 ): FormConfig<RangeControls> => {
+  const controls: FormControl<RangeControls>[] = [
+    {
+      initialValue: options?.initialValues?.name || '',
+      controlType: 'input',
+      label: 'Range Name',
+      name: 'name',
+      validation: {
+        required: 'Range name is required',
+      },
+    },
+    {
+      controlType: 'button',
+      text: 'Save',
+    },
+  ];
+
+  if (additionalOptions?.id) {
+    controls.push({
+      controlType: 'button',
+      text: 'Delete',
+      color: 'error',
+      onClick: options?.onDelete,
+    });
+  }
+
   return {
     title: {
       text: 'Range Details',
@@ -350,21 +379,7 @@ export const getRangeConfigForm: GetConfigForm<RangeControls> = (
         variant: 'h6',
       },
     },
-    controls: [
-      {
-        initialValue: options?.initialValues?.name || '',
-        controlType: 'input',
-        label: 'Range Name',
-        name: 'name',
-        validation: {
-          required: 'Range name is required',
-        },
-      },
-      {
-        controlType: 'button',
-        text: 'Save',
-      },
-    ],
+    controls,
     error: options?.error,
   };
 };

@@ -6,14 +6,21 @@ import { useAppSelector } from '../../hooks/store-hooks';
 import { useEffect } from 'react';
 
 type RangeFormProps = {
+  id?: string;
   initialValues?: InitialValue<RangeControls>;
   onSubmit?: SubmitHandler<RangeControls>;
   onNameChange?: (name: string) => void;
+  onDelete?: () => void;
 };
 
-const RangeForm = ({ initialValues, onSubmit, onNameChange }: RangeFormProps) => {
+const RangeForm = ({ id, initialValues, onSubmit, onNameChange, onDelete }: RangeFormProps) => {
   const { status, error } = useAppSelector(selectRange);
-  const config = getRangeConfigForm({ error, initialValues, status });
+  const config = getRangeConfigForm({ 
+    error, 
+    initialValues, 
+    status,
+    onDelete
+  }, { id });
   const methods = useFormMethods<RangeControls>(config);
 
   // Watch for name changes and notify parent

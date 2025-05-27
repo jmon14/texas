@@ -76,9 +76,12 @@ export const updateRange = createAsyncThunk(
 // Async thunk for deleting range
 export const deleteRange = createAsyncThunk(
   'range/delete',
-  async (id: string, { rejectWithValue }) => {
+  async ({ id, userId }: { id: string; userId: string }, { rejectWithValue, dispatch }) => {
     try {
       await rangeApi.deleteRange(id);
+      // After successful deletion, fetch the updated ranges
+      const response = await rangeApi.getRangesByUserId(userId);
+      return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data?.message || error.message);
@@ -165,7 +168,7 @@ export const rangeSlice = createSlice({
       // Delete range
       .addCase(deleteRange.pending, loadingReducer)
       .addCase(deleteRange.rejected, rejectedReducer)
-      .addCase(deleteRange.fulfilled, fulfillReducer)
+      .addCase(deleteRange.fulfilled, rangesReducer)
       // Get ranges by user id
       .addCase(getRangesByUserId.pending, loadingReducer)
       .addCase(getRangesByUserId.rejected, rejectedReducer)
