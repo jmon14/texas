@@ -42,7 +42,7 @@ const FormSelect = <TControls extends FieldValues>({
       <InputLabel>{label}</InputLabel>
       <MuiSelect
         label={label}
-        defaultValue={initialValue || ''}
+        value={getValues(name) || initialValue || ''}
         {...register(name, registerOptions)}
         {...props}
       >

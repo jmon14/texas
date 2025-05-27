@@ -27,7 +27,9 @@ export const createRange = createAsyncThunk(
   async (range: Omit<Range, 'id'>, { rejectWithValue }) => {
     try {
       await rangeApi.createRange(range);
-      return range;
+      // After successful creation, fetch the updated ranges
+      const response = await rangeApi.getRangesByUserId(range.userId);
+      return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data?.message || error.message);
@@ -56,10 +58,12 @@ export const getRangeById = createAsyncThunk(
 // Async thunk for updating range
 export const updateRange = createAsyncThunk(
   'range/update',
-  async ({ id, range }: { id: string; range: Range }, { rejectWithValue }) => {
+  async ({ id, range, userId }: { id: string; range: Range; userId: string }, { rejectWithValue, dispatch }) => {
     try {
       await rangeApi.updateRange(id, range);
-      return range;
+      // After successful update, fetch the updated ranges
+      const response = await rangeApi.getRangesByUserId(userId);
+      return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data?.message || error.message);
@@ -149,7 +153,7 @@ export const rangeSlice = createSlice({
       // Create range
       .addCase(createRange.pending, loadingReducer)
       .addCase(createRange.rejected, rejectedReducer)
-      .addCase(createRange.fulfilled, rangeReducer)
+      .addCase(createRange.fulfilled, rangesReducer)
       // Get range by id
       .addCase(getRangeById.pending, loadingReducer)
       .addCase(getRangeById.rejected, rejectedReducer)
@@ -157,7 +161,7 @@ export const rangeSlice = createSlice({
       // Update range
       .addCase(updateRange.pending, loadingReducer)
       .addCase(updateRange.rejected, rejectedReducer)
-      .addCase(updateRange.fulfilled, rangeReducer)
+      .addCase(updateRange.fulfilled, rangesReducer)
       // Delete range
       .addCase(deleteRange.pending, loadingReducer)
       .addCase(deleteRange.rejected, rejectedReducer)

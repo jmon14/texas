@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
+import { UseFormSetValue, UseFormReturn } from 'react-hook-form';
 
 import { defaultActions, defaultHandRange } from '../../constants';
 import { Action, Range } from '../../../vision-api';
@@ -10,7 +11,8 @@ import { useAppSelector, useAppDispatch } from '../../hooks/store-hooks';
 import { selectAuthenticatedUser } from '../../store/slices/user-slice';
 import { createRange, getRangesByUserId, selectRange, updateRange } from '../../store/slices/range-slice';
 import RangeSelector from './range-selector';
-import { RangeControls } from '../../utils/form-utils';
+import { RangeControls, RangeSelectorControls } from '../../utils/form-utils';
+import { SubmitHandler } from 'react-hook-form';
 
 const RangeBuilder = () => {
   const dispatch = useAppDispatch();
@@ -56,20 +58,34 @@ const RangeBuilder = () => {
     setRange({ ...range, handsRange: updatedHandsRange });
   };
 
+  const handleRangeSubmit: SubmitHandler<RangeControls> = (data) => {
+    if (range.id) {
+      dispatch(updateRange({ id: range.id, range: { ...range, name: data.name }, userId: user.uuid }));
+    } else {
+      const newRangeData = { ...data, userId: user.uuid, handsRange: range.handsRange };
+      dispatch(createRange(newRangeData)).then((action) => {
+        if (action.meta.requestStatus === 'fulfilled') {
+          const newRanges = action.payload as Range[];
+          const newRange = newRanges.find(r => 
+            r.name === newRangeData.name && 
+            r.userId === newRangeData.userId
+          );
+          if (newRange) {
+            setRange(newRange);
+          }
+        }
+      });
+    }
+  };
+
+  const [rangeSelectorKey, setRangeSelectorKey] = useState(0);
+
   const handleRangeSelectChange = (rangeId: string) => {
     const range = ranges.find(range => range.id === rangeId);
     if (range) {
       setRange(range);
     } else {
       setRange(defaultRange);
-    }
-  };
-
-  const handleRangeSubmit = (data: RangeControls) => {
-    if (range.id) {
-      dispatch(updateRange({ id: range.id, range: { ...range, ...data } }));
-    } else {
-      dispatch(createRange({ ...data, userId: user.uuid, handsRange: range.handsRange }));
     }
   };
 
@@ -86,7 +102,11 @@ const RangeBuilder = () => {
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
         <ActionList actions={actions} onActionChange={handleActionChange} />
-        <RangeSelector initialValues={{ selectedRangeId: range.id }} onRangeSelectChange={handleRangeSelectChange} />
+        <RangeSelector 
+          key={rangeSelectorKey}
+          initialValues={{ selectedRangeId: range.id }} 
+          onRangeSelectChange={(rangeId) => handleRangeSelectChange(rangeId)} 
+        />
         <RangeForm 
           initialValues={{ name: range.name }} 
           onSubmit={handleRangeSubmit}

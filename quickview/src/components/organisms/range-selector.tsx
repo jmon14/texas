@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 
 // External libraries
-import { SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, UseFormSetValue } from 'react-hook-form';
 
 // Store
 import { selectRange } from '../../store/slices/range-slice';
@@ -25,25 +25,38 @@ const RangeSelector = ({ initialValues, onRangeSelectChange }: RangeSelectorProp
   const { ranges, error } = useAppSelector(selectRange);
 
   // Get range selector form configuration with stable options
-  const config = getRangeSelectorConfigForm({ error }, ranges);
+  const config = getRangeSelectorConfigForm({ error, initialValues }, ranges);
 
   // Initialize form methods
   const methods = useFormMethods<RangeSelectorControls>(config);
 
+  // Watch for form value changes
+  useEffect(() => {
+    const subscription = methods.watch((value) => {
+      if (value.selectedRangeId) {
+        onRangeSelectChange(value.selectedRangeId);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [methods, onRangeSelectChange]);
+
   // Set the value when it changes
   useEffect(() => {
     if (initialValues?.selectedRangeId !== undefined) {
-      methods.setValue('selectedRangeId', initialValues.selectedRangeId);
+      methods.setValue('selectedRangeId', initialValues.selectedRangeId, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true
+      });
     }
   }, [initialValues?.selectedRangeId, methods]);
 
-  const handleChange = (data: Partial<RangeSelectorControls>) => {
-    if (data.selectedRangeId) {
-      onRangeSelectChange(data.selectedRangeId);
-    }
-  };
-
-  return <Form config={config} methods={methods} onChange={handleChange} />;
+  return (
+    <Form 
+      config={config} 
+      methods={methods}
+    />
+  );
 };
 
-export default RangeSelector; 
+export default RangeSelector;
