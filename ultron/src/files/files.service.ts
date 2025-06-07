@@ -1,6 +1,5 @@
 // NestJS
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 
 // External libraries
@@ -11,12 +10,15 @@ import { S3 } from 'aws-sdk';
 // Entities
 import FileEntity from 'src/database/entities/file.entity';
 
+// Services
+import { ConfigurationService } from '../config/configuration.service';
+
 @Injectable()
 export class FilesService {
   constructor(
     @InjectRepository(FileEntity)
     private publicFilesRepository: Repository<FileEntity>,
-    private readonly configService: ConfigService,
+    private readonly configurationService: ConfigurationService,
   ) {}
 
   // TODO - Remove later as it is only needed during dev
@@ -30,9 +32,10 @@ export class FilesService {
 
   async uploadFile(dataBuffer: Buffer, filename: string, size, userId) {
     const s3 = new S3();
+    const bucketName = await this.configurationService.get('AWS_PUBLIC_BUCKET_NAME');
     const uploadResult = await s3
       .upload({
-        Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+        Bucket: bucketName,
         Body: dataBuffer,
         Key: `${uuid()}-${filename}`, // Generating a unique key, consider alternatives
       })

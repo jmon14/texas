@@ -1,17 +1,22 @@
 // External libraries
 import { DataSource, EntitySubscriberInterface, EventSubscriber, RemoveEvent } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
 import { S3 } from 'aws-sdk';
 
 // Entities
 import FileEntity from 'src/database/entities/file.entity';
+
+// Services
+import { ConfigurationService } from '../../config/configuration.service';
 
 /**
  * Subscriber of events to update fields before insertion / update
  */
 @EventSubscriber()
 export class FilesSubscriber implements EntitySubscriberInterface<FileEntity> {
-  constructor(public dataSource: DataSource, private configService: ConfigService) {
+  constructor(
+    public dataSource: DataSource,
+    private configurationService: ConfigurationService,
+  ) {
     dataSource.subscribers.push(this);
   }
 
@@ -31,9 +36,10 @@ export class FilesSubscriber implements EntitySubscriberInterface<FileEntity> {
    */
   async beforeRemove({ entity }: RemoveEvent<FileEntity>) {
     const s3 = new S3();
+    const bucketName = await this.configurationService.get('AWS_PUBLIC_BUCKET_NAME');
     await s3
       .deleteObject({
-        Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+        Bucket: bucketName,
         Key: entity.key,
       })
       .promise();
