@@ -4,13 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 // External libraries
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 // Entities
 import { UserEntity } from 'src/database/entities/user.entity';
 
 // DTOs
-import { UserDto } from 'src/users/dtos/user.dto';
+import { RegisterDto } from 'src/users/dtos/user.dto';
 
 // Constants
 import { PostgresErrorCode } from 'src/utils/constants';
@@ -60,10 +59,8 @@ export class UsersService {
     if (!user) {
       return null;
     }
-    // Compare refresh token stored
-    const isRefreshTokenMatching = await bcrypt.compare(refreshToken, user.refreshToken);
     // If refresh token matches return user data
-    if (isRefreshTokenMatching) {
+    if (refreshToken === user.refreshToken) {
       return user;
     }
     return null;
@@ -75,7 +72,7 @@ export class UsersService {
    * @param createUserDto - Dto for user to be created
    * @returns - User saved
    */
-  async createUser(createUserDto: UserDto): Promise<UserEntity> {
+  async createUser(createUserDto: RegisterDto): Promise<UserEntity> {
     try {
       const newUser = this.userRepository.create(createUserDto);
       const user = await this.userRepository.save(newUser);

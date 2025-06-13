@@ -61,10 +61,6 @@ export class UsersSubscriber implements EntitySubscriberInterface<UserEntity> {
       }
     }
 
-    if (entity.refreshToken) {
-      entity.refreshToken = await Utils.generateHash(entity.refreshToken);
-    }
-
     if (entity.email) {
       entity.email = entity.email.toLowerCase();
     }

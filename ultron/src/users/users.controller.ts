@@ -24,9 +24,9 @@ import { UserEntity } from 'src/database/entities/user.entity';
 import FileEntity from 'src/database/entities/file.entity';
 
 // DTOs
-import { UserDto } from './dtos/user.dto';
 import EmailDto from 'src/users/dtos/email.dto';
 import TokenDto from 'src/users/dtos/confirm-email.dto';
+import { RegisterDto } from 'src/users/dtos/user.dto';
 import { ResetPwdDto } from 'src/users/dtos/reset-password.dto';
 
 // Constants
@@ -69,9 +69,9 @@ export class UsersController {
   @Post('create')
   @ApiBody({
     description: 'Create user from payload, send verification email and return created user',
-    type: UserDto,
+    type: RegisterDto,
   })
-  async createUser(@Body() createUserDto: UserDto, @Request() req): Promise<UserEntity> {
+  async createUser(@Body() createUserDto: RegisterDto, @Request() req): Promise<UserEntity> {
     try {
       const user = await this.userService.createUser(createUserDto);
       // Set Auth cookies to authenticate user

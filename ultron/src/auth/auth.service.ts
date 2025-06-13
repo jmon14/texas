@@ -39,10 +39,10 @@ export class AuthService {
     private readonly configurationService: ConfigurationService,
   ) {}
 
-  private async signToken(payload, secret: string, expirationTime: string): Promise<string> {
+  private signToken(payload, secret: string, expirationTime: string): string {
     return this.jwtService.sign(payload, {
-      secret: await this.configurationService.get(secret),
-      expiresIn: `${await this.configurationService.get(expirationTime)}s`,
+      secret,
+      expiresIn: `${expirationTime}s`,
     });
   }
 
@@ -74,39 +74,40 @@ export class AuthService {
    * @returns - Email from token
    */
   async decodeToken<T extends object>(token: string, secret: string): Promise<T> {
+    const secretValue = await this.configurationService.get(secret);
     const payload: T = await this.jwtService.verify(token, {
-      secret: await this.configurationService.get(secret),
+      secret: secretValue,
     });
     return payload;
   }
 
   async setAuthCookies(res: Response, payload: TokenPayload): Promise<void> {
-    const secret = 'JWT_SECRET';
-    const refreshSecret = 'JWT_REFRESH_SECRET';
-    const expiration = 'JWT_EXPIRATION_TIME';
-    const refreshExpiration = 'JWT_REFRESH_EXPIRATION_TIME';
+    const secret = await this.configurationService.get('JWT_SECRET');
+    const refreshSecret = await this.configurationService.get('JWT_REFRESH_SECRET');
+    const expiration = await this.configurationService.get('JWT_EXPIRATION_TIME');
+    const refreshExpiration = await this.configurationService.get('JWT_REFRESH_EXPIRATION_TIME');
     const domain = await this.configurationService.get('DOMAIN');
     // Set signed auth cookies
-    const authToken = await this.signToken(payload, secret, expiration);
-    const refreshToken = await this.signToken(payload, refreshSecret, refreshExpiration);
+    const authToken = this.signToken(payload, secret, expiration);
+    const refreshToken = this.signToken(payload, refreshSecret, refreshExpiration);
     const authCookie = Utils.createCookie(
       'Authentication',
       authToken,
-      await this.configurationService.get(expiration),
+      expiration,
       true,
       domain,
     );
     const refreshCookie = Utils.createCookie(
       'Refresh',
       refreshToken,
-      await this.configurationService.get(refreshExpiration),
+      refreshExpiration,
       true,
       domain,
     );
     const refreshExistCookie = Utils.createCookie(
       'RefreshExist',
-      refreshToken,
-      await this.configurationService.get(refreshExpiration),
+      'true',
+      refreshExpiration,
       false,
       domain,
     );
@@ -122,7 +123,7 @@ export class AuthService {
     const logoutCookies = [
       Utils.createCookie('Authentication', '', '0', true, domain),
       Utils.createCookie('Refresh', '', '0', true, domain),
-      Utils.createCookie('RefreshExist', '', '0', true, domain),
+      Utils.createCookie('RefreshExist', '', '0', false, domain),
     ];
     res.setHeader('Set-Cookie', logoutCookies);
     // Remove refreshToken from user
@@ -135,7 +136,7 @@ export class AuthService {
     // Sign token and create mail
     const secret = await this.configurationService.get('JWT_EMAIL_SECRET');
     const expiration = await this.configurationService.get('JWT_EMAIL_EXPIRATION_TIME');
-    const token = await this.signToken({ ...payload }, secret, expiration);
+    const token = this.signToken({ ...payload }, secret, expiration);
     const url = `${await this.configurationService.get('UI_URL')}${mailData.url}?token=${token}`;
     const text = `${mailData.content} ${url}`;
     const mail: Mail.Options = {

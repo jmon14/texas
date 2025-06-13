@@ -15,12 +15,18 @@ export class LoginDto {
 }
 
 /**
- * User DTO
+ * Register Dto
  */
-export class UserDto extends LoginDto {
+export class RegisterDto extends LoginDto {
+  @IsNotEmpty()
   @IsEmail()
   email: string;
+}
 
+/**
+ * User DTO
+ */
+export class UserDto extends RegisterDto {
   @IsNotEmpty()
   @IsUUID()
   uuid: string;
