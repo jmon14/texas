@@ -1,13 +1,19 @@
+// NestJS
 import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
-import { ConfigurationService } from './configuration.service';
+
+// External
 import * as Joi from 'joi';
+
+// Config
+import { ConfigurationService } from './configuration.service';
+
+// Constants
 import { NODE_ENV } from '../utils/constants';
 
 @Module({
   imports: [
     NestConfigModule.forRoot({
-      isGlobal: true,
       envFilePath: `.${process.env.NODE_ENV}.env`,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()

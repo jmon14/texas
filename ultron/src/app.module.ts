@@ -2,16 +2,14 @@
 import { Module } from '@nestjs/common';
 
 // Feature module
-import { AuthModule } from './auth/auth.module';
-import { EmailModule } from './email/email.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { EmailModule } from 'src/email/email.module';
+import { UsersModule } from 'src/users/users.module';
 import { FilesModule } from 'src/files/files.module';
-import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from './config/config.module';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
   imports: [
-    ConfigModule,
     DatabaseModule,
     UsersModule,
     EmailModule,

@@ -10,6 +10,9 @@ import { EmailModule } from 'src/email/email.module';
 // Services
 import { AuthService } from './auth.service';
 
+// Config
+import { ConfigModule } from 'src/config/config.module';
+
 // Strategies
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -19,7 +22,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 
 @Module({
-  imports: [PassportModule, forwardRef(() => UsersModule), JwtModule.register({}), EmailModule],
+  imports: [PassportModule, forwardRef(() => UsersModule), JwtModule.register({}), EmailModule, ConfigModule],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
   controllers: [AuthController],
   exports: [AuthService],

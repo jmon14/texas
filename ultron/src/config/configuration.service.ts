@@ -1,7 +1,14 @@
+// NestJS
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
+// AWS
 import { SSM } from 'aws-sdk';
+
+// Constants
 import { NODE_ENV } from '../utils/constants';
 
+@Injectable()
 export class ConfigurationService {
   private ssm: SSM;
   private cachedParameters: Map<string, string> = new Map();

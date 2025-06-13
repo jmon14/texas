@@ -4,11 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Constants
 import { NODE_ENV } from 'src/utils/constants';
-import { ConfigurationService } from '../config/configuration.service';
+import { ConfigModule } from 'src/config/config.module';
+import { ConfigurationService } from 'src/config/configuration.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigurationService],
       useFactory: async (configurationService: ConfigurationService) => ({
         type: 'postgres',
