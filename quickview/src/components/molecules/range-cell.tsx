@@ -12,7 +12,14 @@ type RangeCellProps = CellProps & {
   isDragging?: boolean;
 };
 
-const RangeCell = ({ onClick, onMouseDown, onMouseEnter, isSelected, isDragging, ...props }: RangeCellProps) => {
+const RangeCell = ({
+  onClick,
+  onMouseDown,
+  onMouseEnter,
+  isSelected,
+  isDragging,
+  ...props
+}: RangeCellProps) => {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
@@ -64,10 +71,7 @@ const RangeCell = ({ onClick, onMouseDown, onMouseEnter, isSelected, isDragging,
           )
         }
       >
-        <Cell 
-          {...props} 
-          onClick={onClick}
-        />
+        <Cell {...props} onClick={onClick} />
       </Tooltip>
     </Box>
   );

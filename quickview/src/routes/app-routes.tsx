@@ -26,11 +26,7 @@ export const AppRoutes = () => {
       <Route path="auth" element={<Auth />}>
         <Route
           element={
-            <AuthProtected
-              refreshCookie={refreshCookie}
-              shouldBeLogged={false}
-              redirectPath="/"
-            />
+            <AuthProtected refreshCookie={refreshCookie} shouldBeLogged={false} redirectPath="/" />
           }
         >
           <Route path="new-password" element={<NewPassword />} />
@@ -57,4 +53,4 @@ export const AppRoutes = () => {
       </Route>
     </Routes>
   );
-}; 
+};

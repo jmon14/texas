@@ -37,11 +37,14 @@ const RangeGrid = ({ range, onCellClick, onCellsSelect }: RangeGridProps) => {
     setSelectedCells(new Set([index]));
   }, []);
 
-  const handleMouseEnter = useCallback((index: number) => {
-    if (isMouseDown) {
-      setSelectedCells(prev => new Set([...Array.from(prev), index]));
-    }
-  }, [isMouseDown]);
+  const handleMouseEnter = useCallback(
+    (index: number) => {
+      if (isMouseDown) {
+        setSelectedCells((prev) => new Set([...Array.from(prev), index]));
+      }
+    },
+    [isMouseDown],
+  );
 
   return (
     <Panel
@@ -56,10 +59,10 @@ const RangeGrid = ({ range, onCellClick, onCellsSelect }: RangeGridProps) => {
       }}
     >
       {range.handsRange.map(({ rangeFraction, actions, label }, index) => (
-        <RangeCell 
-          key={index} 
-          rangeFraction={rangeFraction} 
-          actions={actions} 
+        <RangeCell
+          key={index}
+          rangeFraction={rangeFraction}
+          actions={actions}
           label={label}
           onClick={() => onCellClick?.(index)}
           onMouseDown={() => handleMouseDown(index)}

@@ -15,4 +15,4 @@ const useRange = () => {
   return [dispatch, rangeState] as const;
 };
 
-export default useRange; 
+export default useRange;

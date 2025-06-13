@@ -1,6 +1,12 @@
 // External libraries
 import { FieldValues, RegisterOptions } from 'react-hook-form';
-import { Select as MuiSelect, SelectProps as MuiSelectProps, MenuItem, FormControl, InputLabel } from '@mui/material';
+import {
+  Select as MuiSelect,
+  SelectProps as MuiSelectProps,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 
 // Utils
 import { buildValidate, isCustomValidation, WithFormProps } from '../../utils/form-utils';
@@ -56,4 +62,4 @@ const FormSelect = <TControls extends FieldValues>({
   );
 };
 
-export default FormSelect; 
+export default FormSelect;

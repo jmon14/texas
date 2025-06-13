@@ -48,6 +48,18 @@ ultronInstance.interceptors.response.use(
 );
 
 export const authApi = new AuthApi(undefined, process.env.REACT_APP_ULTRON_API_URL, ultronInstance);
-export const userApi = new UsersApi(undefined, process.env.REACT_APP_ULTRON_API_URL, ultronInstance);
-export const filesApi = new FilesApi(undefined, process.env.REACT_APP_ULTRON_API_URL, ultronInstance);
-export const rangeApi = new RangeControllerApi(undefined, process.env.REACT_APP_VISION_API_URL, visionInstance);
+export const userApi = new UsersApi(
+  undefined,
+  process.env.REACT_APP_ULTRON_API_URL,
+  ultronInstance,
+);
+export const filesApi = new FilesApi(
+  undefined,
+  process.env.REACT_APP_ULTRON_API_URL,
+  ultronInstance,
+);
+export const rangeApi = new RangeControllerApi(
+  undefined,
+  process.env.REACT_APP_VISION_API_URL,
+  visionInstance,
+);

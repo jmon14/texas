@@ -36,7 +36,7 @@ export const createRange = createAsyncThunk(
       }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create range');
     }
-  }
+  },
 );
 
 // Async thunk for getting range by id
@@ -52,13 +52,16 @@ export const getRangeById = createAsyncThunk(
       }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to get range');
     }
-  }
+  },
 );
 
 // Async thunk for updating range
 export const updateRange = createAsyncThunk(
   'range/update',
-  async ({ id, range, userId }: { id: string; range: Range; userId: string }, { rejectWithValue, dispatch }) => {
+  async (
+    { id, range, userId }: { id: string; range: Range; userId: string },
+    { rejectWithValue, dispatch },
+  ) => {
     try {
       await rangeApi.updateRange(id, range);
       // After successful update, fetch the updated ranges
@@ -70,7 +73,7 @@ export const updateRange = createAsyncThunk(
       }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to update range');
     }
-  }
+  },
 );
 
 // Async thunk for deleting range
@@ -88,7 +91,7 @@ export const deleteRange = createAsyncThunk(
       }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete range');
     }
-  }
+  },
 );
 
 // Async thunk for getting ranges by user id
@@ -104,7 +107,7 @@ export const getRangesByUserId = createAsyncThunk(
       }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to get ranges');
     }
-  }
+  },
 );
 
 // Loading reducer
@@ -180,4 +183,4 @@ export const { setCurrentRange, clearState } = rangeSlice.actions;
 
 export const selectRange = (state: RootState) => state.range;
 
-export default rangeSlice.reducer; 
+export default rangeSlice.reducer;

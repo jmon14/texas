@@ -14,7 +14,11 @@ import Form, { useFormMethods } from './form';
 import { useAppSelector } from '../../hooks/store-hooks';
 
 // Utils
-import { getRangeSelectorConfigForm, InitialValue, RangeSelectorControls } from '../../utils/form-utils';
+import {
+  getRangeSelectorConfigForm,
+  InitialValue,
+  RangeSelectorControls,
+} from '../../utils/form-utils';
 
 type RangeSelectorProps = {
   initialValues?: InitialValue<RangeSelectorControls>;
@@ -45,16 +49,11 @@ const RangeSelector = ({ initialValues, onRangeSelectChange }: RangeSelectorProp
     methods.setValue('selectedRangeId', initialValues?.selectedRangeId || 'Default selection', {
       shouldValidate: true,
       shouldDirty: true,
-      shouldTouch: true
+      shouldTouch: true,
     });
   }, [initialValues?.selectedRangeId, methods]);
 
-  return (
-    <Form
-      config={config}
-      methods={methods}
-    />
-  );
+  return <Form config={config} methods={methods} />;
 };
 
 export default RangeSelector;

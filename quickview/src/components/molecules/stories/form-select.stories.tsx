@@ -61,4 +61,4 @@ export const FormSelect: Story = {
     },
     selectOptions: mockOptions,
   },
-}; 
+};

@@ -15,12 +15,15 @@ type RangeFormProps = {
 
 const RangeForm = ({ id, initialValues, onSubmit, onNameChange, onDelete }: RangeFormProps) => {
   const { status, error } = useAppSelector(selectRange);
-  const config = getRangeConfigForm({ 
-    error, 
-    initialValues, 
-    status,
-    onDelete
-  }, { id });
+  const config = getRangeConfigForm(
+    {
+      error,
+      initialValues,
+      status,
+      onDelete,
+    },
+    { id },
+  );
   const methods = useFormMethods<RangeControls>(config);
 
   // Watch for name changes and notify parent
@@ -46,9 +49,7 @@ const RangeForm = ({ id, initialValues, onSubmit, onNameChange, onDelete }: Rang
     }
   };
 
-  return (
-    <Form config={config} methods={methods} onSubmit={handleRangeSubmit} />
-  );
+  return <Form config={config} methods={methods} onSubmit={handleRangeSubmit} />;
 };
 
-export default RangeForm; 
+export default RangeForm;

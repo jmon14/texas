@@ -27,7 +27,9 @@ export type FormProps<TFormFields extends FieldValues> = {
 } & Omit<DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>, 'onSubmit'>;
 
 // Hook to create form methods
-export const useFormMethods = <TFormFields extends FieldValues>(config?: FormConfig<TFormFields>) => {
+export const useFormMethods = <TFormFields extends FieldValues>(
+  config?: FormConfig<TFormFields>,
+) => {
   return useForm<TFormFields>({
     mode: config?.mode || 'onBlur',
   });
@@ -67,7 +69,9 @@ const Form = <TFormFields extends FieldValues>({
   return (
     <MyForm onSubmit={handleSubmit(handleSubmitForm)} {...rest}>
       {config?.title && (
-        <Typography color="primary" variant="h4" textAlign="center" {...config.title.props}>{config.title.text}</Typography>
+        <Typography color="primary" variant="h4" textAlign="center" {...config.title.props}>
+          {config.title.text}
+        </Typography>
       )}
       {config?.controls?.map((control, index) => {
         if (control.controlType === 'input') {
@@ -121,10 +125,7 @@ const Form = <TFormFields extends FieldValues>({
         </Typography>
       )}
       {config?.success && (
-        <Typography
-          color={(theme) => theme.palette.success.main}
-          sx={{ mt: '-11px', mb: '-11px' }}
-        >
+        <Typography color={(theme) => theme.palette.success.main} sx={{ mt: '-11px', mb: '-11px' }}>
           {config.success}
         </Typography>
       )}

@@ -52,7 +52,10 @@ export const buildValidate = <TControls extends FieldValues>(
 };
 
 // Form controls types
-export type FormControl<TControls extends FieldValues> = InputFormControl<TControls> | SelectFormControl<TControls> | ButtonForm;
+export type FormControl<TControls extends FieldValues> =
+  | InputFormControl<TControls>
+  | SelectFormControl<TControls>
+  | ButtonForm;
 
 export type InitialValue<TControls extends FieldValues> = { [v in Path<TControls>]?: string };
 
@@ -401,10 +404,10 @@ export const getRangeSelectorConfigForm: GetConfigForm<RangeSelectorControls, Ra
         initialValue: options?.initialValues?.selectedRangeId || 'Default selection',
         options: [
           { value: 'Default selection', label: 'New range' },
-          ...(additionalOptions?.map(range => ({ value: range.id!, label: range.name })) || []),
+          ...(additionalOptions?.map((range) => ({ value: range.id!, label: range.name })) || []),
         ],
       },
     ],
-    error: options?.error
+    error: options?.error,
   };
 };

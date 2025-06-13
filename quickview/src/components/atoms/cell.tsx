@@ -15,12 +15,16 @@ const Cell = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.grey[600],
 }));
 
-export type CellProps = React.DOMAttributes<Element> & HandRange & {
-  onClick?: () => void;
-};
+export type CellProps = React.DOMAttributes<Element> &
+  HandRange & {
+    onClick?: () => void;
+  };
 
 const DummyCell = forwardRef(
-  ({ rangeFraction: range, actions, label, onMouseOver, onMouseLeave, onClick }: CellProps, ref) => {
+  (
+    { rangeFraction: range, actions, label, onMouseOver, onMouseLeave, onClick }: CellProps,
+    ref,
+  ) => {
     const theme = useTheme();
 
     return (

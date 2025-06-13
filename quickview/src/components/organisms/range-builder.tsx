@@ -9,7 +9,13 @@ import ActionList from './action-list';
 import RangeForm from './range-form';
 import { useAppSelector, useAppDispatch } from '../../hooks/store-hooks';
 import { selectAuthenticatedUser } from '../../store/slices/user-slice';
-import { createRange, deleteRange, getRangesByUserId, selectRange, updateRange } from '../../store/slices/range-slice';
+import {
+  createRange,
+  deleteRange,
+  getRangesByUserId,
+  selectRange,
+  updateRange,
+} from '../../store/slices/range-slice';
 import RangeSelector from './range-selector';
 import { RangeControls, RangeSelectorControls } from '../../utils/form-utils';
 import { SubmitHandler } from 'react-hook-form';
@@ -23,7 +29,7 @@ const RangeBuilder = () => {
     name: 'Default Range',
     handsRange: defaultHandRange,
     userId: user.uuid,
-    id: undefined
+    id: undefined,
   };
 
   const [range, setRange] = useState<Range>(defaultRange);
@@ -49,7 +55,7 @@ const RangeBuilder = () => {
 
   const handleCellsSelect = (indices: number[]) => {
     const updatedHandsRange = [...range.handsRange];
-    indices.forEach(index => {
+    indices.forEach((index) => {
       updatedHandsRange[index] = {
         ...updatedHandsRange[index],
         actions: [...actions],
@@ -60,15 +66,16 @@ const RangeBuilder = () => {
 
   const handleRangeSubmit: SubmitHandler<RangeControls> = (data) => {
     if (range.id) {
-      dispatch(updateRange({ id: range.id, range: { ...range, name: data.name }, userId: user.uuid }));
+      dispatch(
+        updateRange({ id: range.id, range: { ...range, name: data.name }, userId: user.uuid }),
+      );
     } else {
       const newRangeData = { ...data, userId: user.uuid, handsRange: range.handsRange };
       dispatch(createRange(newRangeData)).then((action) => {
         if (action.meta.requestStatus === 'fulfilled') {
           const newRanges = action.payload as Range[];
-          const newRange = newRanges.find(r => 
-            r.name === newRangeData.name && 
-            r.userId === newRangeData.userId
+          const newRange = newRanges.find(
+            (r) => r.name === newRangeData.name && r.userId === newRangeData.userId,
           );
           if (newRange) {
             setRange(newRange);
@@ -79,7 +86,7 @@ const RangeBuilder = () => {
   };
 
   const handleRangeSelectChange = (rangeId: string) => {
-    const range = ranges.find(range => range.id === rangeId);
+    const range = ranges.find((range) => range.id === rangeId);
     if (range) {
       setRange(range);
     } else {
@@ -88,7 +95,7 @@ const RangeBuilder = () => {
   };
 
   const handleRangeNameChange = (name: string) => {
-    setRange(prev => ({ ...prev, name }));
+    setRange((prev) => ({ ...prev, name }));
   };
 
   const handleRangeDelete = () => {
@@ -100,20 +107,16 @@ const RangeBuilder = () => {
 
   return (
     <Box sx={{ display: 'flex', gap: 3, height: '100%', alignItems: 'flex-start' }}>
-      <RangeGrid
-        range={range}
-        onCellClick={handleCellClick}
-        onCellsSelect={handleCellsSelect}
-      />
+      <RangeGrid range={range} onCellClick={handleCellClick} onCellsSelect={handleCellsSelect} />
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
         <ActionList actions={actions} onActionChange={handleActionChange} />
         <RangeSelector
-          initialValues={{ selectedRangeId: range.id }} 
-          onRangeSelectChange={(rangeId) => handleRangeSelectChange(rangeId)} 
+          initialValues={{ selectedRangeId: range.id }}
+          onRangeSelectChange={(rangeId) => handleRangeSelectChange(rangeId)}
         />
-        <RangeForm 
+        <RangeForm
           id={range.id}
-          initialValues={{ name: range.name }} 
+          initialValues={{ name: range.name }}
           onSubmit={handleRangeSubmit}
           onDelete={handleRangeDelete}
           onNameChange={handleRangeNameChange}

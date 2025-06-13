@@ -46,40 +46,27 @@ const FormV2 = <TFormFields extends FieldValues>({
   return (
     <MyForm onSubmit={handleSubmit(handleSubmitForm)} {...rest}>
       {title && (
-        <Typography 
-          color="primary" 
-          variant={title.variant || 'h4'} 
-          textAlign="center"
-        >
+        <Typography color="primary" variant={title.variant || 'h4'} textAlign="center">
           {title.text}
         </Typography>
       )}
-      
+
       {children}
 
       {submitButtonText && (
-        <Button
-          type="submit"
-          variant="contained"
-        >
+        <Button type="submit" variant="contained">
           {submitButtonText}
         </Button>
       )}
 
       {error && (
-        <Typography 
-          color={(theme) => theme.palette.error.main} 
-          sx={{ mt: '-11px', mb: '-11px' }}
-        >
+        <Typography color={(theme) => theme.palette.error.main} sx={{ mt: '-11px', mb: '-11px' }}>
           {error}
         </Typography>
       )}
 
       {success && (
-        <Typography
-          color={(theme) => theme.palette.success.main}
-          sx={{ mt: '-11px', mb: '-11px' }}
-        >
+        <Typography color={(theme) => theme.palette.success.main} sx={{ mt: '-11px', mb: '-11px' }}>
           {success}
         </Typography>
       )}
@@ -88,4 +75,3 @@ const FormV2 = <TFormFields extends FieldValues>({
 };
 
 export default FormV2;
-
