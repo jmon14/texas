@@ -60,7 +60,7 @@ export const updateRange = createAsyncThunk(
   'range/update',
   async (
     { id, range, userId }: { id: string; range: Range; userId: string },
-    { rejectWithValue, dispatch },
+    { rejectWithValue },
   ) => {
     try {
       await rangeApi.updateRange(id, range);
@@ -79,7 +79,7 @@ export const updateRange = createAsyncThunk(
 // Async thunk for deleting range
 export const deleteRange = createAsyncThunk(
   'range/delete',
-  async ({ id, userId }: { id: string; userId: string }, { rejectWithValue, dispatch }) => {
+  async ({ id, userId }: { id: string; userId: string }, { rejectWithValue }) => {
     try {
       await rangeApi.deleteRange(id);
       // After successful deletion, fetch the updated ranges
@@ -119,12 +119,6 @@ const loadingReducer = (state: RangeState) => {
 const rejectedReducer = (state: RangeState, action: PayloadAction<unknown>) => {
   state.status = FetchStatus.FAILED;
   state.error = action.payload;
-};
-
-// Fulfill reducer
-const fulfillReducer = (state: RangeState) => {
-  state.status = FetchStatus.SUCCEDED;
-  state.error = null;
 };
 
 // Range reducer

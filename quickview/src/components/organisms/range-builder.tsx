@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
-import { UseFormSetValue, UseFormReturn } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 
 import { defaultActions, defaultHandRange } from '../../constants';
 import { Action, Range } from '../../../vision-api';
@@ -17,8 +17,7 @@ import {
   updateRange,
 } from '../../store/slices/range-slice';
 import RangeSelector from './range-selector';
-import { RangeControls, RangeSelectorControls } from '../../utils/form-utils';
-import { SubmitHandler } from 'react-hook-form';
+import { RangeControls } from '../../utils/form-utils';
 
 const RangeBuilder = () => {
   const dispatch = useAppDispatch();

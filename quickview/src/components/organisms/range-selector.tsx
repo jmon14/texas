@@ -1,9 +1,6 @@
 // React
 import { useEffect } from 'react';
 
-// External libraries
-import { SubmitHandler, UseFormSetValue } from 'react-hook-form';
-
 // Store
 import { selectRange } from '../../store/slices/range-slice';
 

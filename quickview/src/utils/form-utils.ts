@@ -404,7 +404,8 @@ export const getRangeSelectorConfigForm: GetConfigForm<RangeSelectorControls, Ra
         initialValue: options?.initialValues?.selectedRangeId || 'Default selection',
         options: [
           { value: 'Default selection', label: 'New range' },
-          ...(additionalOptions?.map((range) => ({ value: range.id!, label: range.name })) || []),
+          ...(additionalOptions?.map((range) => ({ value: range.id ?? '', label: range.name })) ||
+            []),
         ],
       },
     ],
