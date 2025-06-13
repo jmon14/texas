@@ -22,7 +22,13 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 
 @Module({
-  imports: [PassportModule, forwardRef(() => UsersModule), JwtModule.register({}), EmailModule, ConfigModule],
+  imports: [
+    PassportModule,
+    forwardRef(() => UsersModule),
+    JwtModule.register({}),
+    EmailModule,
+    ConfigModule,
+  ],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
   controllers: [AuthController],
   exports: [AuthService],

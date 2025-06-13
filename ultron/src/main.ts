@@ -26,7 +26,7 @@ async function bootstrap() {
   const configurationService = app.get(ConfigurationService);
 
   // Only configure AWS credentials in development
-  if (await configurationService.get('NODE_ENV') !== NODE_ENV.PRODUCTION) {
+  if ((await configurationService.get('NODE_ENV')) !== NODE_ENV.PRODUCTION) {
     awsConfig.update({
       accessKeyId: await configurationService.get('AWS_ACCESS_KEY_ID'),
       secretAccessKey: await configurationService.get('AWS_SECRET_ACCESS_KEY'),

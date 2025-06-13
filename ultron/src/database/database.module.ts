@@ -15,7 +15,7 @@ import { ConfigurationService } from 'src/config/configuration.service';
       useFactory: async (configurationService: ConfigurationService) => ({
         type: 'postgres',
         host: await configurationService.get('DB_HOST'),
-        port: +await configurationService.get('DB_PORT'),
+        port: +(await configurationService.get('DB_PORT')),
         username: await configurationService.get('DB_USERNAME'),
         password: await configurationService.get('DB_PASSWORD'),
         database: await configurationService.get('DB_NAME'),

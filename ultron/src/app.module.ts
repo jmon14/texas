@@ -9,13 +9,7 @@ import { FilesModule } from 'src/files/files.module';
 import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    UsersModule,
-    EmailModule,
-    AuthModule,
-    FilesModule,
-  ],
+  imports: [DatabaseModule, UsersModule, EmailModule, AuthModule, FilesModule],
   providers: [],
   controllers: [],
 })

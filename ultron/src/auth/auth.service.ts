@@ -90,13 +90,7 @@ export class AuthService {
     // Set signed auth cookies
     const authToken = this.signToken(payload, secret, expiration);
     const refreshToken = this.signToken(payload, refreshSecret, refreshExpiration);
-    const authCookie = Utils.createCookie(
-      'Authentication',
-      authToken,
-      expiration,
-      true,
-      domain,
-    );
+    const authCookie = Utils.createCookie('Authentication', authToken, expiration, true, domain);
     const refreshCookie = Utils.createCookie(
       'Refresh',
       refreshToken,

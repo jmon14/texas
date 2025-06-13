@@ -46,4 +46,4 @@ import { NODE_ENV } from '../utils/constants';
   providers: [ConfigurationService],
   exports: [ConfigurationService],
 })
-export class ConfigModule {} 
+export class ConfigModule {}

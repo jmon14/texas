@@ -22,7 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           return request?.cookies?.Authentication;
         },
       ]),
-      secretOrKeyProvider: async (_request: Request, _rawJwtToken: string, done: (err: any, secretOrKey?: string | Buffer) => void) => {
+      secretOrKeyProvider: async (
+        _request: Request,
+        _rawJwtToken: string,
+        done: (err: any, secretOrKey?: string | Buffer) => void,
+      ) => {
         try {
           const secret = await configurationService.get('JWT_SECRET');
           if (!secret) {

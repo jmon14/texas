@@ -51,4 +51,4 @@ export class ConfigurationService {
       throw error;
     }
   }
-} 
+}

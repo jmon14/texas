@@ -22,7 +22,11 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => request?.cookies?.Refresh]),
-      secretOrKeyProvider: async (_request: Request, _rawJwtToken: string, done: (err: any, secretOrKey?: string | Buffer) => void) => {
+      secretOrKeyProvider: async (
+        _request: Request,
+        _rawJwtToken: string,
+        done: (err: any, secretOrKey?: string | Buffer) => void,
+      ) => {
         try {
           const secret = await configurationService.get('JWT_REFRESH_SECRET');
           if (!secret) {
