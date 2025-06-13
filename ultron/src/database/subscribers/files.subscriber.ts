@@ -13,7 +13,10 @@ import { ConfigurationService } from '../../config/configuration.service';
  */
 @EventSubscriber()
 export class FilesSubscriber implements EntitySubscriberInterface<FileEntity> {
-  constructor(public dataSource: DataSource, private configurationService: ConfigurationService) {
+  constructor(
+    public dataSource: DataSource,
+    private configurationService: ConfigurationService,
+  ) {
     dataSource.subscribers.push(this);
   }
 
