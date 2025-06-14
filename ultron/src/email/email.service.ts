@@ -6,6 +6,8 @@ import Mail = require('nodemailer/lib/mailer');
 
 // Services
 import { ConfigurationService } from '../config/configuration.service';
+
+// Strategies
 import { EmailStrategy } from './strategies/email.strategy';
 import { SesStrategy } from './strategies/ses.strategy';
 import { EtherealStrategy } from './strategies/ethereal.strategy';
@@ -31,12 +33,7 @@ export class EmailService {
 
   async sendMail(mailOptions: Mail.Options): Promise<any> {
     try {
-      const info = await this.nodemailerTransport.sendMail({
-        ...mailOptions,
-        from: await this.configurationService.get('EMAIL_FROM'),
-      });
-
-      return info;
+      return await this.nodemailerTransport.sendMail(mailOptions);
     } catch (error) {
       throw error;
     }

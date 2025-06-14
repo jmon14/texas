@@ -1,8 +1,15 @@
+// NestJS
 import { Injectable } from '@nestjs/common';
+
+// External libraries
 import Mail = require('nodemailer/lib/mailer');
 import * as nodemailer from 'nodemailer';
-import { ConfigurationService } from '../../config/configuration.service';
+
+// Strategies
 import { EmailStrategy } from './email.strategy';
+
+// Services
+import { ConfigurationService } from '../../config/configuration.service';
 
 @Injectable()
 export class SesStrategy implements EmailStrategy {

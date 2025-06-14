@@ -134,7 +134,7 @@ export class AuthService {
     const url = `${await this.configurationService.get('UI_URL')}${mailData.url}?token=${token}`;
     const text = `${mailData.content} ${url}`;
     const mail: Mail.Options = {
-      from: 'contact@quickview-ai.com',
+      from: await this.configurationService.get('EMAIL_FROM'),
       subject: mailData.subject,
       to: payload.email,
       text,
