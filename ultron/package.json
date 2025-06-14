@@ -19,6 +19,7 @@
     "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "3.828.0",
     "@nestjs/common": "9.0.11",
     "@nestjs/config": "2.2.0",
     "@nestjs/core": "9.0.11",
