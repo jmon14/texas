@@ -14,21 +14,22 @@ import { NODE_ENV } from '../utils/constants';
 @Module({
   imports: [
     NestConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      envFilePath: `.${process.env.NODE_ENV}.env`, // ? Maybe we can use a .env file instead
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .required()
           .valid(NODE_ENV.DEVELOPMENT, NODE_ENV.PRODUCTION, NODE_ENV.TEST),
-        PORT: Joi.number().default(3000),
+        // ? Can I use the enum instead of all the values?
         AWS_REGION: Joi.string().required(),
+        PORT: Joi.number().default(3000),
+        POSTGRES_PORT: Joi.number().default(5432),
         AWS_ACCESS_KEY_ID: Joi.string(),
         AWS_SECRET_ACCESS_KEY: Joi.string(),
         DOMAIN: Joi.string(),
-        DB_HOST: Joi.string(),
-        DB_PORT: Joi.number(),
-        DB_USERNAME: Joi.string(),
-        DB_PASSWORD: Joi.string(),
-        DB_NAME: Joi.string(),
+        POSTGRES_HOST: Joi.string(),
+        POSTGRES_USERNAME: Joi.string(),
+        POSTGRES_PASSWORD: Joi.string(),
+        POSTGRES_DB: Joi.string(),
         JWT_SECRET: Joi.string(),
         JWT_EXPIRATION_TIME: Joi.number(),
         JWT_REFRESH_SECRET: Joi.string(),
