@@ -1,6 +1,9 @@
 // NestJS
 import { Module } from '@nestjs/common';
 
+// Controllers
+import { AppController } from './app.controller';
+
 // Feature module
 import { AuthModule } from 'src/auth/auth.module';
 import { EmailModule } from 'src/email/email.module';
@@ -10,7 +13,7 @@ import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
   imports: [DatabaseModule, UsersModule, EmailModule, AuthModule, FilesModule],
+  controllers: [AppController],
   providers: [],
-  controllers: [],
 })
 export class AppModule {}
