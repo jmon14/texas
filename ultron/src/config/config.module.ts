@@ -36,7 +36,6 @@ import { NODE_ENV } from '../utils/constants';
         JWT_REFRESH_EXPIRATION_TIME: Joi.number(),
         JWT_EMAIL_SECRET: Joi.string(),
         JWT_EMAIL_EXPIRATION_TIME: Joi.number(),
-        EMAIL_SERVICE: Joi.string(),
         EMAIL_USER: Joi.string(),
         EMAIL_PASSWORD: Joi.string(),
         UI_URL: Joi.string(),

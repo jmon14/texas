@@ -24,28 +24,33 @@ export class ConfigurationService {
     }
   }
 
+  // TODO: Revisit this logic
   async get(key: string): Promise<string> {
-    // In development, use environment variables
-    if (process.env.NODE_ENV !== NODE_ENV.PRODUCTION) {
-      return this.configService.get(key);
+    // First check env variables
+    const envValue = this.configService.get(key);
+    if (envValue) {
+      return envValue;
     }
 
-    // In production, use SSM
+    // Then check cached parameters
     if (this.cachedParameters.has(key)) {
       return this.cachedParameters.get(key);
     }
 
     try {
-      const parameter = await this.ssm
-        .getParameter({
-          Name: `/texas/ultron/${key}`,
-          WithDecryption: true,
-        })
-        .promise();
+      // Then try to get from SSM in production
+      if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
+        const parameter = await this.ssm
+          .getParameter({
+            Name: `/texas/ultron/${key}`,
+            WithDecryption: true,
+          })
+          .promise();
 
-      const value = parameter.Parameter.Value;
-      this.cachedParameters.set(key, value);
-      return value;
+        const value = parameter.Parameter.Value;
+        this.cachedParameters.set(key, value);
+        return value;
+      }
     } catch (error) {
       console.error(`Error fetching parameter ${key} from SSM:`, error);
       throw error;

@@ -32,6 +32,18 @@ variable "vision_mongodb_uri" {
   sensitive   = true
 }
 
+variable "mongodb_user" {
+  description = "MongoDB username"
+  type        = string
+  sensitive   = true
+}
+
+variable "mongodb_password" {
+  description = "MongoDB password"
+  type        = string
+  sensitive   = true
+}
+
 variable "ultron_jwt_secret" {
   description = "JWT secret for Ultron"
   type        = string
@@ -50,8 +62,8 @@ variable "ultron_jwt_email_secret" {
   sensitive   = true
 }
 
-variable "ultron_postgres_url" {
-  description = "PostgreSQL connection URL for Ultron"
+variable "ultron_postgres_user" {
+  description = "PostgreSQL username for Ultron"
   type        = string
   sensitive   = true
 }
@@ -70,18 +82,6 @@ variable "aws_ses_smtp_username" {
 
 variable "aws_ses_smtp_password" {
   description = "AWS SES SMTP password"
-  type        = string
-  sensitive   = true
-}
-
-variable "mongodb_user" {
-  description = "MongoDB username"
-  type        = string
-  sensitive   = true
-}
-
-variable "mongodb_password" {
-  description = "MongoDB password"
   type        = string
   sensitive   = true
 }
