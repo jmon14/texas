@@ -1,8 +1,5 @@
 #!/bin/bash
 apt-get update
-apt-get install -y docker.io docker-compose git
+apt-get install -y docker.io docker-compose git certbot
 systemctl enable docker
 systemctl start docker
-
-# SSL certificates will be setup by the deployment script
-# This ensures proper configuration and fallback options
