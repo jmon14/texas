@@ -53,6 +53,11 @@ services:
     environment:
       - NODE_ENV=production
       - AWS_REGION=eu-central-1
+      - DOMAIN=.allinrange.com
+      - UI_URL=https://www.allinrange.com
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=ultron
 
   # Quickview frontend
   quickview:
