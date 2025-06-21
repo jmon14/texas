@@ -14,9 +14,11 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // Allow requests from quickview service
+        // Allow requests from development and production domains
         config.addAllowedOrigin("http://localhost:8080");
         config.addAllowedOrigin("http://quickview:8080");
+        config.addAllowedOrigin("https://allinrange.com");
+        config.addAllowedOrigin("https://www.allinrange.com");
         
         // Allow all HTTP methods
         config.addAllowedMethod("*");

@@ -1,67 +1,53 @@
 #!/bin/bash
-
-# Exit on error
 set -e
 
-# Load environment variables
-if [ -f .env ]; then
-    source .env
-else
-    echo "Error: .env file not found"
-    exit 1
+# Get the EC2 instance ID from Terraform output
+INSTANCE_ID=$(cd aws && terraform output -raw instance_id)
+
+echo "Deploying to EC2 instance $INSTANCE_ID..."
+
+# Generate SSL certificates if they don't exist
+if [ ! -f "nginx/ssl/cert.pem" ] || [ ! -f "nginx/ssl/key.pem" ]; then
+    echo "SSL certificates not found. Generating self-signed certificates..."
+    cd nginx && ./generate-ssl.sh && cd ..
 fi
 
-# Check if AWS credentials are set
-if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
-    echo "Error: AWS credentials not set in .env file"
-    exit 1
-fi
+# Create deployment directory if it doesn't exist
+aws ssm send-command \
+    --instance-ids $INSTANCE_ID \
+    --document-name "AWS-RunShellScript" \
+    --parameters "commands=['mkdir -p ~/texas']"
 
-# Check if domain email is set
-if [ -z "$DOMAIN_EMAIL" ]; then
-    echo "Error: DOMAIN_EMAIL not set in .env file"
-    exit 1
-fi
+# Copy files to the instance
+echo "Copying files to EC2 instance..."
+aws ssm send-command \
+    --instance-ids $INSTANCE_ID \
+    --document-name "AWS-RunShellScript" \
+    --parameters "commands=[
+        'cd ~/texas',
+        'rm -rf *'
+    ]"
 
-# Initialize Terraform
-cd aws
-terraform init
+# Copy the entire project (excluding .git and other unnecessary files)
+rsync -av --exclude='.git' --exclude='node_modules' --exclude='target' --exclude='.env' \
+    -e "ssh -i ~/.ssh/projects/texas/texas-key -o StrictHostKeyChecking=no" \
+    ./ ec2-user@$(cd aws && terraform output -raw public_ip):~/texas/
 
-# Apply Terraform configuration
-terraform apply -auto-approve
-
-# Get the EC2 instance IP and domain nameservers
-EC2_IP=$(terraform output -raw public_ip)
-NAMESERVERS=$(terraform output -json nameservers)
-
-echo "Domain nameservers:"
-echo "$NAMESERVERS"
-echo "Please update your domain's nameservers in Namecheap with these values"
-echo "Waiting for instance to be ready..."
-sleep 30
-
-# Copy the production docker-compose file and environment variables
-scp -o StrictHostKeyChecking=no ../docker-compose.prod.yml ubuntu@$EC2_IP:~/docker-compose.yml
-scp -o StrictHostKeyChecking=no ../.env ubuntu@$EC2_IP:~/.env
-
-# SSH into the instance and start the services
-ssh -o StrictHostKeyChecking=no ubuntu@$EC2_IP << 'ENDSSH'
-    # Pull the latest code
-    git clone https://github.com/yourusername/texas.git
-    cd texas
-
-    # Start the services
-    docker-compose -f ~/docker-compose.yml up -d
-
-    # Check if services are running
-    docker-compose -f ~/docker-compose.yml ps
-
-    # Check SSL certificate status
-    certbot certificates
-ENDSSH
+# Deploy the application
+aws ssm send-command \
+    --instance-ids $INSTANCE_ID \
+    --document-name "AWS-RunShellScript" \
+    --parameters "commands=[
+        'cd ~/texas',
+        'docker-compose -f infrastructure/docker-compose.prod.yml down',
+        'docker-compose -f infrastructure/docker-compose.prod.yml pull',
+        'docker-compose -f infrastructure/docker-compose.prod.yml up -d',
+        'docker-compose -f infrastructure/docker-compose.prod.yml ps'
+    ]"
 
 echo "Deployment completed!"
 echo "Your application should be available at:"
-echo "http://$EC2_IP"
-echo "https://allinrange.com (once DNS propagates)"
-echo "https://www.allinrange.com (once DNS propagates)" 
+echo "https://allinrange.com"
+echo "https://www.allinrange.com"
+echo ""
+echo "Note: Using self-signed certificates. For production, use Let's Encrypt." 

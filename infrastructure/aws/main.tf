@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-central-1"
+  region = var.aws_region
 }
 
 # Get the latest Ubuntu 22.04 AMI
@@ -31,13 +31,14 @@ data "aws_ami" "ubuntu" {
 # EC2 instance
 resource "aws_instance" "texas_server" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
+  instance_type = var.instance_type
   key_name      = aws_key_pair.texas_key.key_name
+  iam_instance_profile = aws_iam_instance_profile.ec2_service_profile.name
 
   vpc_security_group_ids = [aws_security_group.texas_sg.id]
 
   root_block_device {
-    volume_size = 20
+    volume_size = var.volume_size
     volume_type = "gp3"
     encrypted   = true
   }
@@ -49,68 +50,13 @@ resource "aws_instance" "texas_server" {
     ManagedBy   = "terraform"
   }
 
-  user_data = <<-EOF
-              #!/bin/bash
-              apt-get update
-              apt-get install -y docker.io docker-compose
-              systemctl enable docker
-              systemctl start docker
-              EOF
+  user_data = templatefile("${path.module}/setup.tpl", {
+    nginx_conf   = file("${path.module}/../nginx/nginx.conf")
+    domain_email = var.domain_email
+  })
 }
 
-# Security group
-resource "aws_security_group" "texas_sg" {
-  name        = "texas-security-group"
-  description = "Security group for Texas application"
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "SSH access"
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "HTTP access"
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "HTTPS access"
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
-  }
-
-  tags = {
-    Name        = "texas-security-group"
-    Environment = "production"
-    Project     = "texas"
-    ManagedBy   = "terraform"
-  }
-}
-
-# SSH key pair
-resource "aws_key_pair" "texas_key" {
-  key_name   = "texas-key"
-  public_key = file("~/.ssh/id_rsa.pub")
-}
-
-# Output the public IP
 output "public_ip" {
-  value = aws_instance.texas_server.public_ip
+  value       = aws_instance.texas_server.public_ip
   description = "The public IP address of the Texas server"
-} 
+}
