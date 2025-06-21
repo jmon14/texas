@@ -28,20 +28,6 @@ resource "aws_iam_role_policy_attachment" "ssm_parameter_access" {
   policy_arn = aws_iam_policy.ssm_parameter_access.arn
 }
 
-# Store SSH public key in SSM Parameter Store
-resource "aws_ssm_parameter" "ssh_public_key" {
-  name        = "/texas/ssh/public_key"
-  description = "SSH public key for Texas project"
-  type        = "SecureString"
-  value       = file("${var.ssh_public_key_path}")
-}
-
-# SSH key pair
-resource "aws_key_pair" "texas_key" {
-  key_name   = "texas-key"
-  public_key = aws_ssm_parameter.ssh_public_key.value
-}
-
 resource "aws_ssm_parameter" "vision_mongodb_uri" {
   name        = "/vision/mongodb/uri"
   description = "MongoDB connection URI for Vision"

@@ -25,13 +25,6 @@ variable "volume_size" {
   default     = 20
 }
 
-# SSH Configuration
-variable "ssh_public_key_path" {
-  description = "Path to the SSH public key file"
-  type        = string
-  default     = "~/.ssh/projects/texas/texas-key.pub"
-}
-
 # SSM Parameters
 variable "vision_mongodb_uri" {
   description = "MongoDB connection URI for Vision"
