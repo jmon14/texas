@@ -42,10 +42,13 @@ export class ConfigurationService {
     }
 
     try {
+      // Get SSM parameter path from environment or use default
+      const ssmPath = '/texas/ultron';
+
       // Then try to get from SSM in production
       const parameter = await this.ssm
         .getParameter({
-          Name: `/texas/ultron/${key}`,
+          Name: `${ssmPath}/${key}`,
           WithDecryption: true,
         })
         .promise();

@@ -45,14 +45,14 @@ resource "aws_ssm_parameter" "vision_mongodb_password" {
 }
 
 resource "aws_ssm_parameter" "ultron_postgres_user" {
-  name        = "/ultron/postgres/POSTGRES_USER"
+  name        = "/texas/ultron/POSTGRES_USER"
   description = "PostgreSQL user for Ultron"
   type        = "String"
   value       = var.ultron_postgres_user
 }
 
 resource "aws_ssm_parameter" "ultron_postgres_password" {
-  name        = "/ultron/postgres/POSTGRES_PASSWORD"
+  name        = "/texas/ultron/POSTGRES_PASSWORD"
   description = "PostgreSQL password for Ultron"
   type        = "SecureString"
   value       = var.ultron_postgres_password
@@ -60,21 +60,21 @@ resource "aws_ssm_parameter" "ultron_postgres_password" {
 
 # Ultron JWT Configuration
 resource "aws_ssm_parameter" "ultron_jwt_secret" {
-  name        = "/ultron/jwt/JWT_SECRET"
+  name        = "/texas/ultron/JWT_SECRET"
   description = "JWT secret for Ultron"
   type        = "SecureString"
   value       = var.ultron_jwt_secret
 }
 
 resource "aws_ssm_parameter" "ultron_jwt_refresh_secret" {
-  name        = "/ultron/jwt/JWT_REFRESH_SECRET"
+  name        = "/texas/ultron/JWT_REFRESH_SECRET"
   description = "JWT refresh secret for Ultron"
   type        = "SecureString"
   value       = var.ultron_jwt_refresh_secret
 }
 
 resource "aws_ssm_parameter" "ultron_jwt_email_secret" {
-  name        = "/ultron/jwt/JWT_EMAIL_SECRET"
+  name        = "/texas/ultron/JWT_EMAIL_SECRET"
   description = "JWT email secret for Ultron"
   type        = "SecureString"
   value       = var.ultron_jwt_email_secret
@@ -82,7 +82,7 @@ resource "aws_ssm_parameter" "ultron_jwt_email_secret" {
 
 # Ultron JWT Expiration Times
 resource "aws_ssm_parameter" "ultron_jwt_expiration_time" {
-  name        = "/ultron/jwt/JWT_EXPIRATION_TIME"
+  name        = "/texas/ultron/JWT_EXPIRATION_TIME"
   description = "JWT expiration time in seconds"
   type        = "String"
   value       = "3600"
