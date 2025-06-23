@@ -9,7 +9,16 @@ set -e
 DOMAIN="${DOMAIN:-allinrange.com}"
 WWW_DOMAIN="${WWW_DOMAIN:-www.allinrange.com}"
 SSL_DIR="${SSL_DIR:-./ssl}"  # Relative to nginx directory for container mounting
-EMAIL="${DOMAIN_EMAIL:-admin@allinrange.com}"
+
+# Check if DOMAIN_EMAIL is provided
+if [ -z "$DOMAIN_EMAIL" ]; then
+    echo -e "${RED}❌ DOMAIN_EMAIL environment variable is required${NC}"
+    echo "Please set DOMAIN_EMAIL before running this script"
+    echo "Example: DOMAIN_EMAIL=your-email@domain.com ./setup-ssl.sh"
+    exit 1
+fi
+
+EMAIL="$DOMAIN_EMAIL"
 
 # Colors for output
 RED='\033[0;31m'
@@ -25,22 +34,6 @@ echo "SSL Directory: $SSL_DIR"
 
 # Create SSL directory
 mkdir -p $SSL_DIR
-
-# Function to generate self-signed certificates
-generate_self_signed() {
-    echo -e "${YELLOW}📝 Generating self-signed SSL certificates...${NC}"
-    
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout $SSL_DIR/key.pem \
-        -out $SSL_DIR/cert.pem \
-        -subj "/C=US/ST=State/L=City/O=Texas/CN=$DOMAIN" \
-        -addext "subjectAltName = DNS:$DOMAIN,DNS:$WWW_DOMAIN"
-    
-    chmod 600 $SSL_DIR/key.pem
-    chmod 644 $SSL_DIR/cert.pem
-    
-    echo -e "${GREEN}✅ Self-signed certificates generated successfully!${NC}"
-}
 
 # Function to setup Let's Encrypt certificates
 setup_lets_encrypt() {
@@ -65,29 +58,27 @@ setup_lets_encrypt() {
     sudo cp /etc/letsencrypt/live/$DOMAIN/privkey.pem $SSL_DIR/key.pem
     
     # Set proper permissions
-    sudo chown $USER:$USER $SSL_DIR/cert.pem $SSL_DIR/key.pem
+    sudo chown ubuntu:ubuntu $SSL_DIR/cert.pem $SSL_DIR/key.pem
     chmod 600 $SSL_DIR/key.pem
     chmod 644 $SSL_DIR/cert.pem
     
     echo -e "${GREEN}✅ Let's Encrypt certificates setup successfully!${NC}"
 }
 
-# Function to check certificate validity
-check_certificates() {
-    echo -e "${YELLOW}🔍 Checking certificate status...${NC}"
+# Function to generate self-signed certificates
+generate_self_signed() {
+    echo -e "${YELLOW}📝 Generating self-signed SSL certificates...${NC}"
     
-    if [ -f "$SSL_DIR/cert.pem" ] && [ -f "$SSL_DIR/key.pem" ]; then
-        echo -e "${GREEN}✅ SSL certificates found${NC}"
-        
-        # Check certificate expiration
-        if command -v openssl &> /dev/null; then
-            EXPIRY=$(openssl x509 -enddate -noout -in $SSL_DIR/cert.pem | cut -d= -f2)
-            echo -e "${YELLOW}📅 Certificate expires: $EXPIRY${NC}"
-        fi
-    else
-        echo -e "${RED}❌ SSL certificates not found${NC}"
-        return 1
-    fi
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout $SSL_DIR/key.pem \
+        -out $SSL_DIR/cert.pem \
+        -subj "/C=US/ST=State/L=City/O=Texas/CN=$DOMAIN" \
+        -addext "subjectAltName = DNS:$DOMAIN,DNS:$WWW_DOMAIN"
+    
+    chmod 600 $SSL_DIR/key.pem
+    chmod 644 $SSL_DIR/cert.pem
+    
+    echo -e "${GREEN}✅ Self-signed certificates generated successfully!${NC}"
 }
 
 # Function to setup auto-renewal for Let's Encrypt
@@ -129,56 +120,69 @@ restart_nginx() {
     echo -e "${GREEN}✅ Nginx container restarted${NC}"
 }
 
-# Main execution
-case "${1:-auto}" in
-    "self-signed")
-        generate_self_signed
-        restart_nginx
-        ;;
-    "lets-encrypt")
-        setup_lets_encrypt
-        setup_auto_renewal
-        restart_nginx
-        ;;
-    "check")
-        check_certificates
-        ;;
-    "auto")
-        # Try Let's Encrypt first, fallback to self-signed
-        if setup_lets_encrypt 2>/dev/null; then
-            setup_auto_renewal
+# Function to check if certificates exist and are valid
+check_existing_certificates() {
+    echo -e "${YELLOW}🔍 Checking existing certificates...${NC}"
+    
+    if [ -f "$SSL_DIR/cert.pem" ] && [ -f "$SSL_DIR/key.pem" ]; then
+        echo -e "${GREEN}✅ SSL certificates found${NC}"
+        
+        # Check certificate expiration (if openssl is available)
+        if command -v openssl &> /dev/null; then
+            EXPIRY=$(openssl x509 -enddate -noout -in $SSL_DIR/cert.pem | cut -d= -f2)
+            EXPIRY_DATE=$(date -d "$EXPIRY" +%s)
+            CURRENT_DATE=$(date +%s)
+            DAYS_LEFT=$(( ($EXPIRY_DATE - $CURRENT_DATE) / 86400 ))
+            
+            echo -e "${YELLOW}📅 Certificate expires: $EXPIRY (in $DAYS_LEFT days)${NC}"
+            
+            # If certificate is valid for more than 30 days, use it
+            if [ $DAYS_LEFT -gt 30 ]; then
+                echo -e "${GREEN}✅ Certificate is still valid for $DAYS_LEFT days${NC}"
+                return 0
+            else
+                echo -e "${YELLOW}⚠️  Certificate expires soon ($DAYS_LEFT days), will renew${NC}"
+                return 1
+            fi
         else
-            echo -e "${YELLOW}⚠️  Let's Encrypt failed, using self-signed certificates${NC}"
-            generate_self_signed
+            echo -e "${GREEN}✅ Certificates exist, assuming valid${NC}"
+            return 0
         fi
-        restart_nginx
-        ;;
-    *)
-        echo "Usage: $0 {self-signed|lets-encrypt|check|auto}"
-        echo "  self-signed  - Generate self-signed certificates"
-        echo "  lets-encrypt  - Setup Let's Encrypt certificates"
-        echo "  check        - Check certificate status"
-        echo "  auto         - Auto-detect and setup (default)"
-        echo ""
-        echo "Environment variables:"
-        echo "  DOMAIN_EMAIL - Email for Let's Encrypt (required)"
-        echo "  DOMAIN      - Domain name (default: allinrange.com)"
-        echo "  WWW_DOMAIN  - WWW subdomain (default: www.allinrange.com)"
-        echo "  SSL_DIR     - SSL directory (default: ./ssl)"
-        exit 1
-        ;;
-esac
+    else
+        echo -e "${YELLOW}📝 No existing certificates found${NC}"
+        return 1
+    fi
+}
 
-# Final check
-if check_certificates; then
-    echo -e "${GREEN}🎉 SSL setup completed successfully!${NC}"
-    echo ""
-    echo "Your application should now be accessible via HTTPS:"
-    echo "  https://$DOMAIN"
-    echo "  https://$WWW_DOMAIN"
-    echo ""
-    echo "Note: Nginx container has been restarted to load new certificates."
+# Main execution - Let's Encrypt only
+echo -e "${YELLOW}🚀 Setting up Let's Encrypt SSL certificates...${NC}"
+
+# Check if we need to generate new certificates
+if check_existing_certificates; then
+    echo -e "${GREEN}✅ Using existing valid certificates${NC}"
 else
-    echo -e "${RED}❌ SSL setup failed${NC}"
-    exit 1
-fi 
+    # Setup Let's Encrypt certificates
+    if setup_lets_encrypt; then
+        echo -e "${GREEN}✅ Let's Encrypt setup completed successfully!${NC}"
+    else
+        echo -e "${RED}❌ Let's Encrypt setup failed${NC}"
+        echo "Please check:"
+        echo "  - Domain DNS is pointing to this server"
+        echo "  - Port 80 is accessible from internet"
+        echo "  - Nginx container is running"
+        exit 1
+    fi
+fi
+
+restart_nginx
+
+echo -e "${GREEN}🎉 SSL setup completed successfully!${NC}"
+echo ""
+echo "Your application should now be accessible via HTTPS:"
+echo "  https://$DOMAIN"
+echo "  https://$WWW_DOMAIN"
+echo ""
+echo "Note: Nginx container has been restarted to load new certificates."
+echo ""
+echo "⚠️  IMPORTANT: Let's Encrypt certificates expire in 90 days."
+echo "   You'll need to manually renew them or set up auto-renewal." 

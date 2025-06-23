@@ -34,25 +34,25 @@ resource "aws_ssm_parameter" "vision_mongodb_user" {
   name        = "/vision/mongodb/MONGO_USER"
   description = "MongoDB user for Vision"
   type        = "String"
-  value       = var.mongodb_user
+  value       = var.vision_mongodb_user
 }
 
 resource "aws_ssm_parameter" "vision_mongodb_password" {
   name        = "/vision/mongodb/MONGO_PASSWORD"
   description = "MongoDB password for Vision"
   type        = "SecureString"
-  value       = var.mongodb_password
+  value       = var.vision_mongodb_password
 }
 
 resource "aws_ssm_parameter" "ultron_postgres_user" {
-  name        = "/texas/ultron/POSTGRES_USER"
+  name        = "/ultron/postgres/POSTGRES_USER"
   description = "PostgreSQL user for Ultron"
   type        = "String"
   value       = var.ultron_postgres_user
 }
 
 resource "aws_ssm_parameter" "ultron_postgres_password" {
-  name        = "/texas/ultron/POSTGRES_PASSWORD"
+  name        = "/ultron/postgres/POSTGRES_PASSWORD"
   description = "PostgreSQL password for Ultron"
   type        = "SecureString"
   value       = var.ultron_postgres_password

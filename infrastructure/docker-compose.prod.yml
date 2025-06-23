@@ -10,7 +10,7 @@ services:
     networks:
       - texas-network
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
 
   # Vision service (Java Spring Boot)
@@ -67,8 +67,8 @@ services:
     restart: always
     environment:
       - NODE_ENV=production
-      - REACT_APP_API_URL=https://allinrange.com/api
-      - REACT_APP_VISION_URL=https://allinrange.com/vision
+      - REACT_APP_ULTRON_API_URL=https://allinrange.com/api
+      - REACT_APP_VISION_API_URL=https://allinrange.com/vision
     depends_on:
       - ultron
       - vision

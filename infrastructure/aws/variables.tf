@@ -25,20 +25,13 @@ variable "volume_size" {
   default     = 20
 }
 
-# SSM Parameters
-variable "vision_mongodb_uri" {
-  description = "MongoDB connection URI for Vision"
-  type        = string
-  sensitive   = true
-}
-
-variable "mongodb_user" {
+variable "vision_mongodb_user" {
   description = "MongoDB username"
   type        = string
   sensitive   = true
 }
 
-variable "mongodb_password" {
+variable "vision_mongodb_password" {
   description = "MongoDB password"
   type        = string
   sensitive   = true

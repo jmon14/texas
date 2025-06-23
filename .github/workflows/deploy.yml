@@ -2,7 +2,11 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [main]
+    branches: [production]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
 
 permissions:
   id-token: write # Required for OIDC
@@ -11,6 +15,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,15 +23,47 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::123456789012:role/github-actions-role
-          aws-region: eu-central-1
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.5.7"
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to EC2
+        env:
+          DOMAIN_EMAIL: ${{ secrets.DOMAIN_EMAIL }}
         run: |
           cd infrastructure
+          chmod +x deploy.sh
           ./deploy.sh
+
+      - name: Health check
+        run: |
+          echo "Waiting for application to be ready..."
+
+          # Health check with timeout and retry logic
+          timeout=300  # 5 minutes
+          interval=10  # Check every 10 seconds
+          counter=0
+
+          while [ $counter -lt $timeout ]; do
+            echo "Health check attempt $((counter/interval + 1))..."
+            
+            # Check frontend (API is internal, not publicly accessible)
+            if curl -f -s --max-time 10 https://allinrange.com > /dev/null 2>&1; then
+              echo "✅ Frontend is responding on HTTPS!"
+              exit 0
+            elif curl -f -s --max-time 10 http://allinrange.com > /dev/null 2>&1; then
+              echo "⚠️  Frontend is responding on HTTP (HTTPS may still be setting up)"
+              exit 0
+            fi
+            
+            echo "Application not ready yet... waiting $interval seconds"
+            sleep $interval
+            counter=$((counter + interval))
+          done
+
+          echo "❌ Health check failed after $timeout seconds"
+          echo "Application may still be deploying or there might be an issue"
+          echo "Check the server logs:"
+          echo "  - Frontend: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs quickview"
+          echo "  - API: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs ultron"
+          echo "  - Nginx: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs nginx"
+          exit 1
