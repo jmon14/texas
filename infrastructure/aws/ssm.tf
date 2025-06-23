@@ -15,7 +15,7 @@ resource "aws_iam_policy" "ssm_parameter_access" {
         ]
         Resource = [
           "arn:aws:ssm:${var.aws_region}:*:parameter/vision/*",
-          "arn:aws:ssm:${var.aws_region}:*:parameter/ultron/*"
+          "arn:aws:ssm:${var.aws_region}:*:parameter/texas/ultron/*"
         ]
       }
     ]
