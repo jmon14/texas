@@ -76,10 +76,10 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd ~/texas/infrastructure/nginx',
-        'DOMAIN_EMAIL=$(aws ssm get-parameter --name \"DOMAIN_EMAIL\" --query \"Parameter.Value\" --output text)',
+        'DOMAIN_EMAIL=$(aws ssm get-parameter --name \"/texas/ultron/DOMAIN_EMAIL\" --query \"Parameter.Value\" --output text)',
         'if [ -z \"$DOMAIN_EMAIL\" ]; then',
         '  echo \"❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store\"',
-        '  echo \"Please create the parameter: aws ssm put-parameter --name DOMAIN_EMAIL --value your-email@domain.com --type String\"',
+        '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
         '  exit 1',
         'fi',
         'DOMAIN_EMAIL=$DOMAIN_EMAIL ./setup-ssl.sh'

@@ -161,6 +161,14 @@ resource "aws_ssm_parameter" "aws_ses_smtp_password" {
   value       = var.aws_ses_smtp_password
 }
 
+# Domain email for SSL certificates
+resource "aws_ssm_parameter" "domain_email" {
+  name        = "/texas/ultron/DOMAIN_EMAIL"
+  description = "Domain email for SSL certificates"
+  type        = "String"
+  value       = var.domain_email
+}
+
 output "ssm_parameters" {
   description = "SSM parameter ARNs"
   value = {
@@ -173,5 +181,6 @@ output "ssm_parameters" {
     ultron_postgres_password  = aws_ssm_parameter.ultron_postgres_password.arn
     aws_ses_smtp_username     = aws_ssm_parameter.aws_ses_smtp_username.arn
     aws_ses_smtp_password     = aws_ssm_parameter.aws_ses_smtp_password.arn
+    domain_email              = aws_ssm_parameter.domain_email.arn
   }
 }
