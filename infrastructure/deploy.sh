@@ -16,12 +16,21 @@ fi
 
 echo "Deploying to EC2 instance $INSTANCE_ID..."
 
+# Create a temporary file with the base64 data
+echo "Preparing code transfer..."
+cd ..
+tar -cz . | base64 -w 0 > /tmp/texas_deploy.tar.gz.b64
+cd infrastructure
+
 # Transfer the code directly to the server
 echo "Transferring code to server..."
 aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
-    --parameters commands="cd ~,rm -rf texas,mkdir texas,cd texas,cat > deploy.tar.gz << 'EOF',$(cd .. && tar -cz . | base64 -w 0),EOF,base64 -d deploy.tar.gz | tar -xz,rm deploy.tar.gz,POSTGRES_USER=\$(aws ssm get-parameter --name '/texas/ultron/POSTGRES_USER' --query 'Parameter.Value' --output text),POSTGRES_PASSWORD=\$(aws ssm get-parameter --name '/texas/ultron/POSTGRES_PASSWORD' --with-decryption --query 'Parameter.Value' --output text),MONGO_USER=\$(aws ssm get-parameter --name '/vision/mongodb/MONGO_USER' --query 'Parameter.Value' --output text),MONGO_PASSWORD=\$(aws ssm get-parameter --name '/vision/mongodb/MONGO_PASSWORD' --with-decryption --query 'Parameter.Value' --output text),echo \"POSTGRES_USER=\$POSTGRES_USER\" >> .env,echo \"POSTGRES_PASSWORD=\$POSTGRES_PASSWORD\" >> .env,echo \"MONGO_USER=\$MONGO_USER\" >> .env,echo \"MONGO_PASSWORD=\$MONGO_PASSWORD\" >> .env,docker-compose -f infrastructure/docker-compose.prod.yml down,docker-compose -f infrastructure/docker-compose.prod.yml pull,docker-compose -f infrastructure/docker-compose.prod.yml up -d,docker-compose -f infrastructure/docker-compose.prod.yml ps"
+    --parameters commands="cd ~,rm -rf texas,mkdir texas,cd texas,cat > deploy.tar.gz.b64 << 'EOF',$(cat /tmp/texas_deploy.tar.gz.b64),EOF,base64 -d deploy.tar.gz.b64 | tar -xz,rm deploy.tar.gz.b64,POSTGRES_USER=\$(aws ssm get-parameter --name '/texas/ultron/POSTGRES_USER' --query 'Parameter.Value' --output text),POSTGRES_PASSWORD=\$(aws ssm get-parameter --name '/texas/ultron/POSTGRES_PASSWORD' --with-decryption --query 'Parameter.Value' --output text),MONGO_USER=\$(aws ssm get-parameter --name '/vision/mongodb/MONGO_USER' --query 'Parameter.Value' --output text),MONGO_PASSWORD=\$(aws ssm get-parameter --name '/vision/mongodb/MONGO_PASSWORD' --with-decryption --query 'Parameter.Value' --output text),echo \"POSTGRES_USER=\$POSTGRES_USER\" >> .env,echo \"POSTGRES_PASSWORD=\$POSTGRES_PASSWORD\" >> .env,echo \"MONGO_USER=\$MONGO_USER\" >> .env,echo \"MONGO_PASSWORD=\$MONGO_PASSWORD\" >> .env,docker-compose -f infrastructure/docker-compose.prod.yml down,docker-compose -f infrastructure/docker-compose.prod.yml pull,docker-compose -f infrastructure/docker-compose.prod.yml up -d,docker-compose -f infrastructure/docker-compose.prod.yml ps"
+
+# Clean up temporary file
+rm -f /tmp/texas_deploy.tar.gz.b64
 
 # Wait for containers to be ready with health check
 echo "Waiting for containers to be ready..."
