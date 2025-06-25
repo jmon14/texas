@@ -145,18 +145,22 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
         'echo \"Using DOMAIN_EMAIL: \$DOMAIN_EMAIL\"',
         'echo \"Making setup-ssl.sh executable...\"',
         'chmod +x setup-ssl.sh',
-        'echo \"Running SSL setup script...\"',
-        'DOMAIN_EMAIL=\$DOMAIN_EMAIL ./setup-ssl.sh',
+        'echo \"Running SSL setup script with timeout...\"',
+        'timeout 300 DOMAIN_EMAIL=\$DOMAIN_EMAIL ./setup-ssl.sh || echo \"SSL setup timed out or failed, but continuing...\"',
         'echo \"SSL setup script completed\"'
     ]" \
     --query 'Command.CommandId' \
     --output text)
 
-# Wait for SSL setup to complete and check result
-echo "⏳ Waiting for SSL setup to complete..."
-aws ssm wait command-executed --command-id $SSL_SETUP_RESULT --instance-id $INSTANCE_ID
+# Wait for SSL setup to complete with a shorter timeout
+echo "⏳ Waiting for SSL setup to complete (max 5 minutes)..."
+if aws ssm wait command-executed --command-id $SSL_SETUP_RESULT --instance-id $INSTANCE_ID --cli-read-timeout 300; then
+    echo "✅ SSL setup completed"
+else
+    echo "⚠️ SSL setup timed out, but continuing with deployment..."
+fi
 
-# Get the SSL setup output
+# Get the SSL setup output (even if it failed)
 echo "📋 SSL setup output:"
 aws ssm get-command-invocation \
     --command-id $SSL_SETUP_RESULT \
