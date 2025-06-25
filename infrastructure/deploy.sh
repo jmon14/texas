@@ -48,7 +48,7 @@ sleep 10
 
 # Step 3: Setup environment variables
 echo "🔧 Setting up environment variables..."
-aws ssm send-command \
+ENV_SETUP_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
@@ -70,11 +70,20 @@ aws ssm send-command \
         'echo \"Contents of .env file:\"',
         'cat .env | sed \"s/=.*/=***/\"'
     ]" \
-    --output text
+    --query 'Command.CommandId' \
+    --output text)
 
 # Wait for environment setup to complete
 echo "⏳ Waiting for environment setup to complete..."
-sleep 5
+aws ssm wait command-executed --command-id $ENV_SETUP_RESULT --instance-id $INSTANCE_ID
+
+# Get the output
+echo "📋 Environment setup output:"
+aws ssm get-command-invocation \
+    --command-id $ENV_SETUP_RESULT \
+    --instance-id $INSTANCE_ID \
+    --query 'StandardOutputContent' \
+    --output text
 
 # Step 4: Deploy containers
 echo "🐳 Deploying containers..."
@@ -122,14 +131,23 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd ~/texas/infrastructure/nginx',
-        'DOMAIN_EMAIL=$(aws ssm get-parameter --name "/texas/ultron/DOMAIN_EMAIL" --query "Parameter.Value" --output text)',
-        'if [ -z "$DOMAIN_EMAIL" ]; then',
-        '  echo "❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store"',
-        '  echo "Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String"',
+        'echo \"Starting SSL certificate setup...\"',
+        'echo \"Current directory: \$(pwd)\"',
+        'echo \"Checking if setup-ssl.sh exists...\"',
+        'ls -la setup-ssl.sh',
+        'DOMAIN_EMAIL=\$(aws ssm get-parameter --name \"/texas/ultron/DOMAIN_EMAIL\" --query \"Parameter.Value\" --output text)',
+        'echo \"DOMAIN_EMAIL retrieved: \$DOMAIN_EMAIL\"',
+        'if [ -z \"\$DOMAIN_EMAIL\" ]; then',
+        '  echo \"❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store\"',
+        '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
         '  exit 1',
         'fi',
-        'echo "Using DOMAIN_EMAIL: $DOMAIN_EMAIL"',
-        'DOMAIN_EMAIL=$DOMAIN_EMAIL ./setup-ssl.sh'
+        'echo \"Using DOMAIN_EMAIL: \$DOMAIN_EMAIL\"',
+        'echo \"Making setup-ssl.sh executable...\"',
+        'chmod +x setup-ssl.sh',
+        'echo \"Running SSL setup script...\"',
+        'DOMAIN_EMAIL=\$DOMAIN_EMAIL ./setup-ssl.sh',
+        'echo \"SSL setup script completed\"'
     ]" \
     --query 'Command.CommandId' \
     --output text)
@@ -137,6 +155,14 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
 # Wait for SSL setup to complete and check result
 echo "⏳ Waiting for SSL setup to complete..."
 aws ssm wait command-executed --command-id $SSL_SETUP_RESULT --instance-id $INSTANCE_ID
+
+# Get the SSL setup output
+echo "📋 SSL setup output:"
+aws ssm get-command-invocation \
+    --command-id $SSL_SETUP_RESULT \
+    --instance-id $INSTANCE_ID \
+    --query 'StandardOutputContent' \
+    --output text
 
 # Check SSL setup status
 SSL_STATUS=$(aws ssm get-command-invocation \
