@@ -79,4 +79,10 @@ resource "aws_iam_role_policy_attachment" "github_actions_ssm" {
 resource "aws_iam_role_policy_attachment" "github_actions_ec2" {
   role       = aws_iam_role.github_actions.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+}
+
+# Attach S3 policy to GitHub Actions role
+resource "aws_iam_role_policy_attachment" "github_actions_s3" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = aws_iam_policy.s3_access.arn
 } 

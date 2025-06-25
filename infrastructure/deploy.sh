@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# Configuration
+S3_BUCKET="files.allinrange.com"
+DEPLOYMENT_KEY="texas-deploy.tar.gz"
+
 # Get the EC2 instance ID using AWS CLI (more reliable for CI/CD)
 INSTANCE_ID=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=texas-server" "Name=instance-state-name,Values=running" \
@@ -16,8 +20,14 @@ fi
 
 echo "Deploying to EC2 instance $INSTANCE_ID..."
 
-# Transfer the code directly to the server
-echo "Transferring code to server..."
+# Step 1: Create deployment package and upload to S3
+echo "📦 Creating deployment package and uploading to S3..."
+cd ..
+tar -cz . | aws s3 cp - "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
+echo "✅ Deployment package uploaded to s3://$S3_BUCKET/$DEPLOYMENT_KEY"
+
+# Step 2: Download and extract code on the server
+echo "📥 Downloading and extracting code on server..."
 aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
@@ -26,19 +36,44 @@ aws ssm send-command \
         'rm -rf texas',
         'mkdir texas',
         'cd texas',
-        'cat > deploy.tar.gz << \"EOF\"',
-        '$(cd .. && tar -cz . | base64 -w 0)',
-        'EOF',
-        'base64 -d deploy.tar.gz | tar -xz',
-        'rm deploy.tar.gz',
-        'POSTGRES_USER=$(aws ssm get-parameter --name \"/ultron/postgres/POSTGRES_USER\" --query \"Parameter.Value\" --output text)',
-        'POSTGRES_PASSWORD=$(aws ssm get-parameter --name \"/ultron/postgres/POSTGRES_PASSWORD\" --with-decryption --query \"Parameter.Value\" --output text)',
+        'aws s3 cp s3://files.allinrange.com/$DEPLOYMENT_KEY deploy.tar.gz',
+        'tar -xzf deploy.tar.gz',
+        'rm deploy.tar.gz'
+    ]"
+
+# Wait for code transfer to complete
+echo "⏳ Waiting for code transfer to complete..."
+sleep 10
+
+# Step 3: Setup environment variables
+echo "🔧 Setting up environment variables..."
+aws ssm send-command \
+    --instance-ids $INSTANCE_ID \
+    --document-name "AWS-RunShellScript" \
+    --parameters "commands=[
+        'cd ~/texas',
+        'POSTGRES_USER=$(aws ssm get-parameter --name \"/texas/ultron/POSTGRES_USER\" --query \"Parameter.Value\" --output text)',
+        'POSTGRES_PASSWORD=$(aws ssm get-parameter --name \"/texas/ultron/POSTGRES_PASSWORD\" --with-decryption --query \"Parameter.Value\" --output text)',
         'MONGO_USER=$(aws ssm get-parameter --name \"/vision/mongodb/MONGO_USER\" --query \"Parameter.Value\" --output text)',
         'MONGO_PASSWORD=$(aws ssm get-parameter --name \"/vision/mongodb/MONGO_PASSWORD\" --with-decryption --query \"Parameter.Value\" --output text)',
-        'echo \"POSTGRES_USER=$POSTGRES_USER\" >> .env',
+        'echo \"POSTGRES_USER=$POSTGRES_USER\" > .env',
         'echo \"POSTGRES_PASSWORD=$POSTGRES_PASSWORD\" >> .env',
         'echo \"MONGO_USER=$MONGO_USER\" >> .env',
         'echo \"MONGO_PASSWORD=$MONGO_PASSWORD\" >> .env',
+        'echo \"Environment variables configured\"'
+    ]"
+
+# Wait for environment setup to complete
+echo "⏳ Waiting for environment setup to complete..."
+sleep 5
+
+# Step 4: Deploy containers
+echo "🐳 Deploying containers..."
+aws ssm send-command \
+    --instance-ids $INSTANCE_ID \
+    --document-name "AWS-RunShellScript" \
+    --parameters "commands=[
+        'cd ~/texas',
         'docker-compose -f infrastructure/docker-compose.prod.yml down',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d',
@@ -46,7 +81,7 @@ aws ssm send-command \
     ]"
 
 # Wait for containers to be ready with health check
-echo "Waiting for containers to be ready..."
+echo "⏳ Waiting for containers to be ready..."
 aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
@@ -69,8 +104,8 @@ aws ssm send-command \
         'fi'
     ]"
 
-# Setup SSL certificates on the server (with retry logic)
-echo "Setting up SSL certificates..."
+# Step 5: Setup SSL certificates on the server (with retry logic)
+echo "🔒 Setting up SSL certificates..."
 SSL_SETUP_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
@@ -88,7 +123,7 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
     --output text)
 
 # Wait for SSL setup to complete and check result
-echo "Waiting for SSL setup to complete..."
+echo "⏳ Waiting for SSL setup to complete..."
 aws ssm wait command-executed --command-id $SSL_SETUP_RESULT --instance-id $INSTANCE_ID
 
 # Check SSL setup status
@@ -98,6 +133,10 @@ SSL_STATUS=$(aws ssm get-command-invocation \
     --query 'Status' \
     --output text)
 
+# Step 6: Cleanup S3 deployment file
+echo "🧹 Cleaning up S3 deployment file..."
+aws s3 rm "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
+
 if [ "$SSL_STATUS" != "Success" ]; then
     echo "⚠️  SSL setup had issues, but continuing with deployment..."
     echo "You can manually setup SSL later with: ./setup-ssl.sh"
@@ -105,7 +144,7 @@ else
     echo "✅ SSL setup completed successfully!"
 fi
 
-echo "Deployment completed!"
+echo "🎉 Deployment completed!"
 echo "Your application should be available at:"
 echo "https://allinrange.com"
 echo "https://www.allinrange.com"
