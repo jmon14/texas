@@ -39,7 +39,8 @@ aws ssm send-command \
         'aws s3 cp s3://files.allinrange.com/$DEPLOYMENT_KEY deploy.tar.gz',
         'tar -xzf deploy.tar.gz',
         'rm deploy.tar.gz'
-    ]"
+    ]" \
+    --output text
 
 # Wait for code transfer to complete
 echo "⏳ Waiting for code transfer to complete..."
@@ -52,16 +53,17 @@ aws ssm send-command \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd ~/texas',
-        'POSTGRES_USER=$(aws ssm get-parameter --name \"/texas/ultron/POSTGRES_USER\" --query \"Parameter.Value\" --output text)',
-        'POSTGRES_PASSWORD=$(aws ssm get-parameter --name \"/texas/ultron/POSTGRES_PASSWORD\" --with-decryption --query \"Parameter.Value\" --output text)',
-        'MONGO_USER=$(aws ssm get-parameter --name \"/vision/mongodb/MONGO_USER\" --query \"Parameter.Value\" --output text)',
-        'MONGO_PASSWORD=$(aws ssm get-parameter --name \"/vision/mongodb/MONGO_PASSWORD\" --with-decryption --query \"Parameter.Value\" --output text)',
-        'echo \"POSTGRES_USER=$POSTGRES_USER\" > .env',
-        'echo \"POSTGRES_PASSWORD=$POSTGRES_PASSWORD\" >> .env',
-        'echo \"MONGO_USER=$MONGO_USER\" >> .env',
-        'echo \"MONGO_PASSWORD=$MONGO_PASSWORD\" >> .env',
-        'echo \"Environment variables configured\"'
-    ]"
+        'POSTGRES_USER=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_USER" --query "Parameter.Value" --output text)',
+        'POSTGRES_PASSWORD=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
+        'MONGO_USER=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_USER" --query "Parameter.Value" --output text)',
+        'MONGO_PASSWORD=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
+        'echo "POSTGRES_USER=$POSTGRES_USER" > .env',
+        'echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env',
+        'echo "MONGO_USER=$MONGO_USER" >> .env',
+        'echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> .env',
+        'echo "Environment variables configured"'
+    ]" \
+    --output text
 
 # Wait for environment setup to complete
 echo "⏳ Waiting for environment setup to complete..."
@@ -78,7 +80,8 @@ aws ssm send-command \
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d',
         'docker-compose -f infrastructure/docker-compose.prod.yml ps'
-    ]"
+    ]" \
+    --output text
 
 # Wait for containers to be ready with health check
 echo "⏳ Waiting for containers to be ready..."
@@ -102,7 +105,8 @@ aws ssm send-command \
         '  echo \"Timeout waiting for containers\"',
         '  exit 1',
         'fi'
-    ]"
+    ]" \
+    --output text
 
 # Step 5: Setup SSL certificates on the server (with retry logic)
 echo "🔒 Setting up SSL certificates..."
@@ -111,12 +115,13 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd ~/texas/infrastructure/nginx',
-        'DOMAIN_EMAIL=$(aws ssm get-parameter --name \"/texas/ultron/DOMAIN_EMAIL\" --query \"Parameter.Value\" --output text)',
-        'if [ -z \"$DOMAIN_EMAIL\" ]; then',
-        '  echo \"❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store\"',
-        '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
+        'DOMAIN_EMAIL=$(aws ssm get-parameter --name "/texas/ultron/DOMAIN_EMAIL" --query "Parameter.Value" --output text)',
+        'if [ -z "$DOMAIN_EMAIL" ]; then',
+        '  echo "❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store"',
+        '  echo "Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String"',
         '  exit 1',
         'fi',
+        'echo "Using DOMAIN_EMAIL: $DOMAIN_EMAIL"',
         'DOMAIN_EMAIL=$DOMAIN_EMAIL ./setup-ssl.sh'
     ]" \
     --query 'Command.CommandId' \
