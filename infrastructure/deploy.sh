@@ -54,7 +54,7 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
     --parameters "commands=[
         'cd ~/texas',
         'echo \"Starting environment variable setup...\"',
-        'POSTGRES_USER=\$(aws ssm get-parameter --name \"/texas/ultron/POSTGRES_USER\" --query \"Parameter.Value\" --output text)',
+        'POSTGRES_USER=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_USER" --query "Parameter.Value" --output text)',
         'echo \"POSTGRES_USER retrieved: \$POSTGRES_USER\"',
         'POSTGRES_PASSWORD=\$(aws ssm get-parameter --name \"/texas/ultron/POSTGRES_PASSWORD\" --with-decryption --query \"Parameter.Value\" --output text)',
         'echo \"POSTGRES_PASSWORD retrieved: [HIDDEN]\"',
