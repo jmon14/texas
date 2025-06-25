@@ -28,6 +28,12 @@ resource "aws_iam_role_policy_attachment" "ssm_parameter_access" {
   policy_arn = aws_iam_policy.ssm_parameter_access.arn
 }
 
+# Attach SSM agent policy to the instance role
+resource "aws_iam_role_policy_attachment" "ssm_agent_access" {
+  role       = aws_iam_instance_profile.ec2_service_profile.role
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 # Databases Configuration
 
 resource "aws_ssm_parameter" "vision_mongodb_user" {
