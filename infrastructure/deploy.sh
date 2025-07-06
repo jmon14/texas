@@ -32,7 +32,7 @@ aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
-        'cd ~',
+        'cd /home/ssm-user',
         'rm -rf texas',
         'mkdir texas',
         'cd texas',
@@ -52,7 +52,7 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
-        'cd ~/texas',
+        'cd /home/ssm-user/texas',
         'echo \"Starting environment variable setup...\"',
         'POSTGRES_USER=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_USER" --query "Parameter.Value" --output text)',
         'echo \"POSTGRES_USER retrieved: \$POSTGRES_USER\"',
@@ -91,7 +91,7 @@ aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
-        'cd ~/texas',
+        'cd /home/ssm-user/texas',
         'docker-compose -f infrastructure/docker-compose.prod.yml down',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d',
@@ -105,7 +105,7 @@ aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
-        'cd ~/texas',
+        'cd /home/ssm-user/texas',
         'timeout=120',
         'counter=0',
         'while [ $counter -lt $timeout ]; do',
@@ -130,7 +130,7 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
-        'cd ~/texas/infrastructure/nginx',
+        'cd /home/ssm-user/texas/infrastructure/nginx',
         'echo \"Starting SSL certificate setup...\"',
         'echo \"Current directory: \$(pwd)\"',
         'echo \"Checking if setup-ssl.sh exists...\"',
@@ -176,8 +176,8 @@ SSL_STATUS=$(aws ssm get-command-invocation \
     --output text)
 
 # Step 6: Cleanup S3 deployment file
-echo "🧹 Cleaning up S3 deployment file..."
-aws s3 rm "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
+# echo "🧹 Cleaning up S3 deployment file..."
+# aws s3 rm "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
 
 if [ "$SSL_STATUS" != "Success" ]; then
     echo "⚠️  SSL setup had issues, but continuing with deployment..."
@@ -193,7 +193,7 @@ echo "https://www.allinrange.com"
 echo ""
 if [ "$SSL_STATUS" != "Success" ]; then
     echo "⚠️  SSL setup may need manual attention."
-    echo "Run on server: cd ~/texas/infrastructure/nginx && ./setup-ssl.sh"
+    echo "Run on server: cd /home/ssm-user/texas/infrastructure/nginx && ./setup-ssl.sh"
 else
     echo "✅ SSL certificates have been automatically configured."
 fi 

@@ -30,6 +30,7 @@ The infrastructure consists of:
 - Terraform installed
 - Docker and Docker Compose (for local development)
 - Domain name configured to point to AWS nameservers
+- **AWS Session Manager plugin** (for interactive access to EC2 instance)
 
 ### Initial Setup
 
@@ -39,7 +40,13 @@ The infrastructure consists of:
    aws configure
    ```
 
-2. **Create and configure `prod.tfvars`:**
+2. **Install AWS Session Manager plugin** (for interactive EC2 access):
+
+   ```bash
+   brew install session-manager-plugin
+   ```
+
+3. **Create and configure `prod.tfvars`:**
 
    ```bash
    cd infrastructure/aws/environments
@@ -47,21 +54,21 @@ The infrastructure consists of:
    # Edit prod.tfvars and replace all placeholder values with your actual credentials
    ```
 
-3. **Initialize Terraform:**
+4. **Initialize Terraform:**
 
    ```bash
    cd infrastructure/aws
    terraform init
    ```
 
-4. **Deploy infrastructure** (this automatically creates all SSM parameters):
+5. **Deploy infrastructure** (this automatically creates all SSM parameters):
 
    ```bash
-   terraform plan
-   terraform apply
+   terraform plan -var-file="environments/prod.tfvars"
+   terraform apply -var-file="environments/prod.tfvars"
    ```
 
-5. **Deploy application:**
+6. **Deploy application:**
    ```bash
    cd infrastructure
    ./deploy.sh
@@ -265,8 +272,8 @@ curl -I https://www.allinrange.com
 
 ```bash
 cd infrastructure/aws
-terraform plan
-terraform apply
+terraform plan -var-file="environments/prod.tfvars"
+terraform apply -var-file="environments/prod.tfvars"
 ```
 
 ### SSL Certificate Renewal
@@ -283,7 +290,7 @@ sudo certbot renew
 
 ```bash
 cd infrastructure/aws
-terraform destroy
+terraform destroy -var-file="environments/prod.tfvars"
 ```
 
 ### Clean S3 Bucket
