@@ -5,7 +5,7 @@ set -e
 apt-get update
 
 # Install required packages
-apt-get install -y docker.io docker-compose git certbot snapd
+apt-get install -y docker.io docker-compose git certbot snapd awscli
 
 # Install and configure SSM agent
 snap install amazon-ssm-agent --classic
