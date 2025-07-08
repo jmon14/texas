@@ -65,7 +65,7 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
         'echo \"POSTGRES_USER=\$POSTGRES_USER\" > .env',
         'echo \"POSTGRES_PASSWORD=\$POSTGRES_PASSWORD\" >> .env',
         'echo \"MONGO_USER=\$MONGO_USER\" >> .env',
-        'echo \"MONGO_PASSWORD=\$MONGO_PASSWORD\" >> .env',
+        'echo \"MONGO_PASSWORD=\"\$MONGO_PASSWORD\"\" >> .env',
         'echo \"Environment variables configured successfully\"',
         'echo \"Contents of .env file:\"',
         'cat .env | sed \"s/=.*/=***/\"'

@@ -17,3 +17,6 @@ terraform.rc
 
 # Env
 *.env
+
+# Mac
+.DS_Store
