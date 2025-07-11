@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 COPY package*.json ./
 
 # Install dependencies including nodemon for development
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Copy the rest of the application code
 COPY . .
