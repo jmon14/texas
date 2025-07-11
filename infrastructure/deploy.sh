@@ -52,7 +52,7 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
-        'cd /home/ssm-user/texas',
+        'cd /home/ssm-user/texas/infrastructure',
         'echo \"Starting environment variable setup...\"',
         'POSTGRES_USER=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_USER" --query "Parameter.Value" --output text)',
         'echo \"POSTGRES_USER retrieved: \$POSTGRES_USER\"',
@@ -60,7 +60,7 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
         'echo \"POSTGRES_PASSWORD retrieved: [HIDDEN]\"',
         'MONGO_USER=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_USER" --query "Parameter.Value" --output text)',
         'echo \"MONGO_USER retrieved: \$MONGO_USER\"',
-        'MONGO_PASSWORD="$(aws ssm get-parameter --name "/vision/mongodb/MONGO_PASSWORD" --with-decryption --query "Parameter.Value" --output text)"',
+        'MONGO_PASSWORD=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
         'echo \"MONGO_PASSWORD retrieved: [HIDDEN]\"',
         'echo \"POSTGRES_USER=\$POSTGRES_USER\" > .env',
         'echo \"POSTGRES_PASSWORD=\$POSTGRES_PASSWORD\" >> .env',

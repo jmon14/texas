@@ -16,4 +16,19 @@ systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
 systemctl enable docker
 systemctl start docker
 
+# Create ssm-user if it doesn't exist and add to docker group
+echo "Setting up ssm-user..."
+if ! id "ssm-user" &>/dev/null; then
+    echo "Creating ssm-user..."
+    useradd -m -s /bin/bash ssm-user
+    usermod -aG sudo ssm-user
+    echo "ssm-user created successfully"
+else
+    echo "ssm-user already exists"
+fi
+
+# Add ssm-user to docker group
+usermod -aG docker ssm-user
+echo "Successfully added ssm-user to docker group"
+
 echo "Setup completed successfully!"

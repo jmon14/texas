@@ -16,7 +16,7 @@ services:
   # Vision service (Java Spring Boot)
   vision:
     build:
-      context: ./vision
+      context: ../vision
       dockerfile: Dockerfile
     restart: always
     depends_on:
@@ -62,7 +62,7 @@ services:
   # Quickview frontend
   quickview:
     build:
-      context: ./quickview
+      context: ../quickview
       dockerfile: Dockerfile
     restart: always
     environment:
