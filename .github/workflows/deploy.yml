@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,9 +26,43 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY_ULTRON: texas-ultron
+          ECR_REPOSITORY_VISION: texas-vision
+          ECR_REPOSITORY_QUICKVIEW: texas-quickview
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build Ultron image
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:$IMAGE_TAG ./ultron
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:latest ./ultron
+
+          # Build Vision image
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_VISION:$IMAGE_TAG ./vision
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_VISION:latest ./vision
+
+          # Build Quickview image
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:$IMAGE_TAG ./quickview
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:latest ./quickview
+
+          # Push images
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_VISION:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_VISION:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:latest
+
       - name: Deploy to EC2
         env:
           DOMAIN_EMAIL: ${{ secrets.DOMAIN_EMAIL }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           cd infrastructure
           chmod +x deploy.sh

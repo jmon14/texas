@@ -22,6 +22,36 @@ resource "aws_iam_instance_profile" "ec2_service_profile" {
   role = aws_iam_role.ec2_service_role.name
 }
 
+# IAM policy for ECR access
+resource "aws_iam_policy" "ecr_access" {
+  name        = "ECRAccess"
+  description = "Policy to allow access to ECR"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Attach ECR policy to the instance role
+resource "aws_iam_role_policy_attachment" "ecr_access" {
+  role       = aws_iam_role.ec2_service_role.name
+  policy_arn = aws_iam_policy.ecr_access.arn
+}
+
 # OIDC Provider for GitHub Actions
 resource "aws_iam_openid_connect_provider" "github" {
   url = "https://token.actions.githubusercontent.com"
@@ -85,4 +115,10 @@ resource "aws_iam_role_policy_attachment" "github_actions_ec2" {
 resource "aws_iam_role_policy_attachment" "github_actions_s3" {
   role       = aws_iam_role.github_actions.name
   policy_arn = aws_iam_policy.s3_access.arn
+}
+
+# Attach ECR policy to GitHub Actions role (for pushing images)
+resource "aws_iam_role_policy_attachment" "github_actions_ecr" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 } 

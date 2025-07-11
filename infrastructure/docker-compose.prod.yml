@@ -15,9 +15,7 @@ services:
 
   # Vision service (Java Spring Boot)
   vision:
-    build:
-      context: ../vision
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY:-your-registry}/texas-vision:${IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - mongodb
@@ -42,9 +40,7 @@ services:
 
   # Ultron service (NestJS)
   ultron:
-    build:
-      context: ../ultron
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY:-your-registry}/texas-ultron:${IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - postgres
@@ -61,9 +57,7 @@ services:
 
   # Quickview frontend
   quickview:
-    build:
-      context: ../quickview
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY:-your-registry}/texas-quickview:${IMAGE_TAG:-latest}
     restart: always
     environment:
       - NODE_ENV=production

@@ -3,7 +3,7 @@ set -e
 
 # Configuration
 S3_BUCKET="files.allinrange.com"
-DEPLOYMENT_KEY="texas-deploy.tar.gz"
+DEPLOYMENT_KEY="texas-deploy-config.tar.gz"
 
 # Get the EC2 instance ID using AWS CLI (more reliable for CI/CD)
 INSTANCE_ID=$(aws ec2 describe-instances \
@@ -20,31 +20,47 @@ fi
 
 echo "Deploying to EC2 instance $INSTANCE_ID..."
 
-# Step 1: Create deployment package and upload to S3
-echo "📦 Creating deployment package and uploading to S3..."
+# Step 1: Create minimal deployment package (only config files)
+echo "📦 Creating minimal deployment package..."
 cd ..
+# Create a temporary directory with only the files we need
+mkdir -p temp-deploy/infrastructure
+cp infrastructure/docker-compose.prod.yml temp-deploy/infrastructure/
+cp -r infrastructure/nginx temp-deploy/infrastructure/
+cd temp-deploy
 tar -cz . | aws s3 cp - "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
-echo "✅ Deployment package uploaded to s3://$S3_BUCKET/$DEPLOYMENT_KEY"
+cd ..
+rm -rf temp-deploy
+echo "✅ Minimal deployment package uploaded to s3://$S3_BUCKET/$DEPLOYMENT_KEY"
 
-# Step 2: Download and extract code on the server
-echo "📥 Downloading and extracting code on server..."
-aws ssm send-command \
+# Step 2: Download and extract config files on the server
+echo "📥 Downloading and extracting config files on server..."
+CONFIG_TRANSFER_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd /home/ssm-user',
         'rm -rf texas',
-        'mkdir texas',
+        'mkdir -p texas/infrastructure',
         'cd texas',
-        'aws s3 cp s3://files.allinrange.com/$DEPLOYMENT_KEY deploy.tar.gz',
-        'tar -xzf deploy.tar.gz',
-        'rm deploy.tar.gz'
+        'aws s3 cp s3://files.allinrange.com/$DEPLOYMENT_KEY deploy-config.tar.gz',
+        'tar -xzf deploy-config.tar.gz',
+        'rm deploy-config.tar.gz'
     ]" \
-    --output text
+    --query 'Command.CommandId' \
+    --output text)
 
-# Wait for code transfer to complete
-echo "⏳ Waiting for code transfer to complete..."
-sleep 10
+# Wait for config transfer to complete
+echo "⏳ Waiting for config transfer to complete..."
+aws ssm wait command-executed --command-id $CONFIG_TRANSFER_RESULT --instance-id $INSTANCE_ID
+
+# Get the config transfer output
+echo "📋 Config transfer output:"
+aws ssm get-command-invocation \
+    --command-id $CONFIG_TRANSFER_RESULT \
+    --instance-id $INSTANCE_ID \
+    --query 'StandardOutputContent' \
+    --output text
 
 # Step 3: Setup environment variables
 echo "🔧 Setting up environment variables..."
@@ -55,20 +71,18 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
         'cd /home/ssm-user/texas/infrastructure',
         'echo \"Starting environment variable setup...\"',
         'POSTGRES_USER=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_USER" --query "Parameter.Value" --output text)',
-        'echo \"POSTGRES_USER retrieved: \$POSTGRES_USER\"',
         'POSTGRES_PASSWORD=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
-        'echo \"POSTGRES_PASSWORD retrieved: [HIDDEN]\"',
         'MONGO_USER=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_USER" --query "Parameter.Value" --output text)',
-        'echo \"MONGO_USER retrieved: \$MONGO_USER\"',
         'MONGO_PASSWORD=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
-        'echo \"MONGO_PASSWORD retrieved: [HIDDEN]\"',
-        'echo \"POSTGRES_USER=\$POSTGRES_USER\" > .env',
+        'ECR_REGISTRY=${ECR_REGISTRY}',
+        'IMAGE_TAG=${IMAGE_TAG:-latest}',
+        'echo \"ECR_REGISTRY=\$ECR_REGISTRY\" > .env',
+        'echo \"IMAGE_TAG=\$IMAGE_TAG\" >> .env',
+        'echo \"POSTGRES_USER=\$POSTGRES_USER\" >> .env',
         'echo \"POSTGRES_PASSWORD=\$POSTGRES_PASSWORD\" >> .env',
         'echo \"MONGO_USER=\$MONGO_USER\" >> .env',
         'echo \"MONGO_PASSWORD=\$MONGO_PASSWORD\" >> .env',
-        'echo \"Environment variables configured successfully\"',
-        'echo \"Contents of .env file:\"',
-        'cat .env | sed \"s/=.*/=***/\"'
+        'echo \"Environment variables configured successfully\"'
     ]" \
     --query 'Command.CommandId' \
     --output text)
@@ -85,23 +99,42 @@ aws ssm get-command-invocation \
     --query 'StandardOutputContent' \
     --output text
 
-# Step 4: Deploy containers
-echo "🐳 Deploying containers..."
-aws ssm send-command \
+# Step 4: Deploy pre-built containers
+echo "🐳 Deploying pre-built containers from ECR..."
+CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd /home/ssm-user/texas',
+        'echo \"Logging into ECR...\"',
+        'aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${ECR_REGISTRY}',
+        'echo \"Stopping existing containers...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml down',
+        'echo \"Pulling latest images from ECR...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
+        'echo \"Starting containers with pre-built images...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d',
+        'echo \"Container status:\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml ps'
     ]" \
+    --query 'Command.CommandId' \
+    --output text)
+
+# Wait for container deployment to complete
+echo "⏳ Waiting for container deployment to complete..."
+aws ssm wait command-executed --command-id $CONTAINER_DEPLOY_RESULT --instance-id $INSTANCE_ID
+
+# Get the container deployment output
+echo "📋 Container deployment output:"
+aws ssm get-command-invocation \
+    --command-id $CONTAINER_DEPLOY_RESULT \
+    --instance-id $INSTANCE_ID \
+    --query 'StandardOutputContent' \
     --output text
 
 # Wait for containers to be ready with health check
 echo "⏳ Waiting for containers to be ready..."
-aws ssm send-command \
+CONTAINER_HEALTH_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
@@ -122,6 +155,18 @@ aws ssm send-command \
         '  exit 1',
         'fi'
     ]" \
+    --query 'Command.CommandId' \
+    --output text)
+
+# Wait for container health check to complete
+aws ssm wait command-executed --command-id $CONTAINER_HEALTH_RESULT --instance-id $INSTANCE_ID
+
+# Get the container health check output
+echo "📋 Container health check output:"
+aws ssm get-command-invocation \
+    --command-id $CONTAINER_HEALTH_RESULT \
+    --instance-id $INSTANCE_ID \
+    --query 'StandardOutputContent' \
     --output text
 
 # Step 5: Setup SSL certificates on the server (with retry logic)
