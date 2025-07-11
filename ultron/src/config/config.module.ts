@@ -26,7 +26,7 @@ import { NODE_ENV } from '../utils/constants';
         AWS_SECRET_ACCESS_KEY: Joi.string(),
         DOMAIN: Joi.string(),
         POSTGRES_HOST: Joi.string(),
-        POSTGRES_USERNAME: Joi.string(),
+        POSTGRES_USER: Joi.string(),
         POSTGRES_PASSWORD: Joi.string(),
         POSTGRES_DB: Joi.string(),
         JWT_SECRET: Joi.string(),

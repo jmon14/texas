@@ -16,7 +16,7 @@ import { ConfigurationService } from 'src/config/configuration.service';
         type: 'postgres',
         host: await configurationService.get('POSTGRES_HOST'),
         port: +(await configurationService.get('POSTGRES_PORT')),
-        username: await configurationService.get('POSTGRES_USERNAME'),
+        username: await configurationService.get('POSTGRES_USER'),
         password: await configurationService.get('POSTGRES_PASSWORD'),
         database: await configurationService.get('POSTGRES_DB'),
         entities: [__dirname + '/../**/*.entity.{ts,js}'],
