@@ -30,13 +30,13 @@ const config = (env: WebpackEnv): Configuration => {
     // Set the path parameter in the dotenv config
     const fileEnv = dotenv.config({ path: finalPath }).parsed as EnvIndex;
     // Reduce it to a process env object
-    envKeys = Object.keys(fileEnv).reduce<EnvIndex>((prev, next) => {
+    envKeys = Object.keys(fileEnv || {}).reduce<EnvIndex>((prev, next) => {
       prev[`process.env.${next}`] = JSON.stringify(fileEnv[next]);
       return prev;
     }, {});
   } else {
     // Reduce it to a process env object
-    envKeys = Object.keys(process.env).reduce<EnvIndex>((prev, next) => {
+    envKeys = Object.keys(process.env || {}).reduce<EnvIndex>((prev, next) => {
       prev[`process.env.${next}`] = JSON.stringify(process.env[next]);
       return prev;
     }, {});
