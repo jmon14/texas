@@ -20,7 +20,7 @@ import { ConfigurationService } from 'src/config/configuration.service';
         password: await configurationService.get('POSTGRES_PASSWORD'),
         database: await configurationService.get('POSTGRES_DB'),
         entities: [__dirname + '/../**/*.entity.{ts,js}'],
-        synchronize: (await configurationService.get('NODE_ENV')) !== NODE_ENV.PRODUCTION,
+        synchronize: true, // ! TODO: Do this with migrations instead in production
       }),
     }),
   ],

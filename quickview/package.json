@@ -14,7 +14,7 @@
     "openapi:spec-vision": "curl http://localhost:3001/v3/api-docs -o openapi-vision-spec.json",
     "openapi:pretty-vision": "prettier --write openapi-vision-spec.json",
     "openapi:generate-vision": "openapi-generator-cli generate -i openapi-vision-spec.json -o vision-api -g typescript-axios --additional-properties=supportsES6=true",
-    "start": "webpack serve --env ENVIRONMENT=development",
+    "start": "webpack serve",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "storybook": "storybook dev -p 6006",
