@@ -70,7 +70,7 @@ variable "ultron_postgres_password" {
 variable "ultron_postgres_host" {
   description = "PostgreSQL host for Ultron (Supabase)"
   type        = string
-  default     = "db.wuvbdsaffioyltmmzpaw.supabase.co"
+  default     = "aws-0-eu-central-1.pooler.supabase.com"
 }
 
 variable "aws_ses_smtp_username" {
