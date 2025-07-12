@@ -67,6 +67,12 @@ variable "ultron_postgres_password" {
   sensitive   = true
 }
 
+variable "ultron_postgres_host" {
+  description = "PostgreSQL host for Ultron (Supabase)"
+  type        = string
+  default     = "db.wuvbdsaffioyltmmzpaw.supabase.co"
+}
+
 variable "aws_ses_smtp_username" {
   description = "AWS SES SMTP username"
   type        = string

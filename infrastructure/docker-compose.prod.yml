@@ -1,49 +1,21 @@
 version: "3.8"
 
 services:
-  # MongoDB service for Vision
-  mongodb:
-    image: mongo:latest
-    restart: always
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - texas-network
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-
   # Vision service (Java Spring Boot)
   vision:
     image: ${ECR_REGISTRY:-your-registry}/texas-vision:${IMAGE_TAG:-latest}
     restart: always
-    depends_on:
-      - mongodb
     networks:
       - texas-network
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - AWS_REGION=eu-central-1
-
-  # PostgreSQL for Ultron
-  postgres:
-    image: postgres:latest
-    restart: always
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=ultron
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - texas-network
+      - SPRING_DATA_MONGODB_URI=mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@cluster0.x9mmmer.mongodb.net/vision?retryWrites=true&w=majority
 
   # Ultron service (NestJS)
   ultron:
     image: ${ECR_REGISTRY:-your-registry}/texas-ultron:${IMAGE_TAG:-latest}
     restart: always
-    depends_on:
-      - postgres
     networks:
       - texas-network
     environment:
@@ -51,7 +23,6 @@ services:
       - AWS_REGION=eu-central-1
       - DOMAIN=.allinrange.com
       - UI_URL=https://www.allinrange.com
-      - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=ultron
 
@@ -85,10 +56,6 @@ services:
       - vision
     networks:
       - texas-network
-
-volumes:
-  mongodb_data:
-  postgres_data:
 
 networks:
   texas-network:

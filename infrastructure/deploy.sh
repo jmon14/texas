@@ -70,16 +70,12 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
     --parameters "commands=[
         'cd /home/ssm-user/texas/infrastructure',
         'echo \"Starting environment variable setup...\"',
-        'POSTGRES_USER=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_USER" --query "Parameter.Value" --output text)',
-        'POSTGRES_PASSWORD=$(aws ssm get-parameter --name "/texas/ultron/POSTGRES_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
         'MONGO_USER=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_USER" --query "Parameter.Value" --output text)',
         'MONGO_PASSWORD=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
         'ECR_REGISTRY=${ECR_REGISTRY}',
         'IMAGE_TAG=${IMAGE_TAG:-latest}',
         'echo \"ECR_REGISTRY=\$ECR_REGISTRY\" > .env',
         'echo \"IMAGE_TAG=\$IMAGE_TAG\" >> .env',
-        'echo \"POSTGRES_USER=\$POSTGRES_USER\" >> .env',
-        'echo \"POSTGRES_PASSWORD=\$POSTGRES_PASSWORD\" >> .env',
         'echo \"MONGO_USER=\$MONGO_USER\" >> .env',
         'echo \"MONGO_PASSWORD=\$MONGO_PASSWORD\" >> .env',
         'echo \"Environment variables configured successfully\"'

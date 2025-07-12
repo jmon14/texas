@@ -64,6 +64,13 @@ resource "aws_ssm_parameter" "ultron_postgres_password" {
   value       = var.ultron_postgres_password
 }
 
+resource "aws_ssm_parameter" "ultron_postgres_host" {
+  name        = "/texas/ultron/POSTGRES_HOST"
+  description = "PostgreSQL host for Ultron (Supabase)"
+  type        = "String"
+  value       = var.ultron_postgres_host
+}
+
 # Ultron JWT Configuration
 resource "aws_ssm_parameter" "ultron_jwt_secret" {
   name        = "/texas/ultron/JWT_SECRET"
@@ -185,6 +192,7 @@ output "ssm_parameters" {
     ultron_jwt_email_secret   = aws_ssm_parameter.ultron_jwt_email_secret.arn
     ultron_postgres_user      = aws_ssm_parameter.ultron_postgres_user.arn
     ultron_postgres_password  = aws_ssm_parameter.ultron_postgres_password.arn
+    ultron_postgres_host      = aws_ssm_parameter.ultron_postgres_host.arn
     aws_ses_smtp_username     = aws_ssm_parameter.aws_ses_smtp_username.arn
     aws_ses_smtp_password     = aws_ssm_parameter.aws_ses_smtp_password.arn
     domain_email              = aws_ssm_parameter.domain_email.arn
