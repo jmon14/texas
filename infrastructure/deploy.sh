@@ -102,10 +102,6 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd /home/ssm-user/texas/infrastructure/nginx',
-        'echo \"Starting SSL certificate setup...\"',
-        'echo \"Current directory: \$(pwd)\"',
-        'echo \"Checking if setup-ssl.sh exists...\"',
-        'ls -la setup-ssl.sh',
         'DOMAIN_EMAIL=$(aws ssm get-parameter --name "/texas/ultron/DOMAIN_EMAIL" --query "Parameter.Value" --output text)',
         'echo \"DOMAIN_EMAIL retrieved: \$DOMAIN_EMAIL\"',
         'if [ -z \"\$DOMAIN_EMAIL\" ]; then',
@@ -113,11 +109,10 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
         '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
         '  exit 1',
         'fi',
-        'echo \"Using DOMAIN_EMAIL: \$DOMAIN_EMAIL\"',
         'echo \"Making setup-ssl.sh executable...\"',
         'chmod +x setup-ssl.sh',
         'echo \"Running SSL setup script with timeout...\"',
-        'timeout 300 DOMAIN_EMAIL=\$DOMAIN_EMAIL ./setup-ssl.sh || echo \"SSL setup timed out or failed, but continuing...\"',
+        'timeout 300 env DOMAIN_EMAIL=\$DOMAIN_EMAIL ./setup-ssl.sh || echo \"SSL setup timed out or failed, but continuing...\"',
         'echo \"SSL setup script completed\"'
     ]" \
     --query 'Command.CommandId' \
