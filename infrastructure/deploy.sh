@@ -95,7 +95,51 @@ aws ssm get-command-invocation \
     --query 'StandardOutputContent' \
     --output text
 
-# Step 4: Deploy pre-built containers
+# Step 4: Setup SSL certificates
+echo "🔒 Setting up SSL certificates..."
+SSL_SETUP_RESULT=$(aws ssm send-command \
+    --instance-ids $INSTANCE_ID \
+    --document-name "AWS-RunShellScript" \
+    --parameters "commands=[
+        'cd /home/ssm-user/texas/infrastructure/nginx',
+        'echo \"Starting SSL certificate setup...\"',
+        'echo \"Current directory: \$(pwd)\"',
+        'echo \"Checking if setup-ssl.sh exists...\"',
+        'ls -la setup-ssl.sh',
+        'DOMAIN_EMAIL=$(aws ssm get-parameter --name "/texas/ultron/DOMAIN_EMAIL" --query "Parameter.Value" --output text)',
+        'echo \"DOMAIN_EMAIL retrieved: \$DOMAIN_EMAIL\"',
+        'if [ -z \"\$DOMAIN_EMAIL\" ]; then',
+        '  echo \"❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store\"',
+        '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
+        '  exit 1',
+        'fi',
+        'echo \"Using DOMAIN_EMAIL: \$DOMAIN_EMAIL\"',
+        'echo \"Making setup-ssl.sh executable...\"',
+        'chmod +x setup-ssl.sh',
+        'echo \"Running SSL setup script with timeout...\"',
+        'timeout 300 DOMAIN_EMAIL=\$DOMAIN_EMAIL ./setup-ssl.sh || echo \"SSL setup timed out or failed, but continuing...\"',
+        'echo \"SSL setup script completed\"'
+    ]" \
+    --query 'Command.CommandId' \
+    --output text)
+
+# Wait for SSL setup to complete
+echo "⏳ Waiting for SSL setup to complete (max 5 minutes)..."
+if aws ssm wait command-executed --command-id $SSL_SETUP_RESULT --instance-id $INSTANCE_ID --cli-read-timeout 300; then
+    echo "✅ SSL setup completed"
+else
+    echo "⚠️ SSL setup timed out, but continuing with deployment..."
+fi
+
+# Get the SSL setup output
+echo "📋 SSL setup output:"
+aws ssm get-command-invocation \
+    --command-id $SSL_SETUP_RESULT \
+    --instance-id $INSTANCE_ID \
+    --query 'StandardOutputContent' \
+    --output text
+
+# Step 5: Deploy pre-built containers
 echo "🐳 Deploying pre-built containers from ECR..."
 CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
@@ -165,50 +209,6 @@ aws ssm get-command-invocation \
     --query 'StandardOutputContent' \
     --output text
 
-# Step 5: Setup SSL certificates on the server (with retry logic)
-echo "🔒 Setting up SSL certificates..."
-SSL_SETUP_RESULT=$(aws ssm send-command \
-    --instance-ids $INSTANCE_ID \
-    --document-name "AWS-RunShellScript" \
-    --parameters "commands=[
-        'cd /home/ssm-user/texas/infrastructure/nginx',
-        'echo \"Starting SSL certificate setup...\"',
-        'echo \"Current directory: \$(pwd)\"',
-        'echo \"Checking if setup-ssl.sh exists...\"',
-        'ls -la setup-ssl.sh',
-        'DOMAIN_EMAIL=$(aws ssm get-parameter --name "/texas/ultron/DOMAIN_EMAIL" --query "Parameter.Value" --output text)',
-        'echo \"DOMAIN_EMAIL retrieved: \$DOMAIN_EMAIL\"',
-        'if [ -z \"\$DOMAIN_EMAIL\" ]; then',
-        '  echo \"❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store\"',
-        '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
-        '  exit 1',
-        'fi',
-        'echo \"Using DOMAIN_EMAIL: \$DOMAIN_EMAIL\"',
-        'echo \"Making setup-ssl.sh executable...\"',
-        'chmod +x setup-ssl.sh',
-        'echo \"Running SSL setup script with timeout...\"',
-        'timeout 300 DOMAIN_EMAIL=\$DOMAIN_EMAIL ./setup-ssl.sh || echo \"SSL setup timed out or failed, but continuing...\"',
-        'echo \"SSL setup script completed\"'
-    ]" \
-    --query 'Command.CommandId' \
-    --output text)
-
-# Wait for SSL setup to complete with a shorter timeout
-echo "⏳ Waiting for SSL setup to complete (max 5 minutes)..."
-if aws ssm wait command-executed --command-id $SSL_SETUP_RESULT --instance-id $INSTANCE_ID --cli-read-timeout 300; then
-    echo "✅ SSL setup completed"
-else
-    echo "⚠️ SSL setup timed out, but continuing with deployment..."
-fi
-
-# Get the SSL setup output (even if it failed)
-echo "📋 SSL setup output:"
-aws ssm get-command-invocation \
-    --command-id $SSL_SETUP_RESULT \
-    --instance-id $INSTANCE_ID \
-    --query 'StandardOutputContent' \
-    --output text
-
 # Check SSL setup status
 SSL_STATUS=$(aws ssm get-command-invocation \
     --command-id $SSL_SETUP_RESULT \
@@ -217,8 +217,8 @@ SSL_STATUS=$(aws ssm get-command-invocation \
     --output text)
 
 # Step 6: Cleanup S3 deployment file
-# echo "🧹 Cleaning up S3 deployment file..."
-# aws s3 rm "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
+echo "🧹 Cleaning up S3 deployment file..."
+aws s3 rm "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
 
 if [ "$SSL_STATUS" != "Success" ]; then
     echo "⚠️  SSL setup had issues, but continuing with deployment..."
