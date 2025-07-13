@@ -26,19 +26,26 @@ mkdir -p $SSL_DIR
 # Setup Let's Encrypt certificates
 echo "🌐 Setting up Let's Encrypt certificates..."
 
+# Create writable directories for certbot
+mkdir -p /tmp/certbot/config
+mkdir -p /tmp/certbot/work
+mkdir -p /tmp/certbot/logs
+
 certbot certonly --standalone \
     -d $DOMAIN \
     -d $WWW_DOMAIN \
     --non-interactive \
     --agree-tos \
-    --email $EMAIL
+    --email $EMAIL \
+    --config-dir /tmp/certbot/config \
+    --work-dir /tmp/certbot/work \
+    --logs-dir /tmp/certbot/logs
 
 # Copy certificates to the SSL directory
-sudo cp /etc/letsencrypt/live/$DOMAIN/fullchain.pem $SSL_DIR/cert.pem
-sudo cp /etc/letsencrypt/live/$DOMAIN/privkey.pem $SSL_DIR/key.pem
+cp /tmp/certbot/config/live/$DOMAIN/fullchain.pem $SSL_DIR/cert.pem
+cp /tmp/certbot/config/live/$DOMAIN/privkey.pem $SSL_DIR/key.pem
 
 # Set proper permissions
-sudo chown ubuntu:ubuntu $SSL_DIR/cert.pem $SSL_DIR/key.pem
 chmod 600 $SSL_DIR/key.pem
 chmod 644 $SSL_DIR/cert.pem
 
