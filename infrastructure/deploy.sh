@@ -167,69 +167,12 @@ aws ssm get-command-invocation \
     --query 'StandardOutputContent' \
     --output text
 
-# Wait for containers to be ready with health check
-echo "⏳ Waiting for containers to be ready..."
-CONTAINER_HEALTH_RESULT=$(aws ssm send-command \
-    --instance-ids $INSTANCE_ID \
-    --document-name "AWS-RunShellScript" \
-    --parameters "commands=[
-        'cd /home/ssm-user/texas',
-        'timeout=120',
-        'counter=0',
-        'while [ $counter -lt $timeout ]; do',
-        '  if docker-compose -f infrastructure/docker-compose.prod.yml ps | grep -q \"Up\"; then',
-        '    echo \"Containers are ready!\"',
-        '    break',
-        '  fi',
-        '  echo \"Waiting for containers... ($counter/$timeout)\"',
-        '  sleep 5',
-        '  counter=$((counter + 5))',
-        'done',
-        'if [ $counter -eq $timeout ]; then',
-        '  echo \"Timeout waiting for containers\"',
-        '  exit 1',
-        'fi'
-    ]" \
-    --query 'Command.CommandId' \
-    --output text)
-
-# Wait for container health check to complete
-aws ssm wait command-executed --command-id $CONTAINER_HEALTH_RESULT --instance-id $INSTANCE_ID
-
-# Get the container health check output
-echo "📋 Container health check output:"
-aws ssm get-command-invocation \
-    --command-id $CONTAINER_HEALTH_RESULT \
-    --instance-id $INSTANCE_ID \
-    --query 'StandardOutputContent' \
-    --output text
-
-# Check SSL setup status
-SSL_STATUS=$(aws ssm get-command-invocation \
-    --command-id $SSL_SETUP_RESULT \
-    --instance-id $INSTANCE_ID \
-    --query 'Status' \
-    --output text)
-
 # Step 6: Cleanup S3 deployment file
 echo "🧹 Cleaning up S3 deployment file..."
 aws s3 rm "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
-
-if [ "$SSL_STATUS" != "Success" ]; then
-    echo "⚠️  SSL setup had issues, but continuing with deployment..."
-    echo "You can manually setup SSL later with: ./setup-ssl.sh"
-else
-    echo "✅ SSL setup completed successfully!"
-fi
 
 echo "🎉 Deployment completed!"
 echo "Your application should be available at:"
 echo "https://allinrange.com"
 echo "https://www.allinrange.com"
 echo ""
-if [ "$SSL_STATUS" != "Success" ]; then
-    echo "⚠️  SSL setup may need manual attention."
-    echo "Run on server: cd /home/ssm-user/texas/infrastructure/nginx && ./setup-ssl.sh"
-else
-    echo "✅ SSL certificates have been automatically configured."
-fi 
