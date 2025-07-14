@@ -13,8 +13,14 @@ RUN npm install --legacy-peer-deps
 # Copy the rest of your application files
 COPY . .
  
+# Build the production version
+RUN npm run build
+
+# Install a simple HTTP server to serve static files
+RUN npm install -g serve
+ 
 # Expose the port your app runs on
 EXPOSE 8080
  
-# Define the command to run your app (will be overridden in docker-compose for development)
-CMD ["npm", "start"]
+# Serve the built static files
+CMD ["serve", "-s", "dist", "-l", "8080"]
