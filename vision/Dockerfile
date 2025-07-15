@@ -28,5 +28,5 @@ COPY --from=build /app/target/vision-0.0.1-SNAPSHOT.jar app.jar
 # Expose the port the application runs on
 EXPOSE 3001
 
-# Run the jar file
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the jar file with TLS configuration for MongoDB Atlas
+ENTRYPOINT ["java", "-Djdk.tls.client.protocols=TLSv1.2", "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts", "-Djavax.net.ssl.trustStorePassword=changeit", "-jar", "app.jar"]
