@@ -47,8 +47,14 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_VISION:latest ./vision
 
           # Build Quickview image
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:$IMAGE_TAG ./quickview
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:latest ./quickview
+          docker build \
+            --build-arg REACT_APP_ULTRON_API_URL=https://allinrange.com/api \
+            --build-arg REACT_APP_VISION_API_URL=https://allinrange.com/vision \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:$IMAGE_TAG ./quickview
+          docker build \
+            --build-arg REACT_APP_ULTRON_API_URL=https://allinrange.com/api \
+            --build-arg REACT_APP_VISION_API_URL=https://allinrange.com/vision \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:latest ./quickview
 
           # Push images
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:$IMAGE_TAG

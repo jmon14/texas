@@ -36,7 +36,7 @@ const Uploader = () => {
           <UploadItem
             key={file.name}
             file={file}
-            url={`${process.env.API_URL}/files/upload`}
+            url={`${process.env.REACT_APP_ULTRON_API_URL}/files/upload`}
             onRemove={onRemove}
           />
         ))}
