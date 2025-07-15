@@ -48,12 +48,12 @@ jobs:
 
           # Build Quickview image
           docker build \
-            --build-arg REACT_APP_ULTRON_API_URL=https://allinrange.com/api \
-            --build-arg REACT_APP_VISION_API_URL=https://allinrange.com/vision \
+            --build-arg REACT_APP_ULTRON_API_URL=https://www.allinrange.com/api \
+            --build-arg REACT_APP_VISION_API_URL=https://www.allinrange.com/vision \
             -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:$IMAGE_TAG ./quickview
           docker build \
-            --build-arg REACT_APP_ULTRON_API_URL=https://allinrange.com/api \
-            --build-arg REACT_APP_VISION_API_URL=https://allinrange.com/vision \
+            --build-arg REACT_APP_ULTRON_API_URL=https://www.allinrange.com/api \
+            --build-arg REACT_APP_VISION_API_URL=https://www.allinrange.com/vision \
             -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:latest ./quickview
 
           # Push images
@@ -87,10 +87,10 @@ jobs:
             echo "Health check attempt $((counter/interval + 1))..."
             
             # Check frontend (API is internal, not publicly accessible)
-            if curl -f -s --max-time 10 https://allinrange.com > /dev/null 2>&1; then
+            if curl -f -s --max-time 10 https://www.allinrange.com > /dev/null 2>&1; then
               echo "✅ Frontend is responding on HTTPS!"
               exit 0
-            elif curl -f -s --max-time 10 http://allinrange.com > /dev/null 2>&1; then
+            elif curl -f -s --max-time 10 http://www.allinrange.com > /dev/null 2>&1; then
               echo "⚠️  Frontend is responding on HTTP (HTTPS may still be setting up)"
               exit 0
             fi

@@ -149,7 +149,7 @@ resource "aws_ssm_parameter" "ultron_ui_url" {
   name        = "/texas/ultron/UI_URL"
   description = "UI URL for Ultron"
   type        = "String"
-  value       = "https://allinrange.com"
+  value       = "https://www.allinrange.com"
 }
 
 resource "aws_ssm_parameter" "ultron_aws_public_bucket_name" {

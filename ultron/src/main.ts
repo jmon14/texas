@@ -42,14 +42,12 @@ async function bootstrap() {
     });
   }
 
-  // Configure CORS based on environment
-  if (nodeEnv !== NODE_ENV.PRODUCTION) {
-    // In development, allow requests from the frontend
-    app.enableCors({
-      origin: await configurationService.get('UI_URL'),
-      credentials: true,
-    });
-  }
+  // Configure CORS for all environments
+  const uiUrl = await configurationService.get('UI_URL');
+  app.enableCors({
+    origin: [uiUrl],
+    credentials: true,
+  });
 
   // Apply helmet middleware
   app.use(helmet());
