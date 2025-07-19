@@ -28,6 +28,19 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+# Elastic IP for the EC2 instance
+resource "aws_eip" "texas_eip" {
+  instance = aws_instance.texas_server.id
+  domain   = "vpc"
+
+  tags = {
+    Name        = "texas-elastic-ip"
+    Environment = "production"
+    Project     = "texas"
+    ManagedBy   = "terraform"
+  }
+}
+
 # EC2 instance
 resource "aws_instance" "texas_server" {
   ami           = data.aws_ami.ubuntu.id
@@ -55,7 +68,7 @@ resource "aws_instance" "texas_server" {
   })
 }
 
-output "public_ip" {
-  value       = aws_instance.texas_server.public_ip
-  description = "The public IP address of the Texas server"
+output "elastic_ip" {
+  value       = aws_eip.texas_eip.public_ip
+  description = "The Elastic IP address of the Texas server (use this IP for MongoDB Atlas whitelist)"
 }
