@@ -9,7 +9,7 @@ resource "aws_route53_record" "root" {
   name    = "allinrange.com"
   type    = "A"
   ttl     = "300"
-  records = [aws_instance.texas_server.public_ip]
+  records = [aws_eip.texas_eip.public_ip]
 }
 
 # A record for www subdomain
@@ -18,7 +18,7 @@ resource "aws_route53_record" "www" {
   name    = "www.allinrange.com"
   type    = "A"
   ttl     = "300"
-  records = [aws_instance.texas_server.public_ip]
+  records = [aws_eip.texas_eip.public_ip]
 }
 
 # Output the nameservers

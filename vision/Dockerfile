@@ -1,5 +1,5 @@
-# Use an official OpenJDK runtime as a parent image
-FROM maven:3.9.6-amazoncorretto-21 AS build
+# Use Eclipse Temurin for building
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 # Set the working directory in the container
 WORKDIR /app
@@ -16,8 +16,8 @@ COPY src ./src
 # Build the application
 RUN mvn clean package -DskipTests
 
-# Use a smaller runtime image
-FROM openjdk:21-jdk-slim
+# Use Eclipse Temurin runtime (production-optimized, no OpenSSL vulnerability)
+FROM eclipse-temurin:21-jre
 
 # Set the working directory
 WORKDIR /app

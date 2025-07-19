@@ -1,3 +1,20 @@
+# =============================================================================
+# Main Terraform Configuration for Texas Poker Application
+# =============================================================================
+# 
+# This file defines the core AWS infrastructure:
+# - EC2 instance running Ubuntu 22.04
+# - Elastic IP for static public IP
+# - IAM instance profile for SSM access
+# - Security groups for network access
+#
+# The EC2 instance runs Docker containers for:
+# - Quickview (React frontend)
+# - Ultron (NestJS backend)
+# - Vision (Spring Boot API)
+# - Nginx (reverse proxy with SSL)
+# =============================================================================
+
 terraform {
   required_providers {
     aws = {
@@ -28,7 +45,40 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-# EC2 instance
+# Elastic IP for the EC2 instance
+# This IP is used for:
+# - Domain DNS configuration
+# - MongoDB Atlas whitelist
+# - SSL certificate validation
+# =============================================================================
+
+resource "aws_eip" "texas_eip" {
+  instance = aws_instance.texas_server.id
+  domain   = "vpc"
+
+  tags = {
+    Name        = "texas-elastic-ip"
+    Environment = "production"
+    Project     = "texas"
+    ManagedBy   = "terraform"
+  }
+}
+
+# =============================================================================
+# EC2 Instance Configuration
+# =============================================================================
+# Main application server running Ubuntu 22.04 LTS
+# 
+# Features:
+# - t3.small instance type (production ready)
+# - 20GB encrypted EBS volume
+# - IAM instance profile for SSM access
+# - Security group for network access
+# - User data script for initial setup
+#
+# The instance runs Docker containers for all application services
+# =============================================================================
+
 resource "aws_instance" "texas_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
@@ -55,7 +105,13 @@ resource "aws_instance" "texas_server" {
   })
 }
 
-output "public_ip" {
-  value       = aws_instance.texas_server.public_ip
-  description = "The public IP address of the Texas server"
+# =============================================================================
+# Outputs
+# =============================================================================
+# Exports important values for use in other configurations
+# =============================================================================
+
+output "elastic_ip" {
+  value       = aws_eip.texas_eip.public_ip
+  description = "The Elastic IP address of the Texas server (use this IP for MongoDB Atlas whitelist)"
 }
