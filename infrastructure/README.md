@@ -1,309 +1,163 @@
-# Texas Infrastructure
+# Infrastructure Documentation
 
-This directory contains the infrastructure configuration for the Texas application, which consists of multiple microservices deployed on AWS EC2 with Docker Compose.
+This directory contains all infrastructure-related configuration for the Texas Poker application.
 
-## 🏗️ Architecture Overview
+## 🏗️ Architecture
 
-The infrastructure consists of:
+### AWS Resources
 
-- **AWS EC2 Instance** (t3.micro) running Ubuntu 22.04
-- **Docker Compose** orchestrating multiple services
-- **Nginx** reverse proxy with SSL termination
-- **Route53** DNS management for `allinrange.com`
-- **S3** bucket for file storage and deployment packages
-- **SSM Parameter Store** for secure configuration management
+- **EC2 Instance**: Application server running Docker containers
+- **Elastic IP**: Static IP for consistent access
+- **Security Groups**: Network access control
+- **SSM Parameters**: Secure configuration storage
+- **ECR Repositories**: Container image storage
 
-### Services
+### Network Flow
 
-1. **Quickview** - React frontend application
-2. **Ultron** - NestJS backend API service
-3. **Vision** - Java Spring Boot service
-4. **PostgreSQL** - Database for Ultron service
-5. **MongoDB** - Database for Vision service
-6. **Nginx** - Reverse proxy and SSL termination
+```
+Internet → Elastic IP → EC2 → Nginx → Docker Containers
+                                    ├── Quickview (Frontend)
+                                    ├── Ultron (NestJS API)
+                                    └── Vision (Spring Boot API)
+```
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- AWS CLI configured with appropriate permissions
-- Terraform installed
-- Docker and Docker Compose (for local development)
-- Domain name configured to point to AWS nameservers
-- **AWS Session Manager plugin** (for interactive access to EC2 instance)
-
-### Initial Setup
-
-1. **Configure AWS credentials:**
-
-   ```bash
-   aws configure
-   ```
-
-2. **Install AWS Session Manager plugin** (for interactive EC2 access):
-
-   ```bash
-   brew install session-manager-plugin
-   ```
-
-3. **Create and configure `prod.tfvars`:**
-
-   ```bash
-   cd infrastructure/aws/environments
-   cp prod.tfvars.example prod.tfvars
-   # Edit prod.tfvars and replace all placeholder values with your actual credentials
-   ```
-
-4. **Initialize Terraform:**
-
-   ```bash
-   cd infrastructure/aws
-   terraform init
-   ```
-
-5. **Deploy infrastructure** (this automatically creates all SSM parameters):
-
-   ```bash
-   terraform plan -var-file="environments/prod.tfvars"
-   terraform apply -var-file="environments/prod.tfvars"
-   ```
-
-6. **Deploy application:**
-   ```bash
-   cd infrastructure
-   ./deploy.sh
-   ```
-
-## 📁 Directory Structure
+## 📁 File Structure
 
 ```
 infrastructure/
-├── aws/                    # Terraform configuration
-│   ├── environments/       # Environment-specific variables
-│   ├── main.tf            # Main EC2 instance configuration
-│   ├── security.tf        # Security groups
-│   ├── domain.tf          # Route53 DNS configuration
-│   ├── s3.tf             # S3 bucket configuration
-│   ├── iam.tf            # IAM roles and policies
-│   ├── ssm.tf            # SSM parameter store
-│   └── variables.tf      # Variable definitions
-├── nginx/                 # Nginx configuration
-│   ├── nginx.conf        # Nginx reverse proxy config
-│   └── setup-ssl.sh      # SSL certificate setup script
-├── docker-compose.prod.yml # Production Docker Compose
-└── deploy.sh             # Deployment script
+├── aws/                        # Terraform configuration
+│   ├── main.tf                 # Main Terraform configuration
+│   ├── variables.tf            # Input variables
+│   ├── outputs.tf              # Output values
+│   ├── backend.tf              # Backend state s3 bucket
+│   ├── ecr.tf                  # ECR repositories
+│   ├── s3.tf                   # S3 bucket for user files
+│   ├── ssm.tf                  # SSM parameters
+│   ├── security.tf             # Security groups
+│   ├── domain.tf               # Domain configuration
+│   └── environments/           # Environment-specific variables
+│       ├── prod.tfvars.example # Example production variables
+│       └── prod.tfvars         # Production variables (create this)
+├── nginx/                      # Nginx configuration
+│   ├── nginx.conf              # Main nginx config
+│   └── ssl/                    # SSL certificates
+├── docker-compose.prod.yml     # Production Docker setup
+└── deploy.sh                   # Deployment script
+```
+
+## 🚀 Deployment Process
+
+### 1. Infrastructure Setup
+
+```bash
+cd infrastructure/aws
+
+# Create environments directory and configuration
+mkdir environments
+cp environments/prod.tfvars.example environments/prod.tfvars
+# Edit environments/prod.tfvars with your actual values
+
+# Initialize Terraform
+terraform init
+
+# Plan the deployment
+terraform plan -var-file="environments/prod.tfvars"
+
+# Apply the infrastructure
+terraform apply -var-file="environments/prod.tfvars"
+```
+
+### 2. Application Deployment
+
+```bash
+# Build and push Docker images
+./infrastructure/deploy.sh
 ```
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-The application uses SSM Parameter Store for secure configuration management. Required parameters:
+All sensitive configuration is stored in AWS SSM Parameters:
 
-**Ultron Service:**
+- **Database credentials**: MongoDB Atlas, Supabase
+- **JWT secrets**: Authentication tokens
+- **API keys**: External service credentials
+- **Domain configuration**: SSL certificates
 
-- `/texas/ultron/POSTGRES_USER` - PostgreSQL username
-- `/texas/ultron/POSTGRES_PASSWORD` - PostgreSQL password
-- `/texas/ultron/DOMAIN_EMAIL` - Email for SSL certificates
+### SSL Configuration
 
-**Vision Service:**
+- **Domain**: allinrange.com and www.allinrange.com
+- **Certificate**: Let's Encrypt (manual renewal required)
+- **Setup**: Run `./infrastructure/nginx/setup-ssl.sh` to create certificates
 
-- `/vision/mongodb/MONGO_USER` - MongoDB username
-- `/vision/mongodb/MONGO_PASSWORD` - MongoDB password
-
-### Terraform Variables
-
-Key variables in `infrastructure/aws/variables.tf`:
-
-- `aws_region` - AWS region (default: eu-central-1)
-- `instance_type` - EC2 instance type (default: t3.micro)
-- `volume_size` - EBS volume size in GB (default: 20)
-- `aws_public_bucket_name` - S3 bucket name (default: files.allinrange.com)
-
-## 🚀 Deployment
-
-### Automated Deployment
-
-The `deploy.sh` script automates the entire deployment process:
-
-1. **Package and upload** code to S3
-2. **Download and extract** code on EC2 instance
-3. **Configure environment** variables from SSM
-4. **Deploy containers** using Docker Compose
-5. **Setup SSL certificates** using Let's Encrypt
-6. **Cleanup** temporary files
-
-```bash
-./deploy.sh
-```
-
-### Manual Deployment
-
-If you need to deploy manually:
-
-1. **Connect to the instance via SSM:**
-
-   ```bash
-   # Get instance ID
-   INSTANCE_ID=$(aws ec2 describe-instances \
-       --filters "Name=tag:Name,Values=texas-server" "Name=instance-state-name,Values=running" \
-       --query 'Reservations[0].Instances[0].InstanceId' \
-       --output text)
-
-   # Connect via SSM Session Manager
-   aws ssm start-session --target $INSTANCE_ID
-   ```
-
-2. **Navigate to the project:**
-
-   ```bash
-   cd ~/texas
-   ```
-
-3. **Deploy containers:**
-
-   ```bash
-   docker-compose -f infrastructure/docker-compose.prod.yml down
-   docker-compose -f infrastructure/docker-compose.prod.yml pull
-   docker-compose -f infrastructure/docker-compose.prod.yml up -d
-   ```
-
-4. **Setup SSL (if needed):**
-   ```bash
-   cd infrastructure/nginx
-   ./setup-ssl.sh
-   ```
-
-**Alternative: Run commands remotely without connecting:**
-
-```bash
-# Run commands directly on the instance
-aws ssm send-command \
-    --instance-ids $INSTANCE_ID \
-    --document-name "AWS-RunShellScript" \
-    --parameters "commands=[
-        'cd ~/texas',
-        'docker-compose -f infrastructure/docker-compose.prod.yml ps'
-    ]"
-```
-
-## 🔒 Security
-
-### Security Groups
-
-The EC2 instance is configured with a security group that allows:
-
-- **Port 80** (HTTP) - for initial SSL setup
-- **Port 443** (HTTPS) - for secure traffic
-- **All outbound traffic** - for updates and external API calls
-
-### SSL/TLS
-
-- **Automatic SSL setup** using Let's Encrypt
-- **Certificate renewal** handled by Certbot
-- **HTTPS enforcement** via Nginx configuration
-
-### Secrets Management
-
-- **SSM Parameter Store** for sensitive configuration
-- **Encrypted parameters** for passwords and secrets
-- **No hardcoded secrets** in configuration files
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **SSL Certificate Issues:**
-
-   ```bash
-   # Check certificate status
-   sudo certbot certificates
-
-   # Renew certificates manually
-   sudo certbot renew
-   ```
-
-2. **Container Issues:**
-
-   ```bash
-   # Check container status
-   docker-compose -f infrastructure/docker-compose.prod.yml ps
-
-   # View logs
-   docker-compose -f infrastructure/docker-compose.prod.yml logs
-   ```
-
-3. **SSM Parameter Issues:**
-
-   ```bash
-   # List parameters
-   aws ssm describe-parameters --query "Parameters[?starts_with(Name, '/texas/') || starts_with(Name, '/vision/')]"
-
-   # Get parameter value
-   aws ssm get-parameter --name "/texas/ultron/POSTGRES_USER" --query "Parameter.Value" --output text
-   ```
+## 📊 Monitoring
 
 ### Logs
 
-- **Application logs:** `docker-compose -f infrastructure/docker-compose.prod.yml logs [service-name]`
-- **Nginx logs:** `docker logs texas_nginx_1`
-- **System logs:** `journalctl -u docker`
+- **Application logs**: Docker container logs
+- **Nginx logs**: Access and error logs
+- **System logs**: EC2 instance logs
+- **No CloudWatch**: Basic logging only
 
 ### Health Checks
 
+- **Frontend**: https://www.allinrange.com
+- **API**: https://www.allinrange.com/api/health (public)
+- **Vision API**: No health endpoint available
+
+## 🔐 Security
+
+### Network Security
+
+- **Security Groups**: Restrict access to necessary ports
+- **SSL/TLS**: All traffic encrypted
+- **CORS**: Properly configured for domain
+
+### Application Security
+
+- **JWT Authentication**: Secure token-based auth
+- **Environment Variables**: No secrets in code
+- **Docker Security**: Containers run with limited privileges
+
+## 🛠️ Maintenance
+
+### Updates
+
 ```bash
-# Check if all services are running
-docker-compose -f infrastructure/docker-compose.prod.yml ps
-
-# Test application endpoints
-curl -I https://allinrange.com
-curl -I https://www.allinrange.com
-```
-
-## 🔄 Updates and Maintenance
-
-### Application Updates
-
-1. **Code changes:** Use `./deploy.sh` for full deployment
-2. **Configuration changes:** Update SSM parameters and redeploy
-3. **Infrastructure changes:** Use Terraform for infrastructure updates
-
-### Infrastructure Updates
-
-```bash
+# Update infrastructure
 cd infrastructure/aws
 terraform plan -var-file="environments/prod.tfvars"
 terraform apply -var-file="environments/prod.tfvars"
+
+# Update applications (via CI/CD)
+# Push to production branch triggers automatic deployment
 ```
 
-### SSL Certificate Renewal
+### Troubleshooting
 
-Certificates are automatically renewed by Certbot, but you can manually renew:
+- **Check container status**: `docker ps`
+- **View logs**: `docker logs <container>`
+- **SSM access**: `aws ssm start-session --target <instance-id>`
 
-```bash
-sudo certbot renew
-```
+## 💰 Cost Optimization
 
-## 🗑️ Cleanup
+### Current Setup
 
-### Destroy Infrastructure
+- **EC2**: t3.small (production instance)
+- **MongoDB**: Atlas free tier
+- **Supabase**: Free tier
+- **Domain**: ~$12/year
 
-```bash
-cd infrastructure/aws
-terraform destroy -var-file="environments/prod.tfvars"
-```
+### Estimated Monthly Cost
 
-### Clean S3 Bucket
+- **EC2**: $15-20/month (t3.small)
+- **Data Transfer**: $0-5/month
+- **Total**: ~$20-30/month
 
-```bash
-aws s3 rm s3://files.allinrange.com --recursive
-```
+## 📚 Additional Resources
 
-## 📝 Notes
-
-### Cost Optimization
-
-- **Use Spot Instances** for non-critical workloads
-- **Implement auto-scaling** based on demand
-- **Monitor and optimize** EBS volumes
-- **Use AWS Cost Explorer** to track spending
+- [Terraform Documentation](https://www.terraform.io/docs)
+- [AWS EC2 Documentation](https://docs.aws.amazon.com/ec2/)
+- [Nginx Configuration](https://nginx.org/en/docs/)
+- [Docker Compose](https://docs.docker.com/compose/)

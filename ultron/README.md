@@ -1,35 +1,353 @@
-## Description
+# Ultron API
 
-Backend project for Qview application
+A NestJS backend service for the Texas Poker application, handling user authentication, file management, and email notifications.
 
-## Installation
+## 🏗️ Architecture Overview
 
-```bash
-$ npm install
+Ultron is a **microservice** responsible for:
+
+- **User Authentication & Authorization**
+- **User Management** (registration, profile updates)
+- **File Upload & Management**
+- **Email Notifications** (verification, password reset)
+
+## 📁 Project Structure
+
+```
+ultron/
+├── src/
+│   ├── auth/             # Authentication & Authorization
+│   │   ├── guards/       # JWT and Local auth guards
+│   │   ├── strategies/   # Passport strategies
+│   │   ├── interfaces/   # Request interfaces
+│   │   └── auth.service.ts
+│   ├── users/            # User Management
+│   │   ├── dtos/         # Data Transfer Objects
+│   │   ├── users.service.ts
+│   │   └── users.controller.ts
+│   ├── files/            # File Management
+│   │   ├── files.service.ts
+│   │   └── files.controller.ts
+│   ├── email/            # Email Service
+│   │   ├── strategies/   # Email providers (SES, Ethereal)
+│   │   └── email.service.ts
+│   ├── database/         # Database Layer
+│   │   ├── entities/     # TypeORM entities
+│   │   ├── subscribers/  # Database event handlers
+│   │   └── database.module.ts
+│   ├── config/           # Configuration
+│   │   ├── config.module.ts
+│   │   └── configuration.service.ts
+│   └── utils/            # Utilities
+└── test/                 # E2E tests
 ```
 
-## Running the app
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 16+
+- PostgreSQL database
+- AWS SES (for email) or Ethereal (for development)
+
+### Development Setup
 
 ```bash
-# development
-$ npm run start
+# Install dependencies
+npm install
 
-# watch mode
-$ npm run start:dev
+# Set up environment variables
+cp .development.env.example .development.env
+# Edit .development.env with your values
 
-# production mode
-$ npm run start:prod
+# Start development server
+npm run start:dev
 ```
 
-## Test
+### Production Setup
 
 ```bash
-# unit tests
-$ npm run test
+# Build the application
+npm run build
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Start production server
+npm run start:prod
 ```
+
+## 🔐 Authentication System
+
+### JWT-Based Authentication
+
+Ultron uses a **dual-token system**:
+
+- **Access Token**: Short-lived (1 hour) for API requests
+- **Refresh Token**: Long-lived (5 hours) for token renewal
+
+### Authentication Flow
+
+1. **Login**: Username/password → JWT tokens in HTTP-only cookies
+2. **API Requests**: Access token automatically sent with requests
+3. **Token Refresh**: Automatic renewal using refresh token
+4. **Logout**: Tokens cleared from cookies
+
+### Guards
+
+- **JwtAuthGuard**: Protects routes requiring authentication
+- **LocalAuthGuard**: Handles username/password login
+- **JwtRefreshGuard**: Validates refresh tokens
+
+## 👥 User Management
+
+### User Registration
+
+```typescript
+POST /users/create
+{
+  "username": "pokerplayer",
+  "email": "player@example.com",
+  "password": "securepassword"
+}
+```
+
+### Email Verification
+
+- **Automatic email** sent on registration
+- **JWT token** embedded in verification link
+- **Email confirmation** required to activate account
+
+### Password Reset
+
+- **Reset request**: Send email with reset link
+- **Token-based**: Secure JWT token for password change
+- **Time-limited**: Tokens expire after 30 minutes
+
+## 📁 File Management
+
+### File Upload
+
+```typescript
+POST /files/upload
+Content-Type: multipart/form-data
+Authorization: Bearer <jwt_token>
+
+file: <file_data>
+```
+
+### Features
+
+- **Authenticated uploads**: Only logged-in users
+- **AWS S3 storage**: Files stored in cloud
+- **User association**: Files linked to user accounts
+- **Metadata tracking**: File size, name, upload date
+
+## 📧 Email System
+
+### Email Providers
+
+- **AWS SES**: Production email service
+- **Ethereal**: Development email testing
+- **Configurable**: Environment-based provider selection
+
+### Email Types
+
+- **Account Verification**: Welcome email with confirmation link
+- **Password Reset**: Secure reset link with token
+- **Template-based**: Consistent email formatting
+
+## 🗄️ Database Schema
+
+### User Entity
+
+```typescript
+{
+  uuid: string;           // Unique identifier
+  username: string;       // Unique username (6-20 chars)
+  email: string;          // Unique email address
+  password: string;       // Hashed password
+  active: boolean;        // Email verification status
+  refreshToken?: string;  // Current refresh token
+  files: FileEntity[];    // Associated files
+}
+```
+
+### File Entity
+
+```typescript
+{
+  id: string; // Unique file ID
+  filename: string; // Original filename
+  size: number; // File size in bytes
+  user: UserEntity; // File owner
+  createdAt: Date; // Upload timestamp
+}
+```
+
+## 🛡️ Security Features
+
+### Authentication Security
+
+- **Password hashing**: bcrypt with salt
+- **JWT tokens**: Secure, time-limited tokens
+- **HTTP-only cookies**: XSS protection
+- **CSRF protection**: SameSite cookie attributes
+
+### Data Validation
+
+- **Class-validator**: Request data validation
+- **DTOs**: Type-safe data transfer objects
+- **Input sanitization**: Automatic validation
+
+### Security Headers
+
+- **Helmet**: Security headers middleware
+- **CORS**: Cross-origin request protection
+- **Rate limiting**: Request throttling
+
+## 📊 API Endpoints
+
+### Authentication
+
+```
+POST /auth/login          # User login
+GET  /auth/refresh        # Refresh access token
+POST /auth/logout         # User logout
+POST /auth/reset          # Request password reset
+```
+
+### Users
+
+```
+POST /users/create        # Register new user
+POST /users/confirm       # Confirm email address
+POST /users/reset-pwd     # Reset password
+GET  /users/files         # Get user's files
+```
+
+### Files
+
+```
+POST /files/upload        # Upload file (authenticated)
+GET  /files/:id           # Get file by ID
+DELETE /files/:id         # Delete file
+```
+
+### Health Check
+
+```
+GET /health              # Service health status
+GET /                    # API information
+```
+
+## 🧪 Testing
+
+### Unit Tests
+
+```bash
+# Run unit tests
+npm run test
+
+# Run with coverage
+npm run test:cov
+
+# Watch mode
+npm run test:watch
+```
+
+### E2E Tests
+
+```bash
+# Run end-to-end tests
+npm run test:e2e
+```
+
+### Test Structure
+
+- **Unit tests**: Individual service/controller testing
+- **E2E tests**: Full API integration testing
+- **Mock services**: Isolated testing environment
+
+## 🔄 Development Workflow
+
+### Code Quality
+
+```bash
+# Format code
+npm run format
+
+# Lint code
+npm run lint
+
+# Type checking
+npm run build
+```
+
+## 🚀 Deployment
+
+### Docker
+
+```bash
+# Build image
+docker build -t ultron .
+
+# Run container
+docker run -p 3000:3000 ultron
+```
+
+### Environment Setup
+
+1. **Development**: Local PostgreSQL + Ethereal email
+2. **Production**: Supabase PostgreSQL + AWS SES
+3. **Configuration**: AWS SSM Parameter Store
+
+## 📚 API Documentation
+
+### Swagger UI
+
+Access interactive API documentation at:
+
+```
+http://localhost:3000/api
+```
+
+### OpenAPI Specification
+
+Automatically generated from:
+
+- **Controller decorators**: Route definitions
+- **DTO classes**: Request/response schemas
+- **Entity classes**: Database models
+
+## 🔍 Monitoring & Logging
+
+### Health Checks
+
+- **Service health**: `/health` endpoint
+- **Database connectivity**: Automatic checks
+- **Email service**: Provider status monitoring
+
+### Logging
+
+- **Structured logging**: JSON format
+- **Environment-based**: Different log levels
+- **Error tracking**: Detailed error information
+
+## 🤝 Contributing
+
+### Development Guidelines
+
+1. **Follow NestJS patterns**: Use decorators and modules
+2. **Write tests**: Unit and E2E tests required
+3. **Validate input**: Use DTOs and class-validator
+4. **Document APIs**: Add Swagger decorators
+5. **Handle errors**: Proper error responses
+
+### Code Style
+
+- **TypeScript**: Strict type checking
+- **ESLint**: Code quality rules
+- **Prettier**: Code formatting
+- **Conventional commits**: Git commit messages
+
+## 📄 License
+
+This project is part of the Texas Poker application and is licensed under the MIT License.
