@@ -1,5 +1,5 @@
 // External libraries
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 // Components
@@ -46,6 +46,7 @@ export const AppRoutes = () => {
         }
       >
         <Route path="" element={<Home />}>
+          <Route path="" element={<Navigate to="range" />} />
           <Route path="upload" element={<Uploader />} />
           <Route path="dashboard" element={<Files />} />
           <Route path="range" element={<RangeBuilder />} />

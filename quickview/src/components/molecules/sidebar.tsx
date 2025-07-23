@@ -9,7 +9,7 @@ import {
   Toolbar,
   useTheme,
 } from '@mui/material';
-import { BarChart, ChevronLeft, Dashboard, Upload } from '@mui/icons-material';
+import { BarChart, ChevronLeft } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 type SidebarProps = {
@@ -35,23 +35,11 @@ const Sidebar = ({ collapseSidebar }: SidebarProps) => {
       </Toolbar>
       <Divider />
       <List component="nav">
-        <ListItemButton sx={{ pl: theme.spacing(3) }} component={Link} to="/dashboard">
-          <ListItemIcon>
-            <Dashboard />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
-        <ListItemButton sx={{ pl: theme.spacing(3) }} component={Link} to="/upload">
-          <ListItemIcon>
-            <Upload />
-          </ListItemIcon>
-          <ListItemText primary="Upload" />
-        </ListItemButton>
         <ListItemButton sx={{ pl: theme.spacing(3) }} component={Link} to="/range">
           <ListItemIcon>
             <BarChart />
           </ListItemIcon>
-          <ListItemText primary="Reports" />
+          <ListItemText primary="Range builder" />
         </ListItemButton>
       </List>
       <Divider />
