@@ -1,7 +1,7 @@
 // React
 import { useState } from 'react';
 
-import { Logout, Settings, AccountCircle, Menu as MenuIcon, Person } from '@mui/icons-material';
+import { AccountCircle, Logout, Menu as MenuIcon, Person } from '@mui/icons-material';
 import {
   Divider,
   IconButton,
@@ -11,6 +11,7 @@ import {
   Menu,
   Avatar,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 // Store
 import { useAppDispatch } from '../../hooks/store-hooks';
@@ -77,13 +78,7 @@ const Header = ({ open, collapseAppbar }: HeaderProps) => {
           <ListItemText primary="John Doe" secondary="jdoe@acme.com" />
         </MenuItem>
         <Divider />
-        <MenuItem onClick={closeMenu}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={closeMenu} component={Link} to="/account">
           <ListItemIcon>
             <AccountCircle fontSize="small" />
           </ListItemIcon>

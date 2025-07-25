@@ -13,6 +13,7 @@ import Login from '../components/organisms/login';
 import Auth from '../components/pages/auth';
 import Home from '../components/pages/home';
 import RangeBuilder from '../components/organisms/range-builder';
+import Account from '../components/organisms/account';
 
 // Routes
 import { AuthProtected } from './auth-protected';
@@ -50,6 +51,7 @@ export const AppRoutes = () => {
           <Route path="upload" element={<Uploader />} />
           <Route path="dashboard" element={<Files />} />
           <Route path="range" element={<RangeBuilder />} />
+          <Route path="account" element={<Account />} />
         </Route>
       </Route>
     </Routes>
