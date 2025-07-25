@@ -1,5 +1,5 @@
 // NestJS
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 // External libraries
 import Mail = require('nodemailer/lib/mailer');
@@ -16,6 +16,7 @@ import { EtherealStrategy } from './strategies/ethereal.strategy';
 export class EmailService {
   private nodemailerTransport: Mail;
   private strategy!: EmailStrategy;
+  private readonly logger = new Logger(EmailService.name);
 
   constructor(
     private readonly configurationService: ConfigurationService,
@@ -26,15 +27,21 @@ export class EmailService {
   }
 
   private async initializeStrategy() {
-    const environment = await this.configurationService.get('NODE_ENV');
-    this.strategy = environment === 'production' ? this.sesStrategy : this.etherealStrategy;
-    this.nodemailerTransport = await this.strategy.createTransport();
+    try {
+      const environment = await this.configurationService.get('NODE_ENV');
+      this.strategy = environment === 'production' ? this.sesStrategy : this.etherealStrategy;
+      this.nodemailerTransport = await this.strategy.createTransport();
+    } catch (error) {
+      this.logger.error('Failed to initialize email strategy:', error);
+      throw error;
+    }
   }
 
   async sendMail(mailOptions: Mail.Options): Promise<any> {
     try {
       return await this.nodemailerTransport.sendMail(mailOptions);
     } catch (error) {
+      this.logger.error('Failed to send email:', error);
       throw error;
     }
   }

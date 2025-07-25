@@ -1,5 +1,5 @@
 // NestJS
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 // External libraries
@@ -32,6 +32,8 @@ import { confirmationLink, LinkMail, resetLink } from './auth.constants';
  */
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -39,6 +41,14 @@ export class AuthService {
     private readonly configurationService: ConfigurationService,
   ) {}
 
+  /**
+   * Sign JWT token with payload and secret
+   *
+   * @param payload - Payload to be signed
+   * @param secret - Secret to sign with
+   * @param expirationTime - Expiration time in seconds
+   * @returns Signed JWT token
+   */
   private signToken(payload, secret: string, expirationTime: string): string {
     return this.jwtService.sign(payload, {
       secret,
@@ -125,21 +135,38 @@ export class AuthService {
   }
 
   async sendEmailLink(payload: EmailDto, type: LinkMail) {
-    // Get mail data depending on mail to be sent
-    const mailData = type === LinkMail.confirm ? confirmationLink : resetLink;
-    // Sign token and create mail
-    const secret = await this.configurationService.get('JWT_EMAIL_SECRET');
-    const expiration = await this.configurationService.get('JWT_EMAIL_EXPIRATION_TIME');
-    const token = this.signToken({ ...payload }, secret, expiration);
-    const url = `${await this.configurationService.get('UI_URL')}${mailData.url}?token=${token}`;
-    const text = `${mailData.content} ${url}`;
-    const mail: Mail.Options = {
-      from: await this.configurationService.get('EMAIL_FROM'),
-      subject: mailData.subject,
-      to: payload.email,
-      text,
-    };
-    // Send mail
-    await this.emailService.sendMail(mail);
+    try {
+      // Get mail data depending on mail to be sent
+      const mailData = type === LinkMail.confirm ? confirmationLink : resetLink;
+
+      // Sign token and create mail
+      const secret = await this.configurationService.get('JWT_EMAIL_SECRET');
+      const expiration = await this.configurationService.get('JWT_EMAIL_EXPIRATION_TIME');
+      const token = this.signToken({ ...payload }, secret, expiration);
+      const uiUrl = await this.configurationService.get('UI_URL');
+      const emailFrom = await this.configurationService.get('EMAIL_FROM');
+
+      if (!emailFrom) {
+        const error = new Error('EMAIL_FROM is not configured');
+        this.logger.error(error.message);
+        throw error;
+      }
+
+      const url = `${uiUrl}${mailData.url}?token=${token}`;
+      const text = `${mailData.content} ${url}`;
+
+      const mail: Mail.Options = {
+        from: emailFrom,
+        subject: mailData.subject,
+        to: payload.email,
+        text,
+      };
+
+      // Send mail
+      await this.emailService.sendMail(mail);
+    } catch (error) {
+      this.logger.error('Failed to send email link:', error);
+      throw error;
+    }
   }
 }

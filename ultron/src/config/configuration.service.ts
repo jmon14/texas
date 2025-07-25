@@ -1,5 +1,5 @@
 // NestJS
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // AWS
@@ -12,6 +12,7 @@ import { NODE_ENV } from '../utils/constants';
 export class ConfigurationService {
   private ssm: SSM;
   private cachedParameters: Map<string, string> = new Map();
+  private readonly logger = new Logger(ConfigurationService.name);
 
   constructor(private configService: ConfigService) {
     if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
@@ -26,29 +27,30 @@ export class ConfigurationService {
 
   // TODO: Revisit this logic
   async get(key: string): Promise<string> {
-    // First check env variables
-    const configValue = this.configService.get(key);
-    if (configValue) {
-      return configValue;
-    }
-
-    if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT) {
-      return undefined;
-    }
-
-    // Then check cached parameters
-    if (this.cachedParameters.has(key)) {
-      return this.cachedParameters.get(key);
-    }
-
     try {
+      // First check env variables
+      const configValue = this.configService.get(key);
+      if (configValue) {
+        return configValue;
+      }
+
+      if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT) {
+        return undefined;
+      }
+
+      // Then check cached parameters
+      if (this.cachedParameters.has(key)) {
+        return this.cachedParameters.get(key);
+      }
+
       // Get SSM parameter path from environment or use default
       const ssmPath = '/texas/ultron';
+      const parameterName = `${ssmPath}/${key}`;
 
       // Then try to get from SSM in production
       const parameter = await this.ssm
         .getParameter({
-          Name: `${ssmPath}/${key}`,
+          Name: parameterName,
           WithDecryption: true,
         })
         .promise();
@@ -57,7 +59,7 @@ export class ConfigurationService {
       this.cachedParameters.set(key, value);
       return value;
     } catch (error) {
-      console.error(`Error fetching parameter ${key} from SSM:`, error);
+      this.logger.error(`Error fetching parameter ${key}:`, error);
       throw error;
     }
   }

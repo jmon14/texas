@@ -23,6 +23,7 @@ services:
       - AWS_REGION=eu-central-1
       - POSTGRES_PORT=5432
       - POSTGRES_DB=postgres
+      - EMAIL_FROM=noreply@allinrange.com
 
   # Quickview frontend
   quickview:
