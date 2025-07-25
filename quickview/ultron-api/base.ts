@@ -16,10 +16,10 @@
 import type { Configuration } from './configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 
-export const BASE_PATH = "http://localhost:3000".replace(/\/+$/, "");
+export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
 
 /**
  *
@@ -39,7 +39,7 @@ export const COLLECTION_FORMATS = {
  */
 export interface RequestArgs {
     url: string;
-    options: AxiosRequestConfig;
+    options: RawAxiosRequestConfig;
 }
 
 /**
@@ -48,14 +48,13 @@ export interface RequestArgs {
  * @class BaseAPI
  */
 export class BaseAPI {
-    configuration: Configuration | undefined;
-    axios: AxiosInstance | undefined;
-    basePath: string | undefined;
+    protected configuration: Configuration | undefined;
 
-    constructor(configuration?: Configuration, basePath: string = BASE_PATH, axios: AxiosInstance = globalAxios) {
-        this.configuration = configuration;
-        this.basePath = configuration?.basePath || basePath;
-        this.axios = axios;
+    constructor(configuration?: Configuration, protected basePath: string = BASE_PATH, protected axios: AxiosInstance = globalAxios) {
+        if (configuration) {
+            this.configuration = configuration;
+            this.basePath = configuration.basePath ?? basePath;
+        }
     }
 };
 
@@ -66,10 +65,22 @@ export class BaseAPI {
  * @extends {Error}
  */
 export class RequiredError extends Error {
-    field: string
-    name: "RequiredError" = "RequiredError";
-    constructor(field: string, msg?: string) {
+    constructor(public field: string, msg?: string) {
         super(msg);
-        this.field = field;
+        this.name = "RequiredError"
     }
+}
+
+interface ServerMap {
+    [key: string]: {
+        url: string,
+        description: string,
+    }[];
+}
+
+/**
+ *
+ * @export
+ */
+export const operationServerMap: ServerMap = {
 }

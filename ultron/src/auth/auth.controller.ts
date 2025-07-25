@@ -81,4 +81,14 @@ export class AuthController {
   sendResetEmail(@Body() resetData: EmailDto) {
     this.authService.sendEmailLink(resetData, LinkMail.reset);
   }
+
+  @Post('resend-verification')
+  @HttpCode(200)
+  @ApiBody({
+    type: EmailDto,
+    description: 'Resend email verification link',
+  })
+  resendVerificationEmail(@Body() emailData: EmailDto) {
+    this.authService.sendEmailLink(emailData, LinkMail.confirm);
+  }
 }

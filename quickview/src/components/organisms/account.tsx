@@ -17,14 +17,11 @@ import {
   DialogActions,
   DialogContentText,
 } from '@mui/material';
-import { Person, Email, Security, Delete } from '@mui/icons-material';
+import { Person, Email, Security, Delete, Email as EmailIcon } from '@mui/icons-material';
 
 // Store
-import { useAppSelector } from '../../hooks/store-hooks';
-import { selectAuthenticatedUser } from '../../store/slices/user-slice';
-
-// API
-import { authApi } from '../../api/api';
+import { useAppSelector, useAppDispatch } from '../../hooks/store-hooks';
+import { selectAuthenticatedUser, resendVerification, reset } from '../../store/slices/user-slice';
 
 // Constants
 import { FetchStatus } from '../../constants';
@@ -33,25 +30,16 @@ type AccountProps = Record<string, never>;
 
 const Account = ({}: AccountProps) => {
   const user = useAppSelector(selectAuthenticatedUser);
-  const [resetEmailStatus, setResetEmailStatus] = useState<FetchStatus>(FetchStatus.IDDLE);
-  const [resetEmailError, setResetEmailError] = useState<string | null>(null);
-  const [resetEmailSuccess, setResetEmailSuccess] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const userState = useAppSelector((state) => state.user);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-  const handleResetPassword = async () => {
-    try {
-      setResetEmailStatus(FetchStatus.LOADING);
-      setResetEmailError(null);
-      setResetEmailSuccess(false);
+  const handleResetPassword = () => {
+    dispatch(reset(user.email));
+  };
 
-      await authApi.sendResetEmail({ email: user.email });
-
-      setResetEmailStatus(FetchStatus.SUCCEDED);
-      setResetEmailSuccess(true);
-    } catch (error: any) {
-      setResetEmailStatus(FetchStatus.FAILED);
-      setResetEmailError(error.response?.data?.message || 'Failed to send reset email');
-    }
+  const handleResendVerification = () => {
+    dispatch(resendVerification(user.email));
   };
 
   const handleDeleteAccount = () => {
@@ -122,28 +110,60 @@ const Account = ({}: AccountProps) => {
               </Typography>
 
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {!user.active && (
+                  <Box>
+                    <Button
+                      variant="outlined"
+                      startIcon={<EmailIcon />}
+                      onClick={handleResendVerification}
+                      disabled={userState.resendVerificationStatus === FetchStatus.LOADING}
+                      fullWidth
+                    >
+                      {userState.resendVerificationStatus === FetchStatus.LOADING
+                        ? 'Sending Verification Email...'
+                        : 'Resend Verification Email'}
+                    </Button>
+
+                    {userState.resendVerificationStatus === FetchStatus.SUCCEDED && (
+                      <Alert severity="success" sx={{ mt: 1 }}>
+                        Verification email sent successfully! Please check your inbox.
+                      </Alert>
+                    )}
+
+                    {userState.resendVerificationStatus === FetchStatus.FAILED && (
+                      <Alert severity="error" sx={{ mt: 1 }}>
+                        {userState.resendVerificationError
+                          ? String(userState.resendVerificationError)
+                          : 'An error occurred'}
+                      </Alert>
+                    )}
+                  </Box>
+                )}
+
                 <Box>
                   <Button
                     variant="outlined"
                     startIcon={<Security />}
                     onClick={handleResetPassword}
-                    disabled={resetEmailStatus === FetchStatus.LOADING}
+                    disabled={userState.resetPasswordStatus === FetchStatus.LOADING}
                     fullWidth
                   >
-                    {resetEmailStatus === FetchStatus.LOADING
+                    {userState.resetPasswordStatus === FetchStatus.LOADING
                       ? 'Sending Reset Email...'
                       : 'Reset Password'}
                   </Button>
 
-                  {resetEmailSuccess && (
+                  {userState.resetPasswordStatus === FetchStatus.SUCCEDED && (
                     <Alert severity="success" sx={{ mt: 1 }}>
                       Password reset email sent successfully!
                     </Alert>
                   )}
 
-                  {resetEmailError && (
+                  {userState.resetPasswordStatus === FetchStatus.FAILED && (
                     <Alert severity="error" sx={{ mt: 1 }}>
-                      {resetEmailError}
+                      {userState.resetPasswordError
+                        ? String(userState.resetPasswordError)
+                        : 'An error occurred'}
                     </Alert>
                   )}
                 </Box>

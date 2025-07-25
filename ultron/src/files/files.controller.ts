@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiParam } from '@nestjs/swagger';
 
 // Guards
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
@@ -40,11 +40,13 @@ export class FilesController {
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'File ID' })
   getFilesById(@Param() { id }) {
     return this.filesService.getFilesById(id);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', description: 'File ID' })
   deleteFilesById(@Param() { id }) {
     return this.filesService.deleteFilesById(id);
   }

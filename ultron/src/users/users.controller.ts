@@ -13,7 +13,7 @@ import {
   UseGuards,
   Param,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags, ApiParam } from '@nestjs/swagger';
 
 // Services
 import { AuthService } from 'src/auth/auth.service';
@@ -62,6 +62,7 @@ export class UsersController {
   }
 
   @Delete(':uuid')
+  @ApiParam({ name: 'uuid', description: 'User UUID' })
   deleteUserByUuid(@Param() { uuid }) {
     return this.userService.deleteUserById(uuid);
   }

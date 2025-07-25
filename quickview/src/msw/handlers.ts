@@ -2,7 +2,7 @@
 import { http, HttpResponse } from 'msw';
 
 // Interfaces
-import { EmailDto, LoginDto, ResetPwdDto, UserDto } from '../../ultron-api/api';
+import { EmailDto, LoginDto, ResetPwdDto, RegisterDto } from '../../ultron-api/api';
 
 // Mocks
 import { mockUser } from '../utils/test-utils';
@@ -59,7 +59,7 @@ export const handlers = [
     return HttpResponse.json();
   }),
   // Handles the POST /users/create request
-  http.post<never, UserDto>('http://localhost:3000/users/create', async ({ request }) => {
+  http.post<never, RegisterDto>('http://localhost:3000/users/create', async ({ request }) => {
     const { username } = await request.json();
     // Sad path
     if (username === 'repeated') {
