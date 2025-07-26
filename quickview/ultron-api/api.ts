@@ -76,6 +76,12 @@ export interface FileEntity {
    * @memberof FileEntity
    */
   user: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FileEntity
+   */
+  uuid: string;
 }
 /**
  *
@@ -183,6 +189,12 @@ export interface UserEntity {
    * @memberof UserEntity
    */
   files: Array<FileEntity>;
+  /**
+   *
+   * @type {string}
+   * @memberof UserEntity
+   */
+  uuid: string;
 }
 
 /**

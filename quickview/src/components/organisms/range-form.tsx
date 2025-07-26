@@ -11,9 +11,17 @@ type RangeFormProps = {
   onSubmit?: SubmitHandler<RangeControls>;
   onNameChange?: (name: string) => void;
   onDelete?: () => void;
+  disabled?: boolean;
 };
 
-const RangeForm = ({ id, initialValues, onSubmit, onNameChange, onDelete }: RangeFormProps) => {
+const RangeForm = ({
+  id,
+  initialValues,
+  onSubmit,
+  onNameChange,
+  onDelete,
+  disabled,
+}: RangeFormProps) => {
   const { status, error } = useAppSelector(selectRange);
   const config = getRangeConfigForm(
     {
@@ -22,7 +30,7 @@ const RangeForm = ({ id, initialValues, onSubmit, onNameChange, onDelete }: Rang
       status,
       onDelete,
     },
-    { id },
+    { id, disabled },
   );
   const methods = useFormMethods<RangeControls>(config);
 

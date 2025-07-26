@@ -141,6 +141,8 @@ CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd /home/ssm-user/texas',
+        'echo \"🧹 Cleaning up Docker system before deployment...\"',
+        'docker system prune -f --volumes',
         'echo \"Logging into ECR...\"',
         'aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${ECR_REGISTRY}',
         'echo \"Stopping existing containers...\"',

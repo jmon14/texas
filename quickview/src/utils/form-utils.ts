@@ -92,6 +92,7 @@ type ButtonForm = {
   text: string;
   color?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 // Form configuration utils
@@ -346,9 +347,12 @@ export type RangeControls = {
   name: string;
 };
 
-export const getRangeConfigForm: GetConfigForm<RangeControls, { id?: string }> = (
+export const getRangeConfigForm: GetConfigForm<
+  RangeControls,
+  { id?: string; disabled?: boolean }
+> = (
   options?: FormConfigOptions<RangeControls>,
-  additionalOptions?: { id?: string },
+  additionalOptions?: { id?: string; disabled?: boolean },
 ): FormConfig<RangeControls> => {
   const controls: FormControl<RangeControls>[] = [
     {
@@ -362,7 +366,8 @@ export const getRangeConfigForm: GetConfigForm<RangeControls, { id?: string }> =
     },
     {
       controlType: 'button',
-      text: 'Save',
+      text: additionalOptions?.disabled ? 'Save (Limit Reached)' : 'Save',
+      disabled: additionalOptions?.disabled,
     },
   ];
 

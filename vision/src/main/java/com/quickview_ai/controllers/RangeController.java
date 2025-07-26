@@ -40,6 +40,9 @@ public class RangeController {
             this.rangeServiceImpl.saveRange(range);
             return "Range created successfully";
         } catch (Exception e) {
+            if (e instanceof RuntimeException && e.getMessage() != null && e.getMessage().contains("maximum limit")) {
+                throw new RuntimeException("User has reached the maximum limit of 10 ranges");
+            }
             return "Failed to create range";
         }
     }

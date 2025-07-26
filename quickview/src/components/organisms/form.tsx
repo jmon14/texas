@@ -112,6 +112,7 @@ const Form = <TFormFields extends FieldValues>({
               variant="contained"
               color={control.color}
               onClick={control.onClick}
+              disabled={control.disabled}
             >
               {control.text}
             </Button>

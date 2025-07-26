@@ -16,6 +16,11 @@ public class RangeServiceImpl implements RangeService {
     }
 
     public void saveRange(Range range) {
+        // Check if user has reached the limit of 10 ranges
+        List<Range> userRanges = rangeRepository.findByUserId(range.getUserId());
+        if (userRanges.size() >= 10) {
+            throw new RuntimeException("User has reached the maximum limit of 10 ranges");
+        }
         rangeRepository.save(range);
     }
 

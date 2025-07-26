@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { SubmitHandler } from 'react-hook-form';
 
 import { defaultActions, defaultHandRange } from '../../constants';
@@ -69,6 +69,10 @@ const RangeBuilder = () => {
         updateRange({ id: range.id, range: { ...range, name: data.name }, userId: user.uuid }),
       );
     } else {
+      // Check if user has reached the limit of 10 ranges
+      if (ranges.length >= 10) {
+        return; // Don't submit if limit reached
+      }
       const newRangeData = { ...data, userId: user.uuid, handsRange: range.handsRange };
       dispatch(createRange(newRangeData)).then((action) => {
         if (action.meta.requestStatus === 'fulfilled') {
@@ -119,7 +123,13 @@ const RangeBuilder = () => {
           onSubmit={handleRangeSubmit}
           onDelete={handleRangeDelete}
           onNameChange={handleRangeNameChange}
+          disabled={!range.id && ranges.length >= 10}
         />
+        {!range.id && ranges.length >= 10 && (
+          <Typography variant="body2" color="warning.main" sx={{ mt: 1 }}>
+            You have reached the maximum limit of 10 ranges. Delete a range to create a new one.
+          </Typography>
+        )}
       </Box>
     </Box>
   );

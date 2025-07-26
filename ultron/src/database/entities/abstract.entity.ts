@@ -10,7 +10,6 @@ import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'type
  */
 export abstract class AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
-  @ApiHideProperty()
   public uuid: string;
 
   @CreateDateColumn()
