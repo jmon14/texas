@@ -77,7 +77,16 @@ const config = (env: WebpackEnv): Configuration => {
       hot: 'only',
       compress: true,
       historyApiFallback: true, // Send index.html when 404
-      static: path.join(__dirname, './src'),
+      static: [
+        {
+          directory: path.join(__dirname, './src'),
+          publicPath: '/',
+        },
+        {
+          directory: path.join(__dirname, './public'),
+          publicPath: '/',
+        },
+      ],
     },
   };
 };
