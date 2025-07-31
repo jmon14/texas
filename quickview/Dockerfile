@@ -31,4 +31,4 @@ RUN npm install -g serve
 EXPOSE 8080
  
 # Serve the built static files
-CMD ["serve", "-s", "dist", "-l", "8080"]
+CMD ["serve", "-s", "dist", "-l", "8080", "--single"]
