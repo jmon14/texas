@@ -2,6 +2,7 @@
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import 'webpack-dev-server';
 
 // External libraries
@@ -69,6 +70,14 @@ const config = (env: WebpackEnv): Configuration => {
         template: path.resolve(__dirname, './src/index.html'),
       }),
       new CleanWebpackPlugin(),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, 'public'),
+            to: path.resolve(__dirname, 'dist'),
+          },
+        ],
+      }),
       new DefinePlugin(envKeys),
     ],
     devServer: {
