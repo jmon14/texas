@@ -13,9 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  build-and-deploy:
+  ultron-build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,39 +29,90 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push Docker images
+      - name: Build and push Ultron image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_ULTRON: texas-ultron
-          ECR_REPOSITORY_VISION: texas-vision
-          ECR_REPOSITORY_QUICKVIEW: texas-quickview
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build Ultron image
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:$IMAGE_TAG ./ultron
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:latest ./ultron
+          docker build -t $ECR_REGISTRY/texas-ultron:$IMAGE_TAG ./ultron
+          docker build -t $ECR_REGISTRY/texas-ultron:latest ./ultron
+          docker push $ECR_REGISTRY/texas-ultron:$IMAGE_TAG
+          docker push $ECR_REGISTRY/texas-ultron:latest
 
-          # Build Vision image
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_VISION:$IMAGE_TAG ./vision
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_VISION:latest ./vision
+  vision-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-          # Build Quickview image
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Vision image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/texas-vision:$IMAGE_TAG ./vision
+          docker build -t $ECR_REGISTRY/texas-vision:latest ./vision
+          docker push $ECR_REGISTRY/texas-vision:$IMAGE_TAG
+          docker push $ECR_REGISTRY/texas-vision:latest
+
+  quickview-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Quickview image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
           docker build \
             --build-arg REACT_APP_ULTRON_API_URL=https://www.allinrange.com/api \
             --build-arg REACT_APP_VISION_API_URL=https://www.allinrange.com/vision \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:$IMAGE_TAG ./quickview
+            -t $ECR_REGISTRY/texas-quickview:$IMAGE_TAG ./quickview
           docker build \
             --build-arg REACT_APP_ULTRON_API_URL=https://www.allinrange.com/api \
             --build-arg REACT_APP_VISION_API_URL=https://www.allinrange.com/vision \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:latest ./quickview
+            -t $ECR_REGISTRY/texas-quickview:latest ./quickview
+          docker push $ECR_REGISTRY/texas-quickview:$IMAGE_TAG
+          docker push $ECR_REGISTRY/texas-quickview:latest
 
-          # Push images
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_ULTRON:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_VISION:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_VISION:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_QUICKVIEW:latest
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ultron-build, vision-build, quickview-build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Deploy to EC2
         env:
