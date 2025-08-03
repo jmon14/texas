@@ -13,6 +13,56 @@ permissions:
   contents: read
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      ultron-changed: ${{ steps.changes.outputs.ultron }}
+      vision-changed: ${{ steps.changes.outputs.vision }}
+      quickview-changed: ${{ steps.changes.outputs.quickview }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        id: changes
+        run: |
+          # Use GitHub's built-in context variables for commit comparison
+          BEFORE_SHA="${{ github.event.before }}"
+          AFTER_SHA="${{ github.event.after }}"
+
+          echo "Comparing commits: $BEFORE_SHA -> $AFTER_SHA"
+
+          # Check for changes in each project directory
+          ULTRON_CHANGED=false
+          VISION_CHANGED=false
+          QUICKVIEW_CHANGED=false
+
+          if git diff --name-only $BEFORE_SHA $AFTER_SHA | grep -q "^ultron/"; then
+            echo "Ultron changes detected"
+            ULTRON_CHANGED=true
+          fi
+
+          if git diff --name-only $BEFORE_SHA $AFTER_SHA | grep -q "^vision/"; then
+            echo "Vision changes detected"
+            VISION_CHANGED=true
+          fi
+
+          if git diff --name-only $BEFORE_SHA $AFTER_SHA | grep -q "^quickview/"; then
+            echo "Quickview changes detected"
+            QUICKVIEW_CHANGED=true
+          fi
+
+          echo "ultron=$ULTRON_CHANGED" >> $GITHUB_OUTPUT
+          echo "vision=$VISION_CHANGED" >> $GITHUB_OUTPUT
+          echo "quickview=$QUICKVIEW_CHANGED" >> $GITHUB_OUTPUT
+
+          echo "Change Summary:"
+          echo "- Ultron: $ULTRON_CHANGED"
+          echo "- Vision: $VISION_CHANGED"
+          echo "- Quickview: $QUICKVIEW_CHANGED"
+
   ultron-build:
     runs-on: ubuntu-latest
     steps:

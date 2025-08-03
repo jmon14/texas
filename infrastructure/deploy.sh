@@ -150,9 +150,7 @@ CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
         'echo \"Pulling latest images from ECR...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
         'echo \"Starting containers with pre-built images...\"',
-        'docker-compose -f infrastructure/docker-compose.prod.yml up -d',
-        'echo \"Container status:\"',
-        'docker-compose -f infrastructure/docker-compose.prod.yml ps'
+        'docker-compose -f infrastructure/docker-compose.prod.yml up -d'
     ]" \
     --query 'Command.CommandId' \
     --output text)
@@ -169,7 +167,41 @@ aws ssm get-command-invocation \
     --query 'StandardOutputContent' \
     --output text
 
-# Step 6: Cleanup S3 deployment file
+# Step 6: Log disk space after deployment
+echo "💾 Logging disk space after deployment..."
+DISK_LOG_RESULT=$(aws ssm send-command \
+    --instance-ids $INSTANCE_ID \
+    --document-name "AWS-RunShellScript" \
+    --parameters "commands=[
+        'echo \"=== Disk Space After Deployment ===\"',
+        'echo \"Available disk space on the server:\"',
+        'df -h',
+        'echo \"\"',
+        'echo \"Docker disk usage:\"',
+        'docker system df',
+        'echo \"\"',
+        'echo \"Container status:\"',
+        'docker ps -a',
+        'echo \"\"',
+        'echo \"Docker Compose status:\"',
+        'cd /home/ssm-user/texas && docker-compose -f infrastructure/docker-compose.prod.yml ps'
+    ]" \
+    --query 'Command.CommandId' \
+    --output text)
+
+# Wait for disk logging to complete
+echo "⏳ Waiting for disk logging to complete..."
+aws ssm wait command-executed --command-id $DISK_LOG_RESULT --instance-id $INSTANCE_ID
+
+# Get the disk logging output
+echo "📋 Disk space and container status:"
+aws ssm get-command-invocation \
+    --command-id $DISK_LOG_RESULT \
+    --instance-id $INSTANCE_ID \
+    --query 'StandardOutputContent' \
+    --output text
+
+# Step 7: Cleanup S3 deployment file
 echo "🧹 Cleaning up S3 deployment file..."
 aws s3 rm "s3://$S3_BUCKET/$DEPLOYMENT_KEY"
 
