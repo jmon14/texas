@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Vision service (Java Spring Boot)
   vision:
-    image: ${ECR_REGISTRY:-your-registry}/texas-vision:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/texas-vision:${VISION_TAG:-latest}
     restart: always
     networks:
       - texas-network
@@ -14,7 +14,7 @@ services:
 
   # Ultron service (NestJS)
   ultron:
-    image: ${ECR_REGISTRY:-your-registry}/texas-ultron:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/texas-ultron:${ULTRON_TAG:-latest}
     restart: always
     networks:
       - texas-network
@@ -27,7 +27,7 @@ services:
 
   # Quickview frontend
   quickview:
-    image: ${ECR_REGISTRY:-your-registry}/texas-quickview:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/texas-quickview:${QUICKVIEW_TAG:-latest}
     restart: always
     depends_on:
       - ultron

@@ -175,7 +175,6 @@ jobs:
         env:
           DOMAIN_EMAIL: ${{ secrets.DOMAIN_EMAIL }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
         run: |
           cd infrastructure
           chmod +x deploy.sh

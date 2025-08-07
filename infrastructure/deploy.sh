@@ -5,7 +5,7 @@ set -e
 S3_BUCKET="files.allinrange.com"
 DEPLOYMENT_KEY="texas-deploy-config.tar.gz"
 
-# Get the EC2 instance ID using AWS CLI (more reliable for CI/CD)
+# Get the EC2 instance ID using AWS CLI
 INSTANCE_ID=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=texas-server" "Name=instance-state-name,Values=running" \
     --query 'Reservations[0].Instances[0].InstanceId' \
@@ -73,9 +73,10 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
         'MONGO_USER=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_USER" --query "Parameter.Value" --output text)',
         'MONGO_PASSWORD=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
         'ECR_REGISTRY=${ECR_REGISTRY}',
-        'IMAGE_TAG=${IMAGE_TAG:-latest}',
         'echo \"ECR_REGISTRY=\$ECR_REGISTRY\" > .env',
-        'echo \"IMAGE_TAG=\$IMAGE_TAG\" >> .env',
+        'echo \"VISION_TAG=latest\" >> .env',
+        'echo \"ULTRON_TAG=latest\" >> .env',
+        'echo \"QUICKVIEW_TAG=latest\" >> .env',
         'echo \"MONGO_USER=\$MONGO_USER\" >> .env',
         'echo \"MONGO_PASSWORD=\$MONGO_PASSWORD\" >> .env',
         'echo \"Environment variables configured successfully\"'
@@ -134,8 +135,8 @@ aws ssm get-command-invocation \
     --query 'StandardOutputContent' \
     --output text
 
-# Step 5: Deploy pre-built containers
-echo "🐳 Deploying pre-built containers from ECR..."
+# Step 5: Deploy containers using latest tags
+echo "🐳 Deploying containers from ECR using latest tags..."
 CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
     --instance-ids $INSTANCE_ID \
     --document-name "AWS-RunShellScript" \
@@ -149,7 +150,7 @@ CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
         'docker-compose -f infrastructure/docker-compose.prod.yml down',
         'echo \"Pulling latest images from ECR...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
-        'echo \"Starting containers with pre-built images...\"',
+        'echo \"Starting containers with latest images...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d'
     ]" \
     --query 'Command.CommandId' \
