@@ -38,7 +38,7 @@ resource "aws_iam_role_policy_attachment" "ssm_agent_access" {
 
 resource "aws_ssm_parameter" "vision_mongodb_user" {
   name        = "/vision/mongodb/MONGO_USER"
-  description = "MongoDB user for Vision"
+  description = "MongoDB user for Vision app"
   type        = "String"
   value       = var.vision_mongodb_user
 }
