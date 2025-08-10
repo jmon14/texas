@@ -122,3 +122,42 @@ resource "aws_iam_role_policy_attachment" "github_actions_ecr" {
   role       = aws_iam_role.github_actions.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 } 
+
+# Allow GitHub Actions role to access the Terraform state S3 bucket
+resource "aws_iam_policy" "terraform_state_access" {
+  name        = "TerraformStateAccess"
+  description = "Allow access to the Terraform state S3 bucket"
+
+  # NOTE: The bucket name/key are defined in backend.tf and must match here
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = [
+          "arn:aws:s3:::texas-terraform-state"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::texas-terraform-state/terraform.tfstate"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_terraform_state_access" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = aws_iam_policy.terraform_state_access.arn
+}
