@@ -1,7 +1,7 @@
 # ECR Repositories for Docker images
 resource "aws_ecr_repository" "ultron" {
   name = "texas-ultron"
-  
+
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -16,7 +16,7 @@ resource "aws_ecr_repository" "ultron" {
 
 resource "aws_ecr_repository" "vision" {
   name = "texas-vision"
-  
+
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -31,7 +31,7 @@ resource "aws_ecr_repository" "vision" {
 
 resource "aws_ecr_repository" "quickview" {
   name = "texas-quickview"
-  
+
   image_scanning_configuration {
     scan_on_push = true
   }

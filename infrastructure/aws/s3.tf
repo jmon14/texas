@@ -33,9 +33,9 @@ resource "aws_s3_bucket" "files" {
   bucket = var.aws_public_bucket_name
 
   tags = {
-    Name        = "texas-files"
-    Project     = "texas"
-    ManagedBy   = "terraform"
+    Name      = "texas-files"
+    Project   = "texas"
+    ManagedBy = "terraform"
   }
 }
 
@@ -64,9 +64,9 @@ resource "aws_s3_bucket_cors_configuration" "files" {
 
 # S3 bucket policy
 resource "aws_s3_bucket_policy" "files" {
-  bucket = aws_s3_bucket.files.id
+  bucket     = aws_s3_bucket.files.id
   depends_on = [aws_s3_bucket_public_access_block.files]
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
