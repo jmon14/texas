@@ -206,8 +206,11 @@ resource "aws_iam_policy" "files_bucket_admin" {
           "s3:GetReplicationConfiguration",
           "s3:GetBucketRequestPayment",
           "s3:GetLifecycleConfiguration",
-          "s3:GetBucketEncryption",
-          "s3:GetBucketOwnershipControls"
+          "s3:GetEncryptionConfiguration",
+          "s3:GetBucketOwnershipControls",
+          "s3:GetBucketLocation",
+          "s3:GetBucketPolicyStatus",
+          "s3:GetObjectLockConfiguration"
         ]
         Resource = [
           "arn:aws:s3:::${var.aws_public_bucket_name}"
