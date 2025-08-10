@@ -121,7 +121,7 @@ resource "aws_iam_role_policy_attachment" "github_actions_s3" {
 resource "aws_iam_role_policy_attachment" "github_actions_ecr" {
   role       = aws_iam_role.github_actions.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
-} 
+}
 
 # Allow GitHub Actions role to access the Terraform state S3 bucket
 resource "aws_iam_policy" "terraform_state_access" {
