@@ -1,0 +1,90 @@
+name: Terraform Infrastructure
+
+on:
+  push:
+    branches: [production]
+    paths:
+      - 'infrastructure/aws/**/*.tf'
+      - 'infrastructure/aws/setup.tpl'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: terraform-prod
+  cancel-in-progress: false
+
+jobs:
+  tf-apply:
+    name: Plan & Apply (production)
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: infrastructure/aws
+    env:
+      TF_IN_AUTOMATION: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Load TF_VARs from SSM
+        run: |
+          set -euo pipefail
+
+          fetch() {
+            local PARAM_NAME="$1"; shift
+            local TFVAR_NAME="$1"
+
+            # Try SSM first
+            if VALUE=$(aws ssm get-parameter --with-decryption --name "$PARAM_NAME" --query 'Parameter.Value' --output text 2>/dev/null); then
+              echo "Loaded $PARAM_NAME from SSM"
+            else
+              echo "Error: Missing $TFVAR_NAME in SSM ($PARAM_NAME)" >&2
+              exit 1
+            fi
+            # Export to GITHUB_ENV without printing the secret value
+            echo "TF_VAR_${TFVAR_NAME}=$VALUE" >> "$GITHUB_ENV"
+          }
+
+          fetch "/vision/mongodb/MONGO_USER"            vision_mongodb_user
+          fetch "/vision/mongodb/MONGO_PASSWORD"        vision_mongodb_password
+          fetch "/texas/ultron/JWT_SECRET"              ultron_jwt_secret
+          fetch "/texas/ultron/JWT_REFRESH_SECRET"      ultron_jwt_refresh_secret
+          fetch "/texas/ultron/JWT_EMAIL_SECRET"        ultron_jwt_email_secret
+          fetch "/texas/ultron/POSTGRES_USER"           ultron_postgres_user
+          fetch "/texas/ultron/POSTGRES_PASSWORD"       ultron_postgres_password
+          fetch "/texas/ultron/POSTGRES_HOST"           ultron_postgres_host
+          fetch "/texas/ultron/AWS_SES_SMTP_USERNAME"   aws_ses_smtp_username
+          fetch "/texas/ultron/AWS_SES_SMTP_PASSWORD"   aws_ses_smtp_password
+          fetch "/texas/ultron/DOMAIN_EMAIL"            domain_email
+
+      - name: Terraform plan
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Terraform apply
+        if: github.ref == 'refs/heads/production'
+        run: terraform apply -input=false -auto-approve tfplan

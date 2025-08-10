@@ -14,7 +14,7 @@ variable "aws_public_bucket_name" {
 
 # EC2 Instance
 variable "instance_type" {
-  description = "EC2 instance type"
+  description = "EC2 Instance type"
   type        = string
   default     = "t3.micro"
 }
