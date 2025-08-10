@@ -1,12 +1,7 @@
 name: Terraform Infrastructure
 
 on:
-  push:
-    branches: [production]
-    paths:
-      - 'infrastructure/aws/**/*.tf'
-      - 'infrastructure/aws/setup.tpl'
-  workflow_dispatch:
+  workflow_call:
 
 env:
   AWS_REGION: eu-central-1
