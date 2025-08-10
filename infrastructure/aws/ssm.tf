@@ -45,7 +45,7 @@ resource "aws_ssm_parameter" "vision_mongodb_user" {
 
 resource "aws_ssm_parameter" "vision_mongodb_password" {
   name        = "/vision/mongodb/MONGO_PASSWORD"
-  description = "MongoDB password for Vision"
+  description = "MongoDB password for Vision app"
   type        = "SecureString"
   value       = var.vision_mongodb_password
 }
