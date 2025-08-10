@@ -199,7 +199,15 @@ resource "aws_iam_policy" "files_bucket_admin" {
           "s3:DeleteBucketPublicAccessBlock",
           "s3:GetBucketTagging",
           "s3:PutBucketTagging",
-          "s3:DeleteBucketTagging"
+          "s3:DeleteBucketTagging",
+          "s3:GetAccelerateConfiguration",
+          "s3:GetBucketLogging",
+          "s3:GetBucketWebsite",
+          "s3:GetReplicationConfiguration",
+          "s3:GetBucketRequestPayment",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetBucketEncryption",
+          "s3:GetBucketOwnershipControls"
         ]
         Resource = [
           "arn:aws:s3:::${var.aws_public_bucket_name}"
