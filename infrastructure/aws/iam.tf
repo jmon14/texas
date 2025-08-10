@@ -146,11 +146,12 @@ resource "aws_iam_policy" "terraform_state_access" {
         Effect = "Allow"
         Action = [
           "s3:GetObject",
+          "s3:GetObjectVersion",
           "s3:PutObject",
           "s3:DeleteObject"
         ]
         Resource = [
-          "arn:aws:s3:::texas-terraform-state/terraform.tfstate"
+          "arn:aws:s3:::texas-terraform-state/*"
         ]
       }
     ]
@@ -160,4 +161,45 @@ resource "aws_iam_policy" "terraform_state_access" {
 resource "aws_iam_role_policy_attachment" "github_actions_terraform_state_access" {
   role       = aws_iam_role.github_actions.name
   policy_arn = aws_iam_policy.terraform_state_access.arn
+}
+
+# Grant Route53 permissions for managing hosted zone and records
+resource "aws_iam_role_policy_attachment" "github_actions_route53" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRoute53FullAccess"
+}
+
+# Grant IAM permissions for managing roles/policies/OIDC used by Terraform
+resource "aws_iam_role_policy_attachment" "github_actions_iam_full" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
+}
+
+# Additional permissions on the public files bucket for bucket policy and CORS management
+resource "aws_iam_policy" "files_bucket_admin" {
+  name        = "FilesBucketAdmin"
+  description = "Allow managing bucket policy and CORS on the public files bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetBucketPolicy",
+          "s3:PutBucketPolicy",
+          "s3:GetBucketCors",
+          "s3:PutBucketCors"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.aws_public_bucket_name}"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_files_bucket_admin" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = aws_iam_policy.files_bucket_admin.arn
 }
