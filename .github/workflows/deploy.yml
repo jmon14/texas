@@ -74,6 +74,62 @@ jobs:
           echo "- Infra: $INFRA_CHANGED"
 
 
+  ultron-quality:
+    name: Ultron - Lint & Format
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.ultron-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: ultron
+        run: |
+          npm ci || npm install --no-audit --no-fund
+
+      - name: Prettier check
+        working-directory: ultron
+        run: npx prettier "{src,test}/**/*.ts" --check
+
+      - name: ESLint check (no autofix)
+        working-directory: ultron
+        run: npx eslint "{src,test}/**/*.ts" --max-warnings=0
+
+
+  quickview-quality:
+    name: Quickview - Lint & Format
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.quickview-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: quickview
+        run: |
+          npm ci || npm install --no-audit --no-fund
+
+      - name: Prettier check
+        working-directory: quickview
+        run: npx prettier "./src/**/*.{ts,tsx,json}" --check
+
+      - name: ESLint check (no autofix)
+        working-directory: quickview
+        run: npx eslint "./src/**/*.{ts,tsx}" --max-warnings=0
+
+
   infra-terraform:
     name: Terraform (infra changes)
     needs: detect-changes
@@ -83,7 +139,7 @@ jobs:
 
   ultron-build:
     runs-on: ubuntu-latest
-    needs: detect-changes
+    needs: [detect-changes, ultron-quality]
     if: needs.detect-changes.outputs.ultron-changed == 'true'
     steps:
       - name: Checkout code
@@ -139,7 +195,7 @@ jobs:
 
   quickview-build:
     runs-on: ubuntu-latest
-    needs: detect-changes
+    needs: [detect-changes, quickview-quality]
     if: needs.detect-changes.outputs.quickview-changed == 'true'
     steps:
       - name: Checkout code
