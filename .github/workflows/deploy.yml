@@ -73,7 +73,6 @@ jobs:
           echo "- Quickview: $QUICKVIEW_CHANGED"
           echo "- Infra: $INFRA_CHANGED"
 
-
   ultron-quality:
     name: Ultron - Lint & Format
     runs-on: ubuntu-latest
@@ -101,7 +100,6 @@ jobs:
         working-directory: ultron
         run: npx eslint "{src,test}/**/*.ts" --max-warnings=0
 
-
   quickview-quality:
     name: Quickview - Lint & Format
     runs-on: ubuntu-latest
@@ -128,7 +126,6 @@ jobs:
       - name: ESLint check (no autofix)
         working-directory: quickview
         run: npx eslint "./src/**/*.{ts,tsx}" --max-warnings=0
-
 
   infra-terraform:
     name: Terraform (infra changes)
@@ -229,7 +226,14 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [detect-changes, infra-terraform, ultron-build, vision-build, quickview-build]
+    needs:
+      [
+        detect-changes,
+        infra-terraform,
+        ultron-build,
+        vision-build,
+        quickview-build,
+      ]
     if: always() && needs.detect-changes.result == 'success' && (needs.infra-terraform.result == 'success' || needs.infra-terraform.result == 'skipped') && (needs.ultron-build.result == 'success' || needs.ultron-build.result == 'skipped') && (needs.vision-build.result == 'success' || needs.vision-build.result == 'skipped') && (needs.quickview-build.result == 'success' || needs.quickview-build.result == 'skipped')
     steps:
       - name: Checkout code
