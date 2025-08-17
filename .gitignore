@@ -1,5 +1,3 @@
-.vscode/*
-
 # Terraform files
 **/.terraform/*
 *.tfstate

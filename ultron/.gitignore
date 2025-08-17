@@ -8,8 +8,5 @@
 # Tests
 /coverage
 
-# IDE
-.vscode/*
-
 # Environment
 *.env

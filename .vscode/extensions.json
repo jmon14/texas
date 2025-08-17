@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "golang.go",
+    "hashicorp.terraform",
+    "ms-azuretools.vscode-docker",
+    "redhat.java",
+    "vscjava.vscode-java-pack",
+    "redhat.vscode-yaml"
+  ]
+}
