@@ -77,7 +77,6 @@ jobs:
     name: Ultron - Lint & Format
     runs-on: ubuntu-latest
     needs: detect-changes
-    if: needs.detect-changes.outputs.ultron-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,7 +103,6 @@ jobs:
     name: Quickview - Lint & Format
     runs-on: ubuntu-latest
     needs: detect-changes
-    if: needs.detect-changes.outputs.quickview-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
