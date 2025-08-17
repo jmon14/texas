@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Constants
-import { NODE_ENV } from 'src/utils/constants';
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigurationService } from 'src/config/configuration.service';
 

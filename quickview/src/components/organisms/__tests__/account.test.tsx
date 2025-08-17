@@ -15,6 +15,7 @@ import * as api from '../../../api/api';
 
 // Constants
 import { FetchStatus } from '../../../constants';
+import { AxiosResponse } from 'axios';
 
 // Mock the API
 jest.mock('../../../../api/api', () => ({
@@ -28,6 +29,15 @@ const mockUser = {
   email: 'test@example.com',
   active: true,
   uuid: 'test-uuid-123',
+  files: [
+    {
+      url: 'https://example.com/file1.pdf',
+      size: 12345,
+      name: 'file1.pdf',
+      user: 'testuser',
+      uuid: 'file-uuid-1',
+    },
+  ],
 };
 
 const createTestStore = () => {
@@ -40,6 +50,10 @@ const createTestStore = () => {
         user: mockUser,
         status: FetchStatus.SUCCEDED,
         error: null,
+        resendVerificationStatus: FetchStatus.IDDLE,
+        resendVerificationError: null,
+        resetPasswordStatus: FetchStatus.IDDLE,
+        resetPasswordError: null,
       },
     },
   });
@@ -85,7 +99,7 @@ describe('Account Component', () => {
     const mockSendResetEmail = api.authApi.sendResetEmail as jest.MockedFunction<
       typeof api.authApi.sendResetEmail
     >;
-    mockSendResetEmail.mockResolvedValueOnce({} as any);
+    mockSendResetEmail.mockResolvedValueOnce({} as AxiosResponse);
 
     renderWithProviders(<Account />);
 
