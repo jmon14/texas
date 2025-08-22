@@ -19,7 +19,9 @@ import { ConfigurationService } from 'src/config/configuration.service';
         password: await configurationService.get('POSTGRES_PASSWORD'),
         database: await configurationService.get('POSTGRES_DB'),
         entities: [__dirname + '/../**/*.entity.{ts,js}'],
-        synchronize: true, // ! TODO: Do this with migrations instead in production
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        synchronize: false,
+        migrationsRun: false,
       }),
     }),
   ],

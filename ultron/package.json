@@ -16,7 +16,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json"
+    "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json",
+    "migrate": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts",
+    "migrate:revert": "ts-node -r tsconfig-paths/register src/scripts/migrate-revert.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "3.828.0",
@@ -67,7 +69,9 @@
     "jest": "28.1.3",
     "prettier": "3.2.5",
     "supertest": "6.1.3",
-    "ts-jest": "28.0.1"
+    "ts-jest": "28.0.1",
+    "ts-node": "10.9.1",
+    "tsconfig-paths": "4.2.0"
   },
   "jest": {
     "resetMocks": true,

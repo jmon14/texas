@@ -14,7 +14,7 @@ import { NODE_ENV } from '../utils/constants';
 @Module({
   imports: [
     NestConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      envFilePath: `.${process.env.NODE_ENV || 'development'}.env`,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .required()
