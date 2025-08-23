@@ -150,6 +150,10 @@ CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
         'docker-compose -f infrastructure/docker-compose.prod.yml down',
         'echo \"Pulling latest images from ECR...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
+        'echo "Running database migrations (Ultron)..."',
+        '# Run migrations using the Ultron image in a one-off container. This is idempotent and applies only pending migrations.',
+        '# It relies on AWS credentials from the instance profile and AWS_REGION to fetch DB creds from SSM.',
+        'docker-compose -f infrastructure/docker-compose.prod.yml run --rm ultron node dist/scripts/migrate.js',
         'echo \"Starting containers with latest images...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d'
     ]" \
