@@ -150,7 +150,7 @@ CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
         'docker-compose -f infrastructure/docker-compose.prod.yml down',
         'echo \"Pulling latest images from ECR...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
-        'echo "Running database migrations Ultron..."',
+        'echo \"Running database migrations (Ultron)...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml run --rm ultron node dist/scripts/migrate.js',
         'echo \"Starting containers with latest images...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d'
