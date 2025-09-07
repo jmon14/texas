@@ -42,36 +42,36 @@ ultron/
 └── test/                 # E2E tests
 ```
 
-## 🚀 Quick Start
+## 🚀 Development
 
-### Prerequisites
+**For complete setup instructions, see [CONTRIBUTING.md](../CONTRIBUTING.md)**
 
-- Node.js 16+
-- PostgreSQL database
-- AWS SES (for email) or Ethereal (for development)
+### Environment Configuration
 
-### Development Setup
+Before running Ultron locally, you need to set up environment variables:
 
 ```bash
-# Install dependencies
-npm install
-
-# Set up environment variables
+# Copy environment template
 cp .development.env.example .development.env
-# Edit .development.env with your values
 
-# Start development server
-npm run start:dev
+# Edit .development.env with your values:
 ```
 
-### Production Setup
+### Key Backend Commands
 
 ```bash
-# Build the application
-npm run build
+# Database operations
+npm run migrate              # Run database migrations
+npm run migrate:revert       # Revert last migration
 
-# Start production server
-npm run start:prod
+# Testing
+npm test                     # Unit tests
+npm run test:e2e            # End-to-end tests
+npm run test:cov            # Test coverage
+
+# Development
+npm run start:dev           # Development server with hot reload
+npm run lint                # ESLint checking
 ```
 
 ## 🔐 Authentication System

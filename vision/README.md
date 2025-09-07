@@ -31,30 +31,38 @@ vision/
 └── Dockerfile                   # Container configuration
 ```
 
-## 🚀 Quick Start
+## 🚀 Development
 
-### Prerequisites
+**For complete setup instructions, see [CONTRIBUTING.md](../CONTRIBUTING.md)**
 
-- Docker and Docker Compose
-- Access to the root project directory (texas/)
+### Environment Configuration
 
-### Development Setup
+For local development outside Docker, you may need to configure MongoDB connection:
 
 ```bash
-# From the root directory (texas/)
-# Start all services using Docker Compose
-docker-compose up -d
+# Create application-local.properties
+cat > src/main/resources/application-local.properties << EOF
+# MongoDB connection for local development
+spring.data.mongodb.host=localhost
+spring.data.mongodb.port=27017
+spring.data.mongodb.database=vision
 
-# Or start only Vision service
-docker-compose up vision -d
+# Optional: MongoDB authentication if needed
+# spring.data.mongodb.username=your-username
+# spring.data.mongodb.password=your-password
+EOF
+
+# Run with local profile
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-### Production Setup
+### Key Spring Boot Commands
 
 ```bash
-# Production deployment is handled automatically through CI/CD
-# Push to production branch triggers automatic deployment
-git push origin production
+# Local development (if not using Docker)
+./mvnw spring-boot:run       # Start development server
+./mvnw test                  # Run tests
+./mvnw clean package         # Build JAR file
 ```
 
 ### Local Development (Optional)

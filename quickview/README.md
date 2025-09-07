@@ -38,40 +38,37 @@ quickview/
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Development
 
-- Node.js 16+
-- Access to Ultron API (backend)
-- Access to Vision API (range analysis)
+**For complete setup instructions, see [CONTRIBUTING.md](../CONTRIBUTING.md)**
 
-### Development Setup
+#### Environment Configuration
+
+Before running Quickview locally, set up environment variables:
 
 ```bash
-# Install dependencies
-npm install
-
 # Create environment file
 cat > .env << EOF
 # API URLs
 REACT_APP_ULTRON_API_URL=http://localhost:3000
 REACT_APP_VISION_API_URL=http://localhost:3001
-
-# Development settings
-NODE_ENV=development
-EOF
-
-# Start development server
-npm start
 ```
 
-### Production Build
+#### Key Frontend Commands
 
 ```bash
-# Build for production
-npm run build
+# API client generation (run when backend APIs change)
+npm run openapi:ultron    # Generate Ultron API client
+npm run openapi:vision    # Generate Vision API client
 
-# Serve built files
-npm run serve
+# Component development
+npm run storybook         # Interactive component library
+
+# Testing & Quality
+npm test                  # Unit tests
+npm run test:coverage     # Coverage report
+npm run lint             # ESLint checking
+npm run type-check       # TypeScript validation
 ```
 
 ## 🎯 Core Features

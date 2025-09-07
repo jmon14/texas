@@ -1,111 +1,58 @@
 # Texas Poker Application
 
-A full-stack poker application with range analysis and visualization tools.
-
-## 🏗️ Architecture Overview
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Ultron API    │    │   PostgreSQL    │
-│   (Quickview)   │◄──►│   (NestJS)      │◄──►│   (Supabase)    │
-│   React + TS    │    │   Auth/Users    │    │   User Data     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │
-         │             ┌─────────────────┐    ┌─────────────────┐
-         └────────────►│   Vision API    │◄──►│   MongoDB Atlas │
-                       │   (Spring Boot) │    │   (Free Tier)   │
-                       │   Range Data    │    │   Range Data    │
-                       └─────────────────┘    └─────────────────┘
-```
+A full-stack poker application with range analysis and visualization tools, featuring an interactive range builder, user authentication, and file management.
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- Docker and Docker Compose
-- AWS CLI configured
-- Terraform installed
-
-### Local Development
-
 ```bash
-# Start all services
+# Clone and start all services
+git clone <repository-url>
+cd texas
 docker-compose up
 
 # Access applications
-Frontend: http://localhost:8080
-Ultron API: http://localhost:3000
-Vision API: http://localhost:3001
+# Frontend: http://localhost:8080
+# Ultron API: http://localhost:3000
+# Vision API: http://localhost:3001
 ```
 
-```
+**New to the project?** See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed setup and development workflow.
 
-## 📁 Project Structure
-
-```
-
-texas/
-├── quickview/ # React frontend
-├── ultron/ # NestJS backend
-├── vision/ # Spring Boot API
-├── infrastructure/ # Deployment & AWS config
-│ ├── aws/ # Terraform files
-│ ├── nginx/ # Reverse proxy config
-│ └── deploy.sh # Deployment script
-└── texas-sim/ # Go simulation engine
+## 🏗️ Architecture
 
 ```
+├── quickview/     # React frontend (TypeScript + Material-UI)
+├── ultron/        # NestJS authentication API (PostgreSQL)
+├── vision/        # Spring Boot range analysis API (MongoDB)
+└── infrastructure/ # AWS deployment configuration
+```
 
-## 🔧 Environment Configuration
-
-### Development
-
-- Uses local Docker containers
-- MongoDB: `mongodb:27017`
-- PostgreSQL: `postgres:5432`
-
-### Production
-
-- AWS EC2 with Elastic IP
-- MongoDB Atlas (Free Tier)
-- Supabase PostgreSQL
-- Nginx reverse proxy with SSL
+**Frontend** → **Authentication API** → **PostgreSQL**  
+**Frontend** → **Range Analysis API** → **MongoDB**
 
 ## 📚 Documentation
 
-- [Infrastructure Guide](infrastructure/README.md) - Detailed AWS setup
-- [API Documentation](ultron/README.md) - Backend API docs
+- **[Contributing Guide](CONTRIBUTING.md)** - Development setup, workflow, and standards
+- **[System Architecture](docs/architecture.md)** - Technical design and component interactions  
+- **[Infrastructure Guide](infrastructure/README.md)** - Production deployment on AWS
+- **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
 
-## 🛠️ Technologies
+### Service-Specific Documentation
+- [Frontend (quickview/)](quickview/README.md) - React app architecture
+- [Authentication API (ultron/)](ultron/README.md) - NestJS backend service  
+- [Range Analysis API (vision/)](vision/README.md) - Spring Boot service
 
-- **Frontend**: React, TypeScript, Webpack
-- **Backend**: NestJS, Spring Boot
-- **Database**: PostgreSQL (Supabase), MongoDB Atlas
-- **Infrastructure**: AWS EC2, Terraform, Docker
-- **Reverse Proxy**: Nginx with SSL
+### API Documentation
+- [Ultron API](http://localhost:3000/api) - Interactive Swagger docs
+- [Vision API](http://localhost:3001/v3/api-docs) - OpenAPI specification
 
-## 🔐 Security
+## 🛠️ Tech Stack
 
-- SSL certificates via Let's Encrypt (manual renewal)
-- JWT authentication
-- CORS properly configured
-- Environment variables for secrets
-
-## 📊 Monitoring
-
-- Application logs via Docker
-- Health check endpoints available
-- Nginx access and error logs
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test locally with Docker
-5. Submit a pull request
+**Frontend**: React + TypeScript + Material-UI + Redux Toolkit  
+**APIs**: NestJS + Spring Boot  
+**Databases**: PostgreSQL (Supabase) + MongoDB Atlas  
+**Infrastructure**: AWS + Docker + Terraform  
 
 ## 📄 License
 
-This project is licensed under the MIT License.
-```
+MIT License
