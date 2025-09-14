@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-01-14
+
+### Added
+
+#### Vision API Development
+- **Hot Reload**: Added development hot reload capability 
+- **Enhanced Health Endpoints**: Improved health check responses
+
+### Changed
+- **Vision Development**: Added hot reload for faster development cycles
+- **Health Endpoint Response**: Enhanced response format with timestamps
+
+## [1.0.1] - Previous Release
+
 ### Added
 - Comprehensive documentation structure with CONTRIBUTING.md and CHANGELOG.md
 - Enhanced README files with better navigation and structure
