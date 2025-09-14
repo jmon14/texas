@@ -13,9 +13,17 @@ services:
   vision:
     build:
       context: ./vision
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "3001:3001"
+    volumes:
+      - ./vision/src:/app/src
+      - ./vision/pom.xml:/app/pom.xml
+      # Exclude Maven target directory to prevent conflicts
+      - /app/target
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
     depends_on:
       - mongodb
     networks:

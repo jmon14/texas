@@ -1,0 +1,47 @@
+# Development Dockerfile for Vision service with hot reload
+FROM maven:3.9.6-eclipse-temurin-21
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the pom.xml file
+COPY pom.xml .
+
+# Download dependencies for better Docker layer caching
+RUN mvn dependency:go-offline
+
+# Copy the source code
+COPY src ./src
+
+# Expose the port the application runs on
+EXPOSE 3001
+
+# Install inotify-tools for file watching
+RUN apt-get update && apt-get install -y inotify-tools && rm -rf /var/lib/apt/lists/*
+
+# Create a startup script that watches for file changes and recompiles
+RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "Starting Vision service with hot reload..."\n\
+\n\
+# Initial compilation\n\
+mvn compile\n\
+\n\
+# Start the application in the background\n\
+mvn spring-boot:run -Dspring-boot.run.fork=false -Dspring-boot.run.jvmArguments="-Djdk.tls.client.protocols=TLSv1.2 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit" &\n\
+APP_PID=$!\n\
+\n\
+# Watch for source file changes and recompile\n\
+while true; do\n\
+  inotifywait -r -e modify,create,delete --exclude=".*\\.class$|.*\\.jar$|target/.*" /app/src/ && {\n\
+    echo "Source files changed, recompiling..."\n\
+    mvn compile\n\
+    echo "Compilation complete. DevTools should restart the application."\n\
+  }\n\
+done\n\
+' > /app/start-with-reload.sh && chmod +x /app/start-with-reload.sh
+
+# Run Spring Boot with DevTools for hot reload
+# DevTools enables automatic restart when classpath files change
+# Add fork=false for proper DevTools functionality in Docker
+CMD ["/app/start-with-reload.sh"]
