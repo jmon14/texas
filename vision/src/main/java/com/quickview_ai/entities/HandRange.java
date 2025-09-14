@@ -6,13 +6,9 @@ import lombok.Data;
 
 @Data
 public class HandRange {
-    @NotNull
-    private Float rangeFraction;
+  @NotNull private Float rangeFraction;
 
-    @NotNull
-    private String label;
+  @NotNull private String label;
 
-    @NotNull
-    @Valid
-    private Action[] actions;
+  @NotNull @Valid private Action[] actions;
 }

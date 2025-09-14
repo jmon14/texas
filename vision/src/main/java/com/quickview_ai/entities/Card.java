@@ -5,10 +5,7 @@ import lombok.Data;
 
 @Data
 public class Card {
-    @NotNull
-    private CardValue value;
+  @NotNull private CardValue value;
 
-    @NotNull
-    private CardSuit suit;
+  @NotNull private CardSuit suit;
 }
-

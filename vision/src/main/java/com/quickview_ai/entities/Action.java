@@ -5,9 +5,7 @@ import lombok.Data;
 
 @Data
 public class Action {
-    @NotNull
-    private ActionType type;
+  @NotNull private ActionType type;
 
-    @NotNull
-    private Float percentage;
+  @NotNull private Float percentage;
 }
