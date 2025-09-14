@@ -127,6 +127,36 @@ jobs:
         working-directory: quickview
         run: npx eslint "./src/**/*.{ts,tsx}" --max-warnings=0
 
+  vision-quality:
+    name: Vision - Lint & Format
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.vision-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Spotless format check
+        working-directory: vision
+        run: mvn spotless:check
+
+      - name: Checkstyle validation
+        working-directory: vision
+        run: mvn checkstyle:check
+
   infra-terraform:
     name: Terraform (infra changes)
     needs: detect-changes
@@ -164,7 +194,7 @@ jobs:
 
   vision-build:
     runs-on: ubuntu-latest
-    needs: detect-changes
+    needs: [detect-changes, vision-quality]
     if: needs.detect-changes.outputs.vision-changed == 'true'
     steps:
       - name: Checkout code
