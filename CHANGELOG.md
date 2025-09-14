@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-09-14
+
+### Added
+
+#### Vision API Development Experience
+- **Code Formatting**: Integrated Spotless plugin with Google Java Format for consistent code style
+- **Code Linting**: Added Checkstyle plugin with Google's standard checks for code quality validation
+- **Development Workflow**: Enhanced development experience with automated code formatting and linting tools
+- **Build Integration**: Formatting and linting checks run automatically during Maven build process
+
+### Changed
+- **Development Standards**: Improved code quality consistency across the Vision service
+- **Documentation**: Updated Vision README with code formatting and linting tool usage
+
 ## [1.1.0] - 2025-01-14
 
 ### Added

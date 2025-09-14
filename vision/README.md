@@ -63,6 +63,11 @@ EOF
 ./mvnw spring-boot:run       # Start development server
 ./mvnw test                  # Run tests
 ./mvnw clean package         # Build JAR file
+
+# Code formatting and linting
+./mvnw spotless:apply        # Format code with Google Java Format
+./mvnw spotless:check        # Check code formatting
+./mvnw checkstyle:check      # Run Checkstyle linting
 ```
 
 ### Local Development (Optional)
@@ -292,12 +297,28 @@ http://localhost:3001/swagger-ui.html
 4. **Document APIs**: Add OpenAPI annotations
 5. **Handle Errors**: Proper exception handling
 
+### Code Quality Tools
+
+Vision uses automated code formatting and linting tools to ensure consistent code style across the team:
+
+#### **Spotless (Code Formatting)**
+- **Google Java Format**: Enforces Google's Java style guide
+- **Automatic Import Organization**: Sorts and removes unused imports
+- **Consistent Formatting**: Ensures uniform code appearance
+
+#### **Checkstyle (Code Linting)**
+- **Google Checks**: Uses Google's Checkstyle configuration
+- **Style Validation**: Enforces coding standards and best practices
+- **Build Integration**: Runs automatically during Maven validate phase
+
 ### Code Style
 
 - **Java 21**: Latest LTS features
 - **Lombok**: Reduce boilerplate code
 - **Spring Boot**: Standard Spring patterns
 - **Maven**: Standard build tooling
+- **Google Java Format**: Consistent code formatting
+- **Checkstyle**: Code quality and style validation
 
 ## 📄 License
 
