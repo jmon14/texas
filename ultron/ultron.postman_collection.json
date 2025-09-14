@@ -96,11 +96,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/",
+              "raw": "{{base_url}}/health",
               "host": ["{{base_url}}"],
-              "path": [""]
+              "path": ["health"]
             },
-            "description": "Check Ultron service health and status. Returns service information including version and timestamp."
+            "description": "Check Ultron service health and status. Returns service status, timestamp, and service name."
           },
           "response": []
         }

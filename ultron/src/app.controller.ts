@@ -7,18 +7,9 @@ export class AppController {
   @Get('health')
   getHealth() {
     return {
-      status: 'ok',
+      status: 'UP',
       timestamp: new Date().toISOString(),
-      service: 'ultron-api',
-    };
-  }
-
-  @Get()
-  getRoot() {
-    return {
-      message: 'Ultron API is running',
-      version: '1.0.0',
-      timestamp: new Date().toISOString(),
+      service: 'ultron',
     };
   }
 }
