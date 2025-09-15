@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // Constants
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigurationService } from 'src/config/configuration.service';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -22,6 +23,15 @@ import { ConfigurationService } from 'src/config/configuration.service';
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
         synchronize: false,
         migrationsRun: false,
+      }),
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigurationService],
+      useFactory: async (configurationService: ConfigurationService) => ({
+        uri: await configurationService.get('MONGODB_URI'),
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
       }),
     }),
   ],
