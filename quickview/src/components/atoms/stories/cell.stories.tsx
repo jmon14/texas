@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import { ActionTypeEnum } from '../../../../vision-api';
+import { ActionDtoTypeEnum } from '../../../../ultron-api/api';
 import DummyCell from '../cell';
 import { Box } from '@mui/material';
 
@@ -25,9 +25,9 @@ export const Cell: Story = {
     label: 'AA',
     rangeFraction: 0.4,
     actions: [
-      { type: ActionTypeEnum.Fold, percentage: 0.5 },
-      { type: ActionTypeEnum.Call, percentage: 0.3 },
-      { type: ActionTypeEnum.Raise, percentage: 0.2 },
+      { type: ActionDtoTypeEnum.Fold, percentage: 0.5 },
+      { type: ActionDtoTypeEnum.Call, percentage: 0.3 },
+      { type: ActionDtoTypeEnum.Raise, percentage: 0.2 },
     ],
   },
 };

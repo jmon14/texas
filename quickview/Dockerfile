@@ -6,11 +6,9 @@ WORKDIR /app
 
 # Accept build arguments for environment variables
 ARG REACT_APP_ULTRON_API_URL
-ARG REACT_APP_VISION_API_URL
 
 # Set environment variables for build time
 ENV REACT_APP_ULTRON_API_URL=$REACT_APP_ULTRON_API_URL
-ENV REACT_APP_VISION_API_URL=$REACT_APP_VISION_API_URL
  
 # Copy package.json and package-lock.json
 COPY package*.json ./

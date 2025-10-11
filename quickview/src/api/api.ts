@@ -3,18 +3,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // Api
-import { AuthApi, FilesApi, UsersApi } from '../../ultron-api/api';
-import { RangeControllerApi } from '../../vision-api';
+import { AuthApi, FilesApi, UsersApi, RangesApi } from '../../ultron-api/api';
 
 // Create new axios instance
 export const ultronInstance = axios.create({
   baseURL: process.env.REACT_APP_ULTRON_API_URL,
-  withCredentials: true,
-});
-
-// Create vision API instance with its own axios instance
-const visionInstance = axios.create({
-  baseURL: process.env.REACT_APP_VISION_API_URL,
   withCredentials: true,
 });
 
@@ -58,8 +51,8 @@ export const filesApi = new FilesApi(
   process.env.REACT_APP_ULTRON_API_URL,
   ultronInstance,
 );
-export const rangeApi = new RangeControllerApi(
+export const rangeApi = new RangesApi(
   undefined,
-  process.env.REACT_APP_VISION_API_URL,
-  visionInstance,
+  process.env.REACT_APP_ULTRON_API_URL,
+  ultronInstance,
 );

@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import { SubmitHandler } from 'react-hook-form';
 
 import { defaultActions, defaultHandRange } from '../../constants';
-import { Action, Range } from '../../../vision-api';
+import { ActionDto, RangeResponseDto } from '../../../ultron-api/api';
 import RangeGrid from './range-grid';
 import ActionList from './action-list';
 import RangeForm from './range-form';
@@ -24,26 +24,27 @@ const RangeBuilder = () => {
   const user = useAppSelector(selectAuthenticatedUser);
   const { ranges } = useAppSelector(selectRange);
 
-  const defaultRange = {
+  const defaultRange: Partial<RangeResponseDto> = {
     name: 'Default Range',
     handsRange: defaultHandRange,
     userId: user.uuid,
-    id: undefined,
+    _id: undefined,
   };
 
-  const [range, setRange] = useState<Range>(defaultRange);
+  const [range, setRange] = useState<Partial<RangeResponseDto>>(defaultRange);
 
-  const [actions, setActions] = useState<Action[]>(defaultActions);
+  const [actions, setActions] = useState<ActionDto[]>(defaultActions);
 
   useEffect(() => {
     dispatch(getRangesByUserId(user.uuid));
   }, [dispatch, user.uuid]);
 
-  const handleActionChange = (updatedActions: Action[]) => {
+  const handleActionChange = (updatedActions: ActionDto[]) => {
     setActions(updatedActions);
   };
 
   const handleCellClick = (cellIndex: number) => {
+    if (!range.handsRange) return;
     const updatedHandsRange = [...range.handsRange];
     updatedHandsRange[cellIndex] = {
       ...updatedHandsRange[cellIndex],
@@ -53,6 +54,7 @@ const RangeBuilder = () => {
   };
 
   const handleCellsSelect = (indices: number[]) => {
+    if (!range.handsRange) return;
     const updatedHandsRange = [...range.handsRange];
     indices.forEach((index) => {
       updatedHandsRange[index] = {
@@ -64,19 +66,30 @@ const RangeBuilder = () => {
   };
 
   const handleRangeSubmit: SubmitHandler<RangeControls> = (data) => {
-    if (range.id) {
+    if (range._id && range.handsRange) {
+      // Construct a fully typed RangeResponseDto for update
+      const rangeToUpdate: RangeResponseDto = {
+        _id: range._id,
+        name: data.name,
+        handsRange: range.handsRange,
+        userId: user.uuid,
+      };
       dispatch(
-        updateRange({ id: range.id, range: { ...range, name: data.name }, userId: user.uuid }),
+        updateRange({
+          id: range._id,
+          range: rangeToUpdate,
+          userId: user.uuid,
+        }),
       );
     } else {
       // Check if user has reached the limit of 10 ranges
       if (ranges.length >= 10) {
         return; // Don't submit if limit reached
       }
-      const newRangeData = { ...data, userId: user.uuid, handsRange: range.handsRange };
+      const newRangeData = { ...data, userId: user.uuid, handsRange: range.handsRange || [] };
       dispatch(createRange(newRangeData)).then((action) => {
-        if (action.meta.requestStatus === 'fulfilled') {
-          const newRanges = action.payload as Range[];
+        if (action.meta.requestStatus === 'fulfilled' && Array.isArray(action.payload)) {
+          const newRanges = action.payload as RangeResponseDto[];
           const newRange = newRanges.find(
             (r) => r.name === newRangeData.name && r.userId === newRangeData.userId,
           );
@@ -89,7 +102,7 @@ const RangeBuilder = () => {
   };
 
   const handleRangeSelectChange = (rangeId: string) => {
-    const range = ranges.find((range) => range.id === rangeId);
+    const range = ranges.find((range) => range._id === rangeId);
     if (range) {
       setRange(range);
     } else {
@@ -102,8 +115,8 @@ const RangeBuilder = () => {
   };
 
   const handleRangeDelete = () => {
-    if (range.id) {
-      dispatch(deleteRange({ id: range.id, userId: user.uuid }));
+    if (range._id) {
+      dispatch(deleteRange({ id: range._id, userId: user.uuid }));
       setRange(defaultRange);
     }
   };
@@ -114,18 +127,18 @@ const RangeBuilder = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
         <ActionList actions={actions} onActionChange={handleActionChange} />
         <RangeSelector
-          initialValues={{ selectedRangeId: range.id }}
+          initialValues={{ selectedRangeId: range._id }}
           onRangeSelectChange={(rangeId) => handleRangeSelectChange(rangeId)}
         />
         <RangeForm
-          id={range.id}
+          id={range._id}
           initialValues={{ name: range.name }}
           onSubmit={handleRangeSubmit}
           onDelete={handleRangeDelete}
           onNameChange={handleRangeNameChange}
-          disabled={!range.id && ranges.length >= 10}
+          disabled={!range._id && ranges.length >= 10}
         />
-        {!range.id && ranges.length >= 10 && (
+        {!range._id && ranges.length >= 10 && (
           <Typography variant="body2" color="warning.main" sx={{ mt: 1 }}>
             You have reached the maximum limit of 10 ranges. Delete a range to create a new one.
           </Typography>

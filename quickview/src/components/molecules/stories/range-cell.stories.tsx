@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import { ActionTypeEnum } from '../../../../vision-api';
+import { ActionDtoTypeEnum } from '../../../../ultron-api/api';
 import RangeCellComp from '../range-cell';
 
 const meta: Meta<typeof RangeCellComp> = {
@@ -29,15 +29,15 @@ export const Default: Story = {
     label: 'AA',
     actions: [
       {
-        type: ActionTypeEnum.Fold,
+        type: ActionDtoTypeEnum.Fold,
         percentage: 0.5,
       },
       {
-        type: ActionTypeEnum.Call,
+        type: ActionDtoTypeEnum.Call,
         percentage: 0.3,
       },
       {
-        type: ActionTypeEnum.Raise,
+        type: ActionDtoTypeEnum.Raise,
         percentage: 0.2,
       },
     ],

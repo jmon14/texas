@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Range } from '../../../vision-api';
+import { RangeResponseDto } from '../../../ultron-api/api';
 import { FetchStatus } from '../../constants';
 import { AxiosError } from 'axios';
 import { RootState } from '../store';
@@ -9,8 +9,8 @@ import { rangeApi } from '../../api/api';
 export type RangeState = {
   error: unknown;
   status: FetchStatus;
-  currentRange: Range | null; // TODO - Either commit to state here or in the range builder
-  ranges: Range[];
+  currentRange: RangeResponseDto | null;
+  ranges: RangeResponseDto[];
 };
 
 // Initial state on load
@@ -24,7 +24,7 @@ const initialState: RangeState = {
 // Async thunk for creating range
 export const createRange = createAsyncThunk(
   'range/create',
-  async (range: Omit<Range, 'id'>, { rejectWithValue }) => {
+  async (range: Omit<RangeResponseDto, '_id'>, { rejectWithValue }) => {
     try {
       await rangeApi.createRange(range);
       // After successful creation, fetch the updated ranges
@@ -59,7 +59,7 @@ export const getRangeById = createAsyncThunk(
 export const updateRange = createAsyncThunk(
   'range/update',
   async (
-    { id, range, userId }: { id: string; range: Range; userId: string },
+    { id, range, userId }: { id: string; range: RangeResponseDto; userId: string },
     { rejectWithValue },
   ) => {
     try {
@@ -122,14 +122,14 @@ const rejectedReducer = (state: RangeState, action: PayloadAction<unknown>) => {
 };
 
 // Range reducer
-const rangeReducer = (state: RangeState, action: PayloadAction<Range>) => {
+const rangeReducer = (state: RangeState, action: PayloadAction<RangeResponseDto>) => {
   state.status = FetchStatus.SUCCEDED;
   state.currentRange = action.payload;
   state.error = null;
 };
 
 // Ranges reducer
-const rangesReducer = (state: RangeState, action: PayloadAction<Range[]>) => {
+const rangesReducer = (state: RangeState, action: PayloadAction<RangeResponseDto[]>) => {
   state.status = FetchStatus.SUCCEDED;
   state.ranges = action.payload;
   state.error = null;

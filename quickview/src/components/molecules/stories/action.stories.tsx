@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import Action from '../action';
-import { ActionTypeEnum } from '../../../../vision-api';
+import { ActionDtoTypeEnum } from '../../../../ultron-api/api';
 import { action } from '@storybook/addon-actions';
 import { Box } from '@mui/material';
 
@@ -18,7 +18,7 @@ const meta: Meta<typeof Action> = {
     },
   },
   args: {
-    initialAction: { type: ActionTypeEnum.Call, percentage: 0.5 },
+    initialAction: { type: ActionDtoTypeEnum.Call, percentage: 0.5 },
     onChange: action('changed'),
   },
   decorators: [
@@ -36,21 +36,21 @@ type Story = StoryObj<typeof Action>;
 
 export const Default: Story = {
   args: {
-    initialAction: { type: ActionTypeEnum.Call, percentage: 50 },
+    initialAction: { type: ActionDtoTypeEnum.Call, percentage: 50 },
     onChange: action('changed'),
   },
 };
 
 export const FoldAction: Story = {
   args: {
-    initialAction: { type: ActionTypeEnum.Fold, percentage: 30 },
+    initialAction: { type: ActionDtoTypeEnum.Fold, percentage: 30 },
     onChange: action('changed'),
   },
 };
 
 export const RaiseAction: Story = {
   args: {
-    initialAction: { type: ActionTypeEnum.Raise, percentage: 70 },
+    initialAction: { type: ActionDtoTypeEnum.Raise, percentage: 70 },
     onChange: action('changed'),
   },
 };

@@ -1,5 +1,5 @@
 import { green, lightBlue, orange, red } from '@mui/material/colors';
-import { ActionTypeEnum, HandRange } from '../../vision-api';
+import { ActionDtoTypeEnum, HandRangeDto } from '../../ultron-api/api';
 
 // Enums
 export enum FetchStatus {
@@ -19,14 +19,14 @@ export const EMAIL_REGEX =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 type ActionColorType = {
-  [key in ActionTypeEnum]: string;
+  [key in ActionDtoTypeEnum]: string;
 };
 
 export const ActionColor: ActionColorType = {
-  [ActionTypeEnum.Fold]: green[300],
-  [ActionTypeEnum.Call]: lightBlue[800],
-  [ActionTypeEnum.Raise]: red[700],
-  [ActionTypeEnum.Check]: orange[500],
+  [ActionDtoTypeEnum.Fold]: green[300],
+  [ActionDtoTypeEnum.Call]: lightBlue[800],
+  [ActionDtoTypeEnum.Raise]: red[700],
+  [ActionDtoTypeEnum.Check]: orange[500],
 };
 
 export enum CardSuitEnum {
@@ -73,12 +73,12 @@ export const CardLabel: CardLabelType = {
 };
 
 export const defaultActions = [
-  { type: ActionTypeEnum.Fold, percentage: 50 },
-  { type: ActionTypeEnum.Call, percentage: 30 },
-  { type: ActionTypeEnum.Raise, percentage: 20 },
+  { type: ActionDtoTypeEnum.Fold, percentage: 50 },
+  { type: ActionDtoTypeEnum.Call, percentage: 30 },
+  { type: ActionDtoTypeEnum.Raise, percentage: 20 },
 ];
 
-export const defaultHandRange: HandRange[] = [
+export const defaultHandRange: HandRangeDto[] = [
   {
     rangeFraction: 1,
     actions: [],

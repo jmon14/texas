@@ -1,15 +1,15 @@
 import { Box } from '@mui/material';
-import { Action } from '../../../vision-api';
+import { ActionDto } from '../../../ultron-api/api';
 import ActionComponent from '../molecules/action';
 import Panel from '../atoms/panel';
 
 type ActionListProps = {
-  actions: Action[];
-  onActionChange: (actions: Action[]) => void;
+  actions: ActionDto[];
+  onActionChange: (actions: ActionDto[]) => void;
 };
 
 const ActionList = ({ actions, onActionChange }: ActionListProps) => {
-  const handleActionChange = (index: number, updatedAction: Action) => {
+  const handleActionChange = (index: number, updatedAction: ActionDto) => {
     // Create a new array with new instances of the objects
     const newActions = actions.map((action, i) => (i === index ? updatedAction : { ...action }));
 

@@ -14,7 +14,7 @@ import {
   Path,
 } from 'react-hook-form';
 import { TypographyProps } from '@mui/material';
-import { Range } from '../../vision-api';
+import { RangeResponseDto } from '../../ultron-api/api';
 
 // Constants
 import { EMAIL_REGEX, FetchStatus, PWD_REGEX, USER_REGEX } from '../constants';
@@ -396,9 +396,12 @@ export type RangeSelectorControls = {
   selectedRangeId: string;
 };
 
-export const getRangeSelectorConfigForm: GetConfigForm<RangeSelectorControls, Range[]> = (
+export const getRangeSelectorConfigForm: GetConfigForm<
+  RangeSelectorControls,
+  RangeResponseDto[]
+> = (
   options?: FormConfigOptions<RangeSelectorControls>,
-  additionalOptions?: Range[],
+  additionalOptions?: RangeResponseDto[],
 ): FormConfig<RangeSelectorControls> => {
   return {
     controls: [
@@ -409,7 +412,7 @@ export const getRangeSelectorConfigForm: GetConfigForm<RangeSelectorControls, Ra
         initialValue: options?.initialValues?.selectedRangeId || 'Default selection',
         options: [
           { value: 'Default selection', label: 'New range' },
-          ...(additionalOptions?.map((range) => ({ value: range.id ?? '', label: range.name })) ||
+          ...(additionalOptions?.map((range) => ({ value: range._id ?? '', label: range.name })) ||
             []),
         ],
       },

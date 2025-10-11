@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { Box, styled, useTheme } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
-import { HandRange } from '../../../vision-api';
+import { HandRangeDto } from '../../../ultron-api/api';
 import { ActionColor } from '../../constants';
 
 const Cell = styled(Box)(({ theme }) => ({
@@ -16,7 +16,7 @@ const Cell = styled(Box)(({ theme }) => ({
 }));
 
 export type CellProps = React.DOMAttributes<Element> &
-  HandRange & {
+  HandRangeDto & {
     onClick?: () => void;
   };
 

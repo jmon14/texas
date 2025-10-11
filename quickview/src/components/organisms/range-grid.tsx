@@ -1,18 +1,18 @@
 import { useTheme } from '@mui/material';
 import { useState, useCallback, useEffect } from 'react';
-import { Range } from '../../../vision-api';
+import { RangeResponseDto } from '../../../ultron-api/api';
 import RangeCell from '../molecules/range-cell';
 import Panel from '../atoms/panel';
 
 type RangeGridProps = {
-  range: Range;
+  range: Partial<RangeResponseDto>;
   onCellClick?: (index: number) => void;
   onCellsSelect?: (indices: number[]) => void;
 };
 
 const RangeGrid = ({ range, onCellClick, onCellsSelect }: RangeGridProps) => {
   const theme = useTheme();
-  const rangeCardinality = Math.sqrt(range.handsRange.length);
+  const rangeCardinality = Math.sqrt(range.handsRange?.length || 0);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [selectedCells, setSelectedCells] = useState<Set<number>>(new Set());
 
@@ -58,7 +58,7 @@ const RangeGrid = ({ range, onCellClick, onCellsSelect }: RangeGridProps) => {
         userSelect: 'none', // Prevent text selection during drag
       }}
     >
-      {range.handsRange.map(({ rangeFraction, actions, label }, index) => (
+      {range.handsRange?.map(({ rangeFraction, actions, label }, index) => (
         <RangeCell
           key={index}
           rangeFraction={rangeFraction}

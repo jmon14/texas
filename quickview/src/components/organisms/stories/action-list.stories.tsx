@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import { ActionTypeEnum } from '../../../../vision-api';
+import { ActionDtoTypeEnum } from '../../../../ultron-api/api';
 import ActionList from '../action-list';
 
 const meta: Meta<typeof ActionList> = {
@@ -15,9 +15,9 @@ type Story = StoryObj<typeof ActionList>;
 export const Default: Story = {
   args: {
     actions: [
-      { type: ActionTypeEnum.Fold, percentage: 50 },
-      { type: ActionTypeEnum.Call, percentage: 30 },
-      { type: ActionTypeEnum.Raise, percentage: 20 },
+      { type: ActionDtoTypeEnum.Fold, percentage: 50 },
+      { type: ActionDtoTypeEnum.Call, percentage: 30 },
+      { type: ActionDtoTypeEnum.Raise, percentage: 20 },
     ],
     onActionChange: (actions) => console.log('Actions changed:', actions),
   },

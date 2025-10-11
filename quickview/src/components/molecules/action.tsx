@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Box, debounce, styled, TextField, Typography, useTheme } from '@mui/material';
-import { Action } from '../../../vision-api';
+import { ActionDto } from '../../../ultron-api/api';
 import { ActionColor } from '../../constants';
 import { blueGrey, grey } from '@mui/material/colors';
 
@@ -18,9 +18,9 @@ const ActionTextField = styled(TextField)(() => ({
 }));
 
 type ActionProps = {
-  initialAction: Action;
+  initialAction: ActionDto;
   color?: string;
-  onChange: (updatedAction: Action) => void;
+  onChange: (updatedAction: ActionDto) => void;
 };
 
 const ActionComponent = ({ initialAction, onChange }: ActionProps) => {

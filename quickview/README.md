@@ -32,7 +32,6 @@ quickview/
 │   ├── utils/               # Utility functions
 │   └── constants/           # Application constants
 ├── ultron-api/              # Auto-generated Ultron API client
-├── vision-api/              # Auto-generated Vision API client
 └── public/                  # Static assets
 ```
 
@@ -51,7 +50,6 @@ Before running Quickview locally, set up environment variables:
 cat > .env << EOF
 # API URLs
 REACT_APP_ULTRON_API_URL=http://localhost:3000
-REACT_APP_VISION_API_URL=http://localhost:3001
 ```
 
 #### Key Frontend Commands
@@ -59,7 +57,6 @@ REACT_APP_VISION_API_URL=http://localhost:3001
 ```bash
 # API client generation (run when backend APIs change)
 npm run openapi:ultron    # Generate Ultron API client
-npm run openapi:vision    # Generate Vision API client
 
 # Component development
 npm run storybook         # Interactive component library
@@ -157,22 +154,18 @@ Centralized state management using Redux Toolkit:
 
 Connects to multiple backend services:
 
-#### **Ultron API** (Authentication & Files)
+#### **Ultron API** (Authentication, Files & Ranges)
 
 ```typescript
-// User management and file operations
+// User management, file operations, and range analysis
 authApi.login(credentials);
 userApi.createUser(userData);
 filesApi.uploadFile(file);
-```
 
-#### **Vision API** (Range Analysis)
-
-```typescript
-// Poker range operations
-rangeApi.createRange(range);
-rangeApi.getRangesByUserId(userId);
-rangeApi.updateRange(id, range);
+// Poker range operations (migrated from Vision)
+rangesApi.createRange(range);
+rangesApi.getRangesByUserId(userId);
+rangesApi.updateRange(id, range);
 ```
 
 ### Automatic Token Refresh
@@ -238,9 +231,6 @@ npm run build
 ```bash
 # Generate Ultron API client
 npm run openapi:ultron
-
-# Generate Vision API client
-npm run openapi:vision
 ```
 
 ### Storybook Development
@@ -267,11 +257,9 @@ npm run build-storybook
 ```bash
 # Development
 REACT_APP_ULTRON_API_URL=http://localhost:3000
-REACT_APP_VISION_API_URL=http://localhost:3001
 
 # Production
 REACT_APP_ULTRON_API_URL=https://api.allinrange.com
-REACT_APP_VISION_API_URL=https://vision.allinrange.com
 ```
 
 ## 🚀 Deployment
