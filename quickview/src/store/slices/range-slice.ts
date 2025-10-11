@@ -59,7 +59,7 @@ export const getRangeById = createAsyncThunk(
 export const updateRange = createAsyncThunk(
   'range/update',
   async (
-    { id, range, userId }: { id: string; range: RangeResponseDto; userId: string },
+    { id, range, userId }: { id: string; range: Omit<RangeResponseDto, '_id'>; userId: string },
     { rejectWithValue },
   ) => {
     try {

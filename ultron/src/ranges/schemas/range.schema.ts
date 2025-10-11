@@ -7,6 +7,13 @@ export type RangeDocument = Range & Document;
 @Schema({
   collection: 'ranges',
   timestamps: true,
+  toObject: {
+    transform: (doc, ret) => {
+      // Convert MongoDB ObjectId to string
+      ret._id = ret._id.toString();
+      return ret;
+    },
+  },
 })
 export class Range {
   @Prop({

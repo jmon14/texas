@@ -67,9 +67,7 @@ const RangeBuilder = () => {
 
   const handleRangeSubmit: SubmitHandler<RangeControls> = (data) => {
     if (range._id && range.handsRange) {
-      // Construct a fully typed RangeResponseDto for update
-      const rangeToUpdate: RangeResponseDto = {
-        _id: range._id,
+      const rangeToUpdate: Omit<RangeResponseDto, '_id'> = {
         name: data.name,
         handsRange: range.handsRange,
         userId: user.uuid,

@@ -21,32 +21,31 @@ export class RangesService {
   }
 
   async getAllRanges(): Promise<RangeResponseDto[]> {
-    const ranges = await this.rangeModel.find().lean().exec();
-    return ranges;
+    const ranges = await this.rangeModel.find().exec();
+    return ranges.map((range) => range.toObject());
   }
 
   async getRangesByUserId(userId: string): Promise<RangeResponseDto[]> {
-    const ranges = await this.rangeModel.find({ userId }).lean().exec();
-    return ranges;
+    const ranges = await this.rangeModel.find({ userId }).exec();
+    return ranges.map((range) => range.toObject());
   }
 
   async getRangeById(id: string): Promise<RangeResponseDto> {
-    const range = await this.rangeModel.findById(id).lean().exec();
+    const range = await this.rangeModel.findById(id).exec();
     if (!range) {
       throw new NotFoundException(`Range with ID ${id} not found`);
     }
-    return range;
+    return range.toObject();
   }
 
   async updateRange(id: string, updateRangeDto: UpdateRangeDto): Promise<RangeResponseDto> {
     const updatedRange = await this.rangeModel
       .findByIdAndUpdate(id, updateRangeDto, { new: true })
-      .lean()
       .exec();
     if (!updatedRange) {
       throw new NotFoundException(`Range with ID ${id} not found`);
     }
-    return updatedRange;
+    return updatedRange.toObject();
   }
 
   async deleteRange(id: string): Promise<void> {
