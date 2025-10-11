@@ -3,15 +3,6 @@ import { ActionType } from './action-type.enum';
 
 @Schema({
   _id: false,
-  toJSON: {
-    transform: function (_doc, ret) {
-      // Ensure action type is serialized as lowercase string value
-      if (ret.type && typeof ret.type === 'string') {
-        ret.type = ret.type.toLowerCase();
-      }
-      return ret;
-    },
-  },
 })
 export class Action {
   @Prop({
