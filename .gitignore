@@ -18,3 +18,19 @@ terraform.rc
 
 # Mac
 .DS_Store
+
+# External libraries
+node_modules
+
+# Build app
+dist
+build/
+
+# Jest coverage
+coverage
+
+# IDE
+.vscode/
+
+# OS files
+Thumbs.db
