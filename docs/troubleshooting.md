@@ -13,8 +13,8 @@ This document covers common issues you might encounter when developing or deploy
 1. **Port conflicts**
    ```bash
    # Check what's using the ports
-   lsof -i :3000 -i :3001 -i :8080 -i :5432 -i :27017
-   
+   lsof -i :3000 -i :8080 -i :5432 -i :27017
+
    # Kill processes on specific ports
    sudo kill -9 $(lsof -ti:3000)
    ```
@@ -45,7 +45,7 @@ This document covers common issues you might encounter when developing or deploy
    # Inspect Docker network
    docker network ls
    docker network inspect texas-network
-   
+
    # Check if containers are in the same network
    docker ps --format "table {{.Names}}\t{{.Networks}}"
    ```
@@ -54,15 +54,16 @@ This document covers common issues you might encounter when developing or deploy
    ```bash
    # Check container status
    docker-compose ps
-   
+
    # Check database logs
    docker-compose logs postgres
    docker-compose logs mongodb
    ```
 
 3. **Connection string issues**
-   - Development: Use container names (`mongodb:27017`, `postgres:5432`)
-   - Production: Use actual hostnames/IPs
+   - Development PostgreSQL: Use container name (`postgres:5432`)
+   - Development MongoDB: Use container name (`mongodb:27017`)
+   - Production: Use actual hostnames/IPs from environment variables (Supabase for PostgreSQL, MongoDB Atlas for ranges)
 
 ### Hot Reload Not Working
 
@@ -142,7 +143,7 @@ This document covers common issues you might encounter when developing or deploy
    ```bash
    # Test API endpoints directly
    curl http://localhost:3000/health
-   curl http://localhost:3001/v3/api-docs
+   curl http://localhost:3000/api
    ```
 
 2. **Verify Nginx routing** (Production)
@@ -159,10 +160,10 @@ This document covers common issues you might encounter when developing or deploy
    ```bash
    # Verify all services are running
    docker-compose ps
-   
+
    # Check specific service logs
    docker-compose logs ultron
-   docker-compose logs vision
+   docker-compose logs quickview
    ```
 
 ### Database Connection Errors
@@ -172,23 +173,24 @@ This document covers common issues you might encounter when developing or deploy
 **Solutions**:
 
 1. **Connection string validation**
-   - Development: `mongodb://mongodb:27017/vision`
-   - Production: Use connection strings from environment variables
+   - Development PostgreSQL: `postgresql://admin:admin@postgres:5432/ultron`
+   - Development MongoDB: `mongodb://mongodb:27017/ultron`
+   - Production: Use connection strings from environment variables (check MONGODB_URI in Ultron .env)
 
 2. **Database authentication**
    ```bash
-   # Test MongoDB connection
-   docker-compose exec mongodb mongosh
-   
    # Test PostgreSQL connection
    docker-compose exec postgres psql -U admin -d ultron
+
+   # Test MongoDB connection
+   docker-compose exec mongodb mongosh ultron
    ```
 
 3. **Network connectivity**
    ```bash
    # Test connectivity between containers
    docker-compose exec ultron ping postgres
-   docker-compose exec vision ping mongodb
+   docker-compose exec ultron ping mongodb
    ```
 
 ## 🚀 Deployment Issues
@@ -305,25 +307,37 @@ This document covers common issues you might encounter when developing or deploy
 
 ### MongoDB Issues
 
-**Problem**: Vision API can't connect to MongoDB.
+**Problem**: Ultron API can't connect to MongoDB.
 
 **Solutions**:
 
-1. **Atlas connectivity**
+1. **Local MongoDB (Development)**
+   ```bash
+   # Check MongoDB container logs
+   docker-compose logs mongodb
+
+   # Test connection
+   docker-compose exec mongodb mongosh ultron
+
+   # Verify Ultron can reach MongoDB
+   docker-compose exec ultron ping mongodb
+   ```
+
+2. **MongoDB Atlas (Production)**
    - Verify IP whitelist includes your deployment server
-   - Check connection string format
+   - Check connection string format in Ultron's .env file
    - Test connection from command line:
    ```bash
    mongosh "mongodb+srv://username:password@cluster.mongodb.net/database"
    ```
 
-2. **Local MongoDB**
+3. **Environment variables**
    ```bash
-   # Check MongoDB container logs
-   docker-compose logs mongodb
-   
-   # Test connection
-   docker-compose exec mongodb mongosh vision
+   # Verify MongoDB URI is set in Ultron
+   docker-compose exec ultron env | grep MONGODB_URI
+
+   # Check Ultron logs for connection errors
+   docker-compose logs ultron | grep -i mongo
    ```
 
 ## 🎨 Frontend Issues
@@ -359,14 +373,14 @@ This document covers common issues you might encounter when developing or deploy
 
 1. **API service not running**
    ```bash
-   # Ensure services are running before generating clients
+   # Ensure Ultron is running before generating clients
    curl http://localhost:3000/api-json
-   curl http://localhost:3001/v3/api-docs
    ```
 
 2. **OpenAPI spec issues**
-   - Verify API endpoints return valid OpenAPI JSON
+   - Verify API endpoint returns valid OpenAPI JSON
    - Check for breaking changes in API structure
+   - Regenerate after backend API updates: `npm run openapi:ultron`
 
 ## 📱 Browser Issues
 
@@ -427,9 +441,12 @@ This document covers common issues you might encounter when developing or deploy
    ```bash
    # PostgreSQL queries
    docker-compose exec postgres psql -U admin -d ultron -c "SELECT * FROM users LIMIT 5;"
-   
-   # MongoDB queries
-   docker-compose exec mongodb mongosh vision --eval "db.ranges.find().limit(5)"
+
+   # MongoDB queries (Development)
+   docker-compose exec mongodb mongosh ultron --eval "db.ranges.find().limit(5)"
+
+   # MongoDB queries (Production - via MongoDB Atlas shell or Compass)
+   mongosh "mongodb+srv://..." --eval "db.ranges.find().limit(5)"
    ```
 
 ## 🆘 Getting Help
@@ -462,11 +479,11 @@ free -h && df -h
 
 # Service health
 curl -i http://localhost:3000/health
-curl -i http://localhost:3001/actuator/health
+curl -i http://localhost:8080
 
 # Database connectivity
 docker-compose exec ultron npm run migrate
-docker-compose exec vision curl mongodb:27017
+docker-compose exec ultron ping postgres
 
 # Log analysis
 docker-compose logs --tail=50 <service>

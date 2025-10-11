@@ -17,8 +17,7 @@ graph TB
 
     subgraph "Application Layer"
         QV[Quickview Frontend<br/>React + TypeScript]
-        ULTRON[Ultron API<br/>NestJS + TypeORM]
-        VISION[Vision API<br/>Spring Boot + MongoDB]
+        ULTRON[Ultron API<br/>NestJS + TypeORM + Mongoose]
     end
 
     subgraph "Data Layer"
@@ -37,16 +36,13 @@ graph TB
     MOBILE --> NGINX
     NGINX --> QV
     NGINX --> ULTRON
-    NGINX --> VISION
 
     QV --> ULTRON
-    QV --> VISION
 
     ULTRON --> PG
+    ULTRON --> MONGO
     ULTRON --> S3
     ULTRON --> SSM
-
-    VISION --> MONGO
 
     EC2 --> ECR
     EC2 --> SSM
@@ -71,29 +67,23 @@ graph TB
 
 ### API Layer
 
-#### Ultron (Authentication & File Service)
+#### Ultron (Unified Backend Service)
 
-- **Technology**: NestJS + TypeScript + PostgreSQL
-- **Purpose**: User management, authentication, and file handling
+- **Technology**: NestJS + TypeScript + PostgreSQL + MongoDB
+- **Purpose**: User management, authentication, file handling, and poker range analysis
 - **Key Features**:
   - JWT-based authentication with refresh tokens
   - User registration and email verification
   - Password reset functionality
   - File upload to AWS S3
   - Email notifications via AWS SES
-- **Database**: PostgreSQL (Supabase) with TypeORM
-- **Authentication**: Passport.js with JWT strategy
-
-#### Vision (Range Analysis Service)
-
-- **Technology**: Spring Boot + Java 21 + MongoDB
-- **Purpose**: Poker range data management and analysis
-- **Key Features**:
-  - CRUD operations for poker ranges
+  - Poker range CRUD operations and analysis
   - User-specific range isolation
-  - Complex range data structures
-  - Input validation and error handling
-- **Database**: MongoDB Atlas with Spring Data
+  - Complex range data structures with validation
+- **Databases**:
+  - PostgreSQL (Supabase) with TypeORM for user/auth data
+  - MongoDB Atlas with Mongoose for range data
+- **Authentication**: Passport.js with JWT strategy
 
 ### Data Layer
 
@@ -106,13 +96,14 @@ graph TB
   - Files table (uploaded file metadata)
   - Refresh tokens (session management)
 
-#### MongoDB (Vision Database)
+#### MongoDB (Ultron Range Database)
 
 - **Provider**: MongoDB Atlas (free tier)
 - **Purpose**: Poker range data storage
 - **Collections**:
   - Ranges (poker hand ranges with actions)
   - User-specific range isolation
+- **Integration**: Mongoose ODM in Ultron service
 
 #### AWS S3 (File Storage)
 
@@ -150,14 +141,14 @@ sequenceDiagram
 sequenceDiagram
     participant User as User
     participant QV as Quickview
-    participant Vision as Vision API
+    participant Ultron as Ultron API
     participant Mongo as MongoDB
 
     User->>QV: Create/Edit range
-    QV->>Vision: POST /ranges
-    Vision->>Mongo: Store range data
-    Mongo-->>Vision: Confirmation
-    Vision-->>QV: Range created
+    QV->>Ultron: POST /ranges
+    Ultron->>Mongo: Store range data (Mongoose)
+    Mongo-->>Ultron: Confirmation
+    Ultron-->>QV: Range created
     QV-->>User: Updated UI
 ```
 
@@ -276,11 +267,11 @@ For detailed development workflow, see [CONTRIBUTING.md](../CONTRIBUTING.md)
 - **Use case**: Complex UI with real-time updates
 - **Alternatives considered**: Vue.js, Angular
 
-### Backend: NestJS + Spring Boot
+### Backend: NestJS
 
-- **Pros**: Mature frameworks, excellent TypeScript/Java support
-- **Use case**: Separation of concerns (auth vs. domain logic)
-- **Alternatives considered**: Express.js, Django
+- **Pros**: Mature framework, excellent TypeScript support, modular architecture
+- **Use case**: Unified backend handling authentication, files, and domain logic
+- **Alternatives considered**: Express.js, Fastify, Spring Boot
 
 ### Databases: PostgreSQL + MongoDB
 

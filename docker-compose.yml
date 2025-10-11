@@ -1,34 +1,4 @@
 services:
-  # MongoDB service for Vision
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - texas-network
-
-  # Vision service (Java Spring Boot)
-  vision:
-    build:
-      context: ./vision
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3001:3001"
-    volumes:
-      - ./vision/src:/app/src
-      - ./vision/pom.xml:/app/pom.xml
-      # Exclude Maven target directory to prevent conflicts
-      - /app/target
-    environment:
-      - SPRING_DEVTOOLS_RESTART_ENABLED=true
-      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
-    depends_on:
-      - mongodb
-    networks:
-      - texas-network
-
   # Ultron service (NestJS)
   ultron:
     build:
@@ -57,6 +27,18 @@ services:
       - POSTGRES_DB=ultron
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - texas-network
+
+  # MongoDB for Ultron ranges
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=ultron
+    volumes:
+      - mongodb_data:/data/db
     networks:
       - texas-network
 
@@ -89,13 +71,12 @@ services:
     command: npm start
     depends_on:
       - ultron
-      - vision
     networks:
       - texas-network
 
 volumes:
-  mongodb_data:
   postgres_data:
+  mongodb_data:
   pgadmin_data:
 
 networks:

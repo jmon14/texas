@@ -13,7 +13,6 @@ docker-compose up
 # Access applications
 # Frontend: http://localhost:8080
 # Ultron API: http://localhost:3000
-# Vision API: http://localhost:3001
 ```
 
 **New to the project?** See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed setup and development workflow.
@@ -22,13 +21,12 @@ docker-compose up
 
 ```
 ├── quickview/     # React frontend (TypeScript + Material-UI)
-├── ultron/        # NestJS authentication API (PostgreSQL)
-├── vision/        # Spring Boot range analysis API (MongoDB)
+├── ultron/        # NestJS API (PostgreSQL + MongoDB)
 └── infrastructure/ # AWS deployment configuration
 ```
 
-**Frontend** → **Authentication API** → **PostgreSQL**  
-**Frontend** → **Range Analysis API** → **MongoDB**
+**Frontend** → **Ultron API** → **PostgreSQL** (users, files)
+**Frontend** → **Ultron API** → **MongoDB** (ranges)
 
 ## 📚 Documentation
 
@@ -39,18 +37,16 @@ docker-compose up
 
 ### Service-Specific Documentation
 - [Frontend (quickview/)](quickview/README.md) - React app architecture
-- [Authentication API (ultron/)](ultron/README.md) - NestJS backend service  
-- [Range Analysis API (vision/)](vision/README.md) - Spring Boot service
+- [Backend API (ultron/)](ultron/README.md) - NestJS backend service
 
 ### API Documentation
 - [Ultron API](http://localhost:3000/api) - Interactive Swagger docs
-- [Vision API](http://localhost:3001/v3/api-docs) - OpenAPI specification
 
 ## 🛠️ Tech Stack
 
-**Frontend**: React + TypeScript + Material-UI + Redux Toolkit  
-**APIs**: NestJS + Spring Boot  
-**Databases**: PostgreSQL (Supabase) + MongoDB Atlas  
+**Frontend**: React + TypeScript + Material-UI + Redux Toolkit
+**Backend**: NestJS + TypeScript
+**Databases**: PostgreSQL (Supabase) + MongoDB Atlas
 **Infrastructure**: AWS + Docker + Terraform  
 
 ## 📄 License

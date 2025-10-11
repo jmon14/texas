@@ -27,40 +27,37 @@ Thank you for your interest in contributing to the Texas Poker application! This
 3. **Verify setup**
    - Frontend: http://localhost:8080
    - Ultron API: http://localhost:3000/api
-   - Vision API: http://localhost:3001/v3/api-docs
 
 ### Detailed Environment Configuration
 
 #### Development Environment
 - **Container Orchestration**: Docker Compose
 - **Hot Reload**: All services support live code reloading
-- **Database Setup**: 
+- **Database Setup**:
   - PostgreSQL: `postgres:5432`
   - MongoDB: `mongodb:27017`
 - **Networking**: Internal Docker network for service communication
 
 #### Service Startup Order
-1. Databases (PostgreSQL, MongoDB) start first
-2. Backend services (Ultron, Vision) start and wait for database connections
-3. Frontend (Quickview) starts and connects to APIs
+1. PostgreSQL and MongoDB databases start first
+2. Ultron backend service starts and waits for database connections
+3. Frontend (Quickview) starts and connects to Ultron API
 
 #### Environment Variables
 Development uses `.env` files in each service directory:
 - `quickview/.env` - Frontend configuration
-- `ultron/.env` - Backend API configuration  
-- `vision/src/main/resources/application-dev.properties` - Spring Boot config
+- `ultron/.env` - Backend API configuration
 
 #### Database Initialization
 - **PostgreSQL**: Automatic migrations via TypeORM on Ultron startup
-- **MongoDB**: Collections created automatically by Spring Data on first access
+- **MongoDB**: Automatic connection and collection creation via Mongoose in Ultron
 
 ### Service-Specific Development
 
 Each service has its own development commands and detailed setup instructions:
 
 - **Frontend**: See [quickview/README.md](quickview/README.md) - React app development, Storybook, testing
-- **Authentication API**: See [ultron/README.md](ultron/README.md) - NestJS backend, database migrations, email testing
-- **Range Analysis API**: See [vision/README.md](vision/README.md) - Spring Boot service, MongoDB operations
+- **Backend API**: See [ultron/README.md](ultron/README.md) - NestJS backend, database migrations, email testing, range analysis
 
 ### Working with Individual Services
 
@@ -79,10 +76,9 @@ The frontend automatically generates TypeScript clients from backend OpenAPI spe
 ```bash
 cd quickview
 npm run openapi:ultron        # Generates ultron-api/ directory
-npm run openapi:vision        # Generates vision-api/ directory
 ```
 
-Run these commands whenever backend API interfaces change.
+Run this command whenever backend API interfaces change.
 
 ## 🔧 Development Workflow
 
@@ -108,12 +104,9 @@ Run these commands whenever backend API interfaces change.
    ```bash
    # Frontend tests
    cd quickview && npm test
-   
+
    # Backend tests
    cd ultron && npm test
-   
-   # Spring Boot tests
-   cd vision && mvn test
    ```
 
 4. **Lint and format**
@@ -182,28 +175,6 @@ export class MyService {
 }
 ```
 
-### Vision API
-
-- **Framework**: Spring Boot with Java 21
-- **Database**: MongoDB with Spring Data
-- **Testing**: JUnit 5
-- **Documentation**: OpenAPI/Swagger annotations
-
-```java
-// Example controller structure
-@RestController
-@RequestMapping("/api/v1/ranges")
-public class RangeController {
-    
-    @Autowired
-    private RangeService rangeService;
-    
-    @GetMapping
-    public List<Range> getAllRanges() {
-        return rangeService.findAll();
-    }
-}
-```
 
 ## 🧪 Testing Guidelines
 
@@ -381,7 +352,7 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
 
 ### Adding a new API endpoint
 
-1. **Backend (Ultron/Vision)**
+1. **Backend (Ultron)**
    - Create/update controller
    - Add service logic
    - Create/update DTOs
@@ -389,7 +360,7 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
    - Update OpenAPI documentation
 
 2. **Frontend (Quickview)**
-   - Generate API client: `npm run openapi:ultron` or `npm run openapi:vision`
+   - Generate API client: `npm run openapi:ultron`
    - Create/update components
    - Add state management if needed
    - Write tests
@@ -402,9 +373,9 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
    - Create migration: `npm run migrate`
    - Test migration in development
 
-2. **MongoDB (Vision)**
-   - Update domain models
-   - Update repository interfaces
+2. **MongoDB (Ultron)**
+   - Update Mongoose schemas
+   - Update service logic
    - Test changes with sample data
 
 ## 📄 License
