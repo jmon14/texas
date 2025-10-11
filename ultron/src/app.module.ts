@@ -10,9 +10,10 @@ import { EmailModule } from 'src/email/email.module';
 import { UsersModule } from 'src/users/users.module';
 import { FilesModule } from 'src/files/files.module';
 import { DatabaseModule } from 'src/database/database.module';
+import { RangesModule } from 'src/ranges/ranges.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, EmailModule, AuthModule, FilesModule],
+  imports: [DatabaseModule, UsersModule, EmailModule, AuthModule, FilesModule, RangesModule],
   controllers: [AppController],
   providers: [],
 })
