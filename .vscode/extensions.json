@@ -3,9 +3,6 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "hashicorp.terraform",
-    "ms-azuretools.vscode-docker",
-    "redhat.java",
-    "vscjava.vscode-java-pack",
-    "redhat.vscode-yaml"
+    "ms-azuretools.vscode-docker"
   ]
 }

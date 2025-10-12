@@ -2,12 +2,12 @@ services:
   # Ultron service (NestJS)
   ultron:
     build:
-      context: ./ultron
+      context: ./apps/ultron
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - ./ultron:/usr/src/app
+      - ./apps/ultron:/usr/src/app
       - /usr/src/app/node_modules
     command: npm run start:dev
     depends_on:
@@ -58,14 +58,14 @@ services:
   # Quickview frontend
   quickview:
     build:
-      context: ./quickview
+      context: ./apps/quickview
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
       - NODE_ENV=development
     volumes:
-      - ./quickview:/app
+      - ./apps/quickview:/app
     command: npm start
     depends_on:
       - ultron

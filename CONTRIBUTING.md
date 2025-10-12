@@ -45,8 +45,8 @@ Thank you for your interest in contributing to the Texas Poker application! This
 
 #### Environment Variables
 Development uses `.env` files in each service directory:
-- `quickview/.env` - Frontend configuration
-- `ultron/.env` - Backend API configuration
+- `apps/quickview/.env` - Frontend configuration
+- `apps/ultron/.env` - Backend API configuration
 
 #### Database Initialization
 - **PostgreSQL**: Automatic migrations via TypeORM on Ultron startup
@@ -56,8 +56,8 @@ Development uses `.env` files in each service directory:
 
 Each service has its own development commands and detailed setup instructions:
 
-- **Frontend**: See [quickview/README.md](quickview/README.md) - React app development, Storybook, testing
-- **Backend API**: See [ultron/README.md](ultron/README.md) - NestJS backend, database migrations, email testing, range analysis
+- **Frontend**: See [apps/quickview/README.md](apps/quickview/README.md) - React app development, Storybook, testing
+- **Backend API**: See [apps/ultron/README.md](apps/ultron/README.md) - NestJS backend, database migrations, email testing, range analysis
 
 ### Working with Individual Services
 
@@ -74,7 +74,7 @@ docker-compose up postgres mongodb
 #### API Client Generation
 The frontend automatically generates TypeScript clients from backend OpenAPI specs:
 ```bash
-cd quickview
+cd apps/quickview
 npm run openapi:ultron        # Generates ultron-api/ directory
 ```
 
@@ -103,19 +103,19 @@ Run this command whenever backend API interfaces change.
 3. **Test your changes**
    ```bash
    # Frontend tests
-   cd quickview && npm test
-
+   cd apps/quickview && npm test
+   
    # Backend tests
-   cd ultron && npm test
+   cd apps/ultron && npm test
    ```
 
 4. **Lint and format**
    ```bash
    # Frontend
-   cd quickview && npm run lint && npm run format
+   cd apps/quickview && npm run lint && npm run format
    
    # Backend
-   cd ultron && npm run lint && npm run format
+   cd apps/ultron && npm run lint && npm run format
    ```
 
 5. **Commit changes**

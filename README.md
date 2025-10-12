@@ -20,9 +20,10 @@ docker-compose up
 ## 🏗️ Architecture
 
 ```
-├── quickview/     # React frontend (TypeScript + Material-UI)
-├── ultron/        # NestJS API (PostgreSQL + MongoDB)
-└── infrastructure/ # AWS deployment configuration
+├── apps/
+│   ├── quickview/     # React frontend (TypeScript + Material-UI)
+│   └── ultron/        # NestJS API (PostgreSQL + MongoDB)
+└── infrastructure/    # AWS deployment configuration
 ```
 
 **Frontend** → **Ultron API** → **PostgreSQL** (users, files)
@@ -36,8 +37,8 @@ docker-compose up
 - **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
 
 ### Service-Specific Documentation
-- [Frontend (quickview/)](quickview/README.md) - React app architecture
-- [Backend API (ultron/)](ultron/README.md) - NestJS backend service
+- [Frontend (apps/quickview/)](apps/quickview/README.md) - React app architecture
+- [Backend API (apps/ultron/)](apps/ultron/README.md) - NestJS backend service
 
 ### API Documentation
 - [Ultron API](http://localhost:3000/api) - Interactive Swagger docs
