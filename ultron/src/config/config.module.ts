@@ -29,6 +29,7 @@ import { NODE_ENV } from '../utils/constants';
         POSTGRES_USER: Joi.string(),
         POSTGRES_PASSWORD: Joi.string(),
         POSTGRES_DB: Joi.string(),
+        MONGODB_URI: Joi.string(),
         JWT_SECRET: Joi.string(),
         JWT_EXPIRATION_TIME: Joi.number(),
         JWT_REFRESH_SECRET: Joi.string(),

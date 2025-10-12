@@ -1,7 +1,7 @@
 # =============================================================================
 # Main Terraform Configuration for Texas Poker Application
 # =============================================================================
-# 
+#
 # This file defines the core AWS infrastructure:
 # - EC2 instance running Ubuntu 22.04
 # - Elastic IP for static public IP
@@ -11,7 +11,6 @@
 # The EC2 instance runs Docker containers for:
 # - Quickview (React frontend)
 # - Ultron (NestJS backend)
-# - Vision (Spring Boot API)
 # - Nginx (reverse proxy with SSL)
 # =============================================================================
 

@@ -70,15 +70,10 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
     --parameters "commands=[
         'cd /home/ssm-user/texas/infrastructure',
         'echo \"Starting environment variable setup...\"',
-        'MONGO_USER=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_USER" --query "Parameter.Value" --output text)',
-        'MONGO_PASSWORD=$(aws ssm get-parameter --name "/vision/mongodb/MONGO_PASSWORD" --with-decryption --query "Parameter.Value" --output text)',
         'ECR_REGISTRY=${ECR_REGISTRY}',
         'echo \"ECR_REGISTRY=\$ECR_REGISTRY\" > .env',
-        'echo \"VISION_TAG=latest\" >> .env',
         'echo \"ULTRON_TAG=latest\" >> .env',
         'echo \"QUICKVIEW_TAG=latest\" >> .env',
-        'echo \"MONGO_USER=\$MONGO_USER\" >> .env',
-        'echo \"MONGO_PASSWORD=\$MONGO_PASSWORD\" >> .env',
         'echo \"Environment variables configured successfully\"'
     ]" \
     --query 'Command.CommandId' \

@@ -25,18 +25,6 @@ variable "volume_size" {
   default     = 20
 }
 
-variable "vision_mongodb_user" {
-  description = "MongoDB username"
-  type        = string
-  sensitive   = true
-}
-
-variable "vision_mongodb_password" {
-  description = "MongoDB password"
-  type        = string
-  sensitive   = true
-}
-
 variable "ultron_jwt_secret" {
   description = "JWT secret for Ultron"
   type        = string
@@ -71,6 +59,12 @@ variable "ultron_postgres_host" {
   description = "PostgreSQL host for Ultron (Supabase)"
   type        = string
   default     = "aws-0-eu-central-1.pooler.supabase.com"
+}
+
+variable "ultron_mongodb_uri" {
+  description = "MongoDB connection URI for Ultron (ranges data)"
+  type        = string
+  sensitive   = true
 }
 
 variable "aws_ses_smtp_username" {

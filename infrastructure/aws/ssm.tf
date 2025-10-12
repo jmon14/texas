@@ -14,7 +14,6 @@ resource "aws_iam_policy" "ssm_parameter_access" {
           "ssm:GetParametersByPath"
         ]
         Resource = [
-          "arn:aws:ssm:${var.aws_region}:*:parameter/vision/*",
           "arn:aws:ssm:${var.aws_region}:*:parameter/texas/ultron/*"
         ]
       }
@@ -36,20 +35,7 @@ resource "aws_iam_role_policy_attachment" "ssm_agent_access" {
 
 # Databases Configuration
 
-resource "aws_ssm_parameter" "vision_mongodb_user" {
-  name        = "/vision/mongodb/MONGO_USER"
-  description = "MongoDB user for Vision app"
-  type        = "String"
-  value       = var.vision_mongodb_user
-}
-
-resource "aws_ssm_parameter" "vision_mongodb_password" {
-  name        = "/vision/mongodb/MONGO_PASSWORD"
-  description = "MongoDB password for Vision app"
-  type        = "SecureString"
-  value       = var.vision_mongodb_password
-}
-
+# PostgreSQL Configuration
 resource "aws_ssm_parameter" "ultron_postgres_user" {
   name        = "/texas/ultron/POSTGRES_USER"
   description = "PostgreSQL user for Ultron"
@@ -69,6 +55,14 @@ resource "aws_ssm_parameter" "ultron_postgres_host" {
   description = "PostgreSQL host for Ultron (Supabase)"
   type        = "String"
   value       = var.ultron_postgres_host
+}
+
+# MongoDB Configuration (for ranges data)
+resource "aws_ssm_parameter" "ultron_mongodb_uri" {
+  name        = "/texas/ultron/MONGODB_URI"
+  description = "MongoDB connection URI for Ultron (ranges data)"
+  type        = "SecureString"
+  value       = var.ultron_mongodb_uri
 }
 
 # Ultron JWT Configuration
@@ -185,14 +179,13 @@ resource "aws_ssm_parameter" "domain_email" {
 output "ssm_parameters" {
   description = "SSM parameter ARNs"
   value = {
-    vision_mongodb_user       = aws_ssm_parameter.vision_mongodb_user.arn
-    vision_mongodb_password   = aws_ssm_parameter.vision_mongodb_password.arn
     ultron_jwt_secret         = aws_ssm_parameter.ultron_jwt_secret.arn
     ultron_jwt_refresh_secret = aws_ssm_parameter.ultron_jwt_refresh_secret.arn
     ultron_jwt_email_secret   = aws_ssm_parameter.ultron_jwt_email_secret.arn
     ultron_postgres_user      = aws_ssm_parameter.ultron_postgres_user.arn
     ultron_postgres_password  = aws_ssm_parameter.ultron_postgres_password.arn
     ultron_postgres_host      = aws_ssm_parameter.ultron_postgres_host.arn
+    ultron_mongodb_uri        = aws_ssm_parameter.ultron_mongodb_uri.arn
     aws_ses_smtp_username     = aws_ssm_parameter.aws_ses_smtp_username.arn
     aws_ses_smtp_password     = aws_ssm_parameter.aws_ses_smtp_password.arn
     domain_email              = aws_ssm_parameter.domain_email.arn

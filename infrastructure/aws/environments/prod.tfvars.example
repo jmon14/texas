@@ -5,10 +5,6 @@ aws_region     = "eu-central-1"
 instance_type  = "t3.small"
 volume_size    = 20
 
-# Vision MongoDB Configuration
-vision_mongodb_user       = "vision_admin"
-vision_mongodb_password   = "your_secure_mongodb_password"
-
 # Ultron JWT Configuration
 ultron_jwt_secret         = "your_jwt_secret_key_here"
 ultron_jwt_refresh_secret = "your_jwt_refresh_secret_key_here"
@@ -17,6 +13,11 @@ ultron_jwt_email_secret   = "your_jwt_email_secret_key_here"
 # Ultron PostgreSQL Configuration
 ultron_postgres_user      = "ultron_admin"
 ultron_postgres_password  = "your_secure_postgres_password"
+
+# Ultron MongoDB Configuration (ranges data)
+# Use the same MongoDB Atlas connection string that Vision was using
+# Format: mongodb+srv://username:password@cluster0.x9mmmer.mongodb.net/texas?retryWrites=true&w=majority&ssl=true
+ultron_mongodb_uri        = "mongodb+srv://ultron_user:your_secure_mongodb_password@cluster0.x9mmmer.mongodb.net/texas?retryWrites=true&w=majority&ssl=true"
 
 # AWS SES SMTP Configuration
 aws_ses_smtp_username     = "your_ses_smtp_username"

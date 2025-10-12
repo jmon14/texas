@@ -12,8 +12,8 @@ This folder contains the production infrastructure for the Texas Poker app (alli
 - IAM
   - EC2 instance profile with SSM, S3, and ECR access
   - GitHub Actions OIDC role (push to ECR, read SSM, EC2 read-only)
-- SSM Parameters (secrets and config for Ultron and Vision)
-- ECR Repos (texas-ultron, texas-vision, texas-quickview)
+- SSM Parameters (secrets and config for Ultron)
+- ECR Repos (texas-ultron, texas-quickview)
 - S3 bucket (files.allinrange.com) for public files and deployment package transfer
 - Route53 hosted zone for allinrange.com + A records (root and www)
 
@@ -22,8 +22,7 @@ This folder contains the production infrastructure for the Texas Poker app (alli
 ```
 Internet → Elastic IP → EC2 → Nginx → Containers
                                     ├── Quickview (Frontend, :8080)
-                                    ├── Ultron (NestJS API, :3000)
-                                    └── Vision (Spring Boot API, :3001)
+                                    └── Ultron (NestJS API, :3000)
 ```
 
 Region: eu-central-1
@@ -41,7 +40,7 @@ infrastructure/
 │   ├── s3.tf                   # Public S3 bucket and policy
 │   ├── security.tf             # Security group
 │   ├── setup.tpl               # EC2 user-data (Docker, SSM agent, users)
-│   ├── ssm.tf                  # SSM parameters for Ultron/Vision
+│   ├── ssm.tf                  # SSM parameters for Ultron
 │   ├── variables.tf            # Inputs (region, instance type, secrets)
 │   └── environments/
 │       ├── prod.tfvars.example # Copy to prod.tfvars and fill values
@@ -77,10 +76,9 @@ Instance size: variables.tf defaults to t3.micro; prod example uses t3.small. Us
 
 ### 2) Build and push images to ECR
 
-Images must exist in ECR before you deploy. CI (GitHub Actions) is set up for OIDC to push to ECR. Push your images tagged latest (or update tags in the server’s .env later):
+Images must exist in ECR before you deploy. CI (GitHub Actions) is set up for OIDC to push to ECR. Push your images tagged latest (or update tags in the server's .env later):
 
 - texas-ultron:latest
-- texas-vision:latest
 - texas-quickview:latest
 
 ### 3) Run remote deployment
@@ -96,8 +94,8 @@ export ECR_REGISTRY="<aws-account-id>.dkr.ecr.eu-central-1.amazonaws.com"
 
 Notes
 - The script expects the S3 bucket files.allinrange.com to exist (Terraform creates it).
-- It writes /home/ssm-user/texas/infrastructure/.env on the server with: ECR_REGISTRY, image tags, and Vision MongoDB credentials pulled from SSM.
-- If ECR_REGISTRY isn’t set, image pulls will fail. Make sure it’s exported when running the script.
+- It writes /home/ssm-user/texas/infrastructure/.env on the server with: ECR_REGISTRY and image tags.
+- If ECR_REGISTRY isn't set, image pulls will fail. Make sure it's exported when running the script.
 
 ### 4) TLS/SSL
 
@@ -108,20 +106,24 @@ Notes
 
 ## 🔧 Configuration and secrets
 
-Where secrets live: Terraform creates SSM Parameters under `/texas/ultron/*` and `/vision/*`. Examples include:
+Where secrets live: Terraform creates SSM Parameters under `/texas/ultron/*`. Examples include:
 
-- Vision: /vision/mongodb/MONGO_USER, /vision/mongodb/MONGO_PASSWORD
-- Ultron: JWT secrets, Postgres user/password/host, email (SES) creds, DOMAIN, UI_URL
+- Ultron: JWT secrets, PostgreSQL user/password/host, MongoDB URI (for ranges), email (SES) creds, DOMAIN, UI_URL
 - Domain email for SSL: `/texas/ultron/DOMAIN_EMAIL` (set from `domain_email` in prod.tfvars)
 
 Runtime env: Containers read minimal env from Compose; application services fetch sensitive config from SSM using the instance role.
+
+### MongoDB Configuration
+Ultron uses MongoDB Atlas for storing poker ranges data. The connection string is stored in SSM Parameter Store at `/texas/ultron/MONGODB_URI`. Format:
+```
+mongodb+srv://username:password@cluster0.x9mmmer.mongodb.net/texas?retryWrites=true&w=majority&ssl=true
+```
 
 ## 🔍 Monitoring and health
 
 - No CloudWatch setup; use Docker/Nginx logs on the instance
 - Frontend: https://www.allinrange.com
 - API: https://www.allinrange.com/api/health
-- Vision API: no public health endpoint
 
 ## 🔐 Security
 
