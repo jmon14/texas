@@ -9,8 +9,8 @@
 # - Security groups for network access
 #
 # The EC2 instance runs Docker containers for:
-# - Quickview (React frontend)
-# - Ultron (NestJS backend)
+# - Frontend (React)
+# - Backend (NestJS)
 # - Nginx (reverse proxy with SSL)
 # =============================================================================
 

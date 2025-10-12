@@ -27,4 +27,4 @@ package.json
 package-lock.json
 
 # OpenAPI files
-ultron-api/
+backend-api/

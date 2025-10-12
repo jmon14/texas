@@ -26,7 +26,7 @@ Thank you for your interest in contributing to the Texas Poker application! This
 
 3. **Verify setup**
    - Frontend: http://localhost:8080
-   - Ultron API: http://localhost:3000/api
+   - Backend API: http://localhost:3000/api
 
 ### Detailed Environment Configuration
 
@@ -40,24 +40,24 @@ Thank you for your interest in contributing to the Texas Poker application! This
 
 #### Service Startup Order
 1. PostgreSQL and MongoDB databases start first
-2. Ultron backend service starts and waits for database connections
-3. Frontend (Quickview) starts and connects to Ultron API
+2. Backend service starts and waits for database connections
+3. Frontend starts and connects to Backend API
 
 #### Environment Variables
 Development uses `.env` files in each service directory:
-- `apps/quickview/.env` - Frontend configuration
-- `apps/ultron/.env` - Backend API configuration
+- `apps/frontend/.env` - Frontend configuration
+- `apps/backend/.env` - Backend API configuration
 
 #### Database Initialization
-- **PostgreSQL**: Automatic migrations via TypeORM on Ultron startup
-- **MongoDB**: Automatic connection and collection creation via Mongoose in Ultron
+- **PostgreSQL**: Automatic migrations via TypeORM on Backend startup
+- **MongoDB**: Automatic connection and collection creation via Mongoose in Backend
 
 ### Service-Specific Development
 
 Each service has its own development commands and detailed setup instructions:
 
-- **Frontend**: See [apps/quickview/README.md](apps/quickview/README.md) - React app development, Storybook, testing
-- **Backend API**: See [apps/ultron/README.md](apps/ultron/README.md) - NestJS backend, database migrations, email testing, range analysis
+- **Frontend**: See [apps/frontend/README.md](apps/frontend/README.md) - React app development, Storybook, testing
+- **Backend API**: See [apps/backend/README.md](apps/backend/README.md) - NestJS backend, database migrations, email testing, range analysis
 
 ### Working with Individual Services
 
@@ -74,8 +74,8 @@ docker-compose up postgres mongodb
 #### API Client Generation
 The frontend automatically generates TypeScript clients from backend OpenAPI specs:
 ```bash
-cd apps/quickview
-npm run openapi:ultron        # Generates ultron-api/ directory
+cd apps/frontend
+npm run openapi:backend
 ```
 
 Run this command whenever backend API interfaces change.
@@ -103,19 +103,19 @@ Run this command whenever backend API interfaces change.
 3. **Test your changes**
    ```bash
    # Frontend tests
-   cd apps/quickview && npm test
-   
+   cd apps/frontend && npm test
+
    # Backend tests
-   cd apps/ultron && npm test
+   cd apps/backend && npm test
    ```
 
 4. **Lint and format**
    ```bash
    # Frontend
-   cd apps/quickview && npm run lint && npm run format
-   
+   cd apps/frontend && npm run lint && npm run format
+
    # Backend
-   cd apps/ultron && npm run lint && npm run format
+   cd apps/backend && npm run lint && npm run format
    ```
 
 5. **Commit changes**
@@ -133,7 +133,7 @@ Run this command whenever backend API interfaces change.
 - **Security**: Never commit secrets, API keys, or sensitive information
 - **Testing**: Write tests for new features and bug fixes
 
-### Frontend (Quickview)
+### Frontend
 
 - **Framework**: React with TypeScript
 - **State Management**: Redux Toolkit
@@ -153,7 +153,7 @@ export const MyComponent: React.FC<Props> = ({ title, onSubmit }) => {
 };
 ```
 
-### Backend (Ultron)
+### Backend
 
 - **Framework**: NestJS with TypeScript
 - **Database**: TypeORM with PostgreSQL
@@ -352,15 +352,15 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
 
 ### Adding a new API endpoint
 
-1. **Backend (Ultron)**
+1. **Backend**
    - Create/update controller
    - Add service logic
    - Create/update DTOs
    - Write tests
    - Update OpenAPI documentation
 
-2. **Frontend (Quickview)**
-   - Generate API client: `npm run openapi:ultron`
+2. **Frontend**
+   - Generate API client: `npm run openapi:backend`
    - Create/update components
    - Add state management if needed
    - Write tests
@@ -368,12 +368,12 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
 
 ### Database Changes
 
-1. **PostgreSQL (Ultron)**
+1. **PostgreSQL (Backend)**
    - Update entities
    - Create migration: `npm run migrate`
    - Test migration in development
 
-2. **MongoDB (Ultron)**
+2. **MongoDB (Backend)**
    - Update Mongoose schemas
    - Update service logic
    - Test changes with sample data

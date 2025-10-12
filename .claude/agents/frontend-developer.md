@@ -40,7 +40,7 @@ You are a frontend developer specializing in React applications with Material-UI
 
 ### API Integration Workflow
 1. **New API Endpoints**: Coordinate with [backend-architect agent](backend-architect.md) for API design
-2. **Client Generation**: Run `npm run openapi:ultron` or `npm run openapi:vision` after backend changes
+2. **Client Generation**: Run `npm run openapi:backend` after backend changes
 3. **Type Safety**: Leverage auto-generated TypeScript clients from OpenAPI specs
 
 ### Testing Integration

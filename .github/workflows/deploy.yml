@@ -16,8 +16,8 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      ultron-changed: ${{ steps.changes.outputs.ultron }}
-      quickview-changed: ${{ steps.changes.outputs.quickview }}
+      backend-changed: ${{ steps.changes.outputs.backend }}
+      frontend-changed: ${{ steps.changes.outputs.frontend }}
       infra-changed: ${{ steps.changes.outputs.infra }}
     steps:
       - name: Checkout code
@@ -35,18 +35,18 @@ jobs:
           echo "Comparing commits: $BEFORE_SHA -> $AFTER_SHA"
 
           # Check for changes in each project directory
-          ULTRON_CHANGED=false
-          QUICKVIEW_CHANGED=false
+          BACKEND_CHANGED=false
+          FRONTEND_CHANGED=false
           INFRA_CHANGED=false
 
-          if git diff --name-only $BEFORE_SHA $AFTER_SHA | grep -q "^apps/ultron/"; then
-            echo "Ultron changes detected"
-            ULTRON_CHANGED=true
+          if git diff --name-only $BEFORE_SHA $AFTER_SHA | grep -q "^apps/backend/"; then
+            echo "Backend changes detected"
+            BACKEND_CHANGED=true
           fi
 
-          if git diff --name-only $BEFORE_SHA $AFTER_SHA | grep -q "^apps/quickview/"; then
-            echo "Quickview changes detected"
-            QUICKVIEW_CHANGED=true
+          if git diff --name-only $BEFORE_SHA $AFTER_SHA | grep -q "^apps/frontend/"; then
+            echo "Frontend changes detected"
+            FRONTEND_CHANGED=true
           fi
 
           # Infra changes: Terraform files or EC2 user-data template
@@ -55,20 +55,20 @@ jobs:
             INFRA_CHANGED=true
           fi
 
-          echo "ultron=$ULTRON_CHANGED" >> $GITHUB_OUTPUT
-          echo "quickview=$QUICKVIEW_CHANGED" >> $GITHUB_OUTPUT
+          echo "backend=$BACKEND_CHANGED" >> $GITHUB_OUTPUT
+          echo "frontend=$FRONTEND_CHANGED" >> $GITHUB_OUTPUT
           echo "infra=$INFRA_CHANGED" >> $GITHUB_OUTPUT
 
           echo "Change Summary:"
-          echo "- Ultron: $ULTRON_CHANGED"
-          echo "- Quickview: $QUICKVIEW_CHANGED"
+          echo "- Backend: $BACKEND_CHANGED"
+          echo "- Frontend: $FRONTEND_CHANGED"
           echo "- Infra: $INFRA_CHANGED"
 
-  ultron-quality:
-    name: Ultron - Lint & Format
+  backend-quality:
+    name: Backend - Lint & Format
     runs-on: ubuntu-latest
     needs: detect-changes
-    if: needs.detect-changes.outputs.ultron-changed == 'true'
+    if: needs.detect-changes.outputs.backend-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -79,23 +79,23 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        working-directory: ultron
+        working-directory: apps/backend
         run: |
           npm ci || npm install --no-audit --no-fund
 
       - name: Prettier check
-        working-directory: ultron
+        working-directory: apps/backend
         run: npx prettier "{src,test}/**/*.ts" --check
 
       - name: ESLint check (no autofix)
-        working-directory: ultron
+        working-directory: apps/backend
         run: npx eslint "{src,test}/**/*.ts" --max-warnings=0
 
-  quickview-quality:
-    name: Quickview - Lint & Format
+  frontend-quality:
+    name: Frontend - Lint & Format
     runs-on: ubuntu-latest
     needs: detect-changes
-    if: needs.detect-changes.outputs.quickview-changed == 'true'
+    if: needs.detect-changes.outputs.frontend-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -106,16 +106,16 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        working-directory: quickview
+        working-directory: apps/frontend
         run: |
           npm ci || npm install --no-audit --no-fund
 
       - name: Prettier check
-        working-directory: quickview
+        working-directory: apps/frontend
         run: npx prettier "./src/**/*.{ts,tsx,json}" --check
 
       - name: ESLint check (no autofix)
-        working-directory: quickview
+        working-directory: apps/frontend
         run: npx eslint "./src/**/*.{ts,tsx}" --max-warnings=0
 
   infra-terraform:
@@ -125,10 +125,10 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     secrets: inherit
 
-  ultron-build:
+  backend-build:
     runs-on: ubuntu-latest
-    needs: [detect-changes, ultron-quality]
-    if: needs.detect-changes.outputs.ultron-changed == 'true'
+    needs: [detect-changes, backend-quality]
+    if: needs.detect-changes.outputs.backend-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -143,20 +143,20 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push Ultron image
+      - name: Build and push Backend image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/texas-ultron:$IMAGE_TAG ./apps/ultron
-          docker build -t $ECR_REGISTRY/texas-ultron:latest ./apps/ultron
-          docker push $ECR_REGISTRY/texas-ultron:$IMAGE_TAG
-          docker push $ECR_REGISTRY/texas-ultron:latest
+          docker build -t $ECR_REGISTRY/texas-backend:$IMAGE_TAG ./apps/backend
+          docker build -t $ECR_REGISTRY/texas-backend:latest ./apps/backend
+          docker push $ECR_REGISTRY/texas-backend:$IMAGE_TAG
+          docker push $ECR_REGISTRY/texas-backend:latest
 
-  quickview-build:
+  frontend-build:
     runs-on: ubuntu-latest
-    needs: [detect-changes, quickview-quality]
-    if: needs.detect-changes.outputs.quickview-changed == 'true'
+    needs: [detect-changes, frontend-quality]
+    if: needs.detect-changes.outputs.frontend-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -171,24 +171,24 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push Quickview image
+      - name: Build and push Frontend image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build \
-            --build-arg REACT_APP_ULTRON_API_URL=https://www.allinrange.com/api \
-            -t $ECR_REGISTRY/texas-quickview:$IMAGE_TAG ./apps/quickview
+            --build-arg REACT_APP_BACKEND_API_URL=https://www.allinrange.com/api \
+            -t $ECR_REGISTRY/texas-frontend:$IMAGE_TAG ./apps/frontend
           docker build \
-            --build-arg REACT_APP_ULTRON_API_URL=https://www.allinrange.com/api \
-            -t $ECR_REGISTRY/texas-quickview:latest ./apps/quickview
-          docker push $ECR_REGISTRY/texas-quickview:$IMAGE_TAG
-          docker push $ECR_REGISTRY/texas-quickview:latest
+            --build-arg REACT_APP_BACKEND_API_URL=https://www.allinrange.com/api \
+            -t $ECR_REGISTRY/texas-frontend:latest ./apps/frontend
+          docker push $ECR_REGISTRY/texas-frontend:$IMAGE_TAG
+          docker push $ECR_REGISTRY/texas-frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [detect-changes, infra-terraform, ultron-build, quickview-build]
-    if: always() && needs.detect-changes.result == 'success' && (needs.infra-terraform.result == 'success' || needs.infra-terraform.result == 'skipped') && (needs.ultron-build.result == 'success' || needs.ultron-build.result == 'skipped') && (needs.quickview-build.result == 'success' || needs.quickview-build.result == 'skipped')
+    needs: [detect-changes, infra-terraform, backend-build, frontend-build]
+    if: always() && needs.detect-changes.result == 'success' && (needs.infra-terraform.result == 'success' || needs.infra-terraform.result == 'skipped') && (needs.backend-build.result == 'success' || needs.backend-build.result == 'skipped') && (needs.frontend-build.result == 'success' || needs.frontend-build.result == 'skipped')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -255,7 +255,7 @@ jobs:
           echo "❌ Health check failed after $timeout seconds"
           echo "Application may still be deploying or there might be an issue"
           echo "Check the server logs:"
-          echo "  - Frontend: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs quickview"
-          echo "  - API: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs ultron"
+          echo "  - Frontend: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs frontend"
+          echo "  - API: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs backend"
           echo "  - Nginx: docker-compose -f ~/texas/infrastructure/docker-compose.prod.yml logs nginx"
           exit 1

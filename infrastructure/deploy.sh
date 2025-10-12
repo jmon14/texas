@@ -72,8 +72,8 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
         'echo \"Starting environment variable setup...\"',
         'ECR_REGISTRY=${ECR_REGISTRY}',
         'echo \"ECR_REGISTRY=\$ECR_REGISTRY\" > .env',
-        'echo \"ULTRON_TAG=latest\" >> .env',
-        'echo \"QUICKVIEW_TAG=latest\" >> .env',
+        'echo \"BACKEND_TAG=latest\" >> .env',
+        'echo \"FRONTEND_TAG=latest\" >> .env',
         'echo \"Environment variables configured successfully\"'
     ]" \
     --query 'Command.CommandId' \
@@ -98,11 +98,11 @@ SSL_SETUP_RESULT=$(aws ssm send-command \
     --document-name "AWS-RunShellScript" \
     --parameters "commands=[
         'cd /home/ssm-user/texas/infrastructure/nginx',
-        'DOMAIN_EMAIL=$(aws ssm get-parameter --name "/texas/ultron/DOMAIN_EMAIL" --query "Parameter.Value" --output text)',
+        'DOMAIN_EMAIL=$(aws ssm get-parameter --name "/texas/backend/DOMAIN_EMAIL" --query "Parameter.Value" --output text)',
         'echo \"DOMAIN_EMAIL retrieved: \$DOMAIN_EMAIL\"',
         'if [ -z \"\$DOMAIN_EMAIL\" ]; then',
         '  echo \"❌ DOMAIN_EMAIL parameter not found in SSM Parameter Store\"',
-        '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/ultron/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
+        '  echo \"Please create the parameter: aws ssm put-parameter --name /texas/backend/DOMAIN_EMAIL --value your-email@domain.com --type String\"',
         '  exit 1',
         'fi',
         'echo \"Making setup-ssl.sh executable...\"',
@@ -145,8 +145,8 @@ CONTAINER_DEPLOY_RESULT=$(aws ssm send-command \
         'docker-compose -f infrastructure/docker-compose.prod.yml down',
         'echo \"Pulling latest images from ECR...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml pull',
-        'echo \"Running database migrations (Ultron)...\"',
-        'docker-compose -f infrastructure/docker-compose.prod.yml run --rm ultron node dist/scripts/migrate.js',
+        'echo \"Running database migrations (Backend)...\"',
+        'docker-compose -f infrastructure/docker-compose.prod.yml run --rm backend node dist/scripts/migrate.js',
         'echo \"Starting containers with latest images...\"',
         'docker-compose -f infrastructure/docker-compose.prod.yml up -d'
     ]" \

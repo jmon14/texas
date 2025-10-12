@@ -84,8 +84,8 @@ This document covers common issues you might encounter when developing or deploy
 2. **Node.js specific issues**
    ```bash
    # Clear node_modules and reinstall
-   docker-compose exec quickview rm -rf node_modules
-   docker-compose exec quickview npm install
+   docker-compose exec frontend rm -rf node_modules
+   docker-compose exec frontend npm install
    ```
 
 ## 🔐 Authentication Issues
@@ -122,14 +122,14 @@ This document covers common issues you might encounter when developing or deploy
 
 1. **Development (Ethereal Email)**
    ```bash
-   # Check Ultron logs for email URLs
-   docker-compose logs ultron | grep -i ethereal
+   # Check Backend logs for email URLs
+   docker-compose logs backend | grep -i ethereal
    ```
 
 2. **Production (AWS SES)**
    - Verify AWS SES configuration in SSM parameters
    - Check SES sending limits and domain verification
-   - Review Ultron logs for AWS errors
+   - Review Backend logs for AWS errors
 
 ## 🌐 API Issues
 
@@ -162,8 +162,8 @@ This document covers common issues you might encounter when developing or deploy
    docker-compose ps
 
    # Check specific service logs
-   docker-compose logs ultron
-   docker-compose logs quickview
+   docker-compose logs backend
+   docker-compose logs frontend
    ```
 
 ### Database Connection Errors
@@ -173,24 +173,24 @@ This document covers common issues you might encounter when developing or deploy
 **Solutions**:
 
 1. **Connection string validation**
-   - Development PostgreSQL: `postgresql://admin:admin@postgres:5432/ultron`
-   - Development MongoDB: `mongodb://mongodb:27017/ultron`
-   - Production: Use connection strings from environment variables (check MONGODB_URI in Ultron .env)
+   - Development PostgreSQL: `postgresql://admin:admin@postgres:5432/backend`
+   - Development MongoDB: `mongodb://mongodb:27017/texas`
+   - Production: Use connection strings from environment variables (check MONGODB_URI in Backend .env)
 
 2. **Database authentication**
    ```bash
    # Test PostgreSQL connection
-   docker-compose exec postgres psql -U admin -d ultron
+   docker-compose exec postgres psql -U admin -d backend
 
    # Test MongoDB connection
-   docker-compose exec mongodb mongosh ultron
+   docker-compose exec mongodb mongosh texas
    ```
 
 3. **Network connectivity**
    ```bash
    # Test connectivity between containers
-   docker-compose exec ultron ping postgres
-   docker-compose exec ultron ping mongodb
+   docker-compose exec backend ping postgres
+   docker-compose exec backend ping mongodb
    ```
 
 ## 🚀 Deployment Issues
@@ -307,7 +307,7 @@ This document covers common issues you might encounter when developing or deploy
 
 ### MongoDB Issues
 
-**Problem**: Ultron API can't connect to MongoDB.
+**Problem**: Backend API can't connect to MongoDB.
 
 **Solutions**:
 
@@ -317,43 +317,43 @@ This document covers common issues you might encounter when developing or deploy
    docker-compose logs mongodb
 
    # Test connection
-   docker-compose exec mongodb mongosh ultron
+   docker-compose exec mongodb mongosh texas
 
-   # Verify Ultron can reach MongoDB
-   docker-compose exec ultron ping mongodb
+   # Verify Backend can reach MongoDB
+   docker-compose exec backend ping mongodb
    ```
 
 2. **MongoDB Atlas (Production)**
    - Verify IP whitelist includes your deployment server
-   - Check connection string format in Ultron's .env file
+   - Check connection string format in Backend's .env file
    - Test connection from command line:
    ```bash
-   mongosh "mongodb+srv://username:password@cluster.mongodb.net/database"
+   mongosh "mongodb+srv://username:password@cluster.mongodb.net/texas"
    ```
 
 3. **Environment variables**
    ```bash
-   # Verify MongoDB URI is set in Ultron
-   docker-compose exec ultron env | grep MONGODB_URI
+   # Verify MongoDB URI is set in Backend
+   docker-compose exec backend env | grep MONGODB_URI
 
-   # Check Ultron logs for connection errors
-   docker-compose logs ultron | grep -i mongo
+   # Check Backend logs for connection errors
+   docker-compose logs backend | grep -i mongo
    ```
 
 ## 🎨 Frontend Issues
 
 ### Build Failures
 
-**Problem**: `npm run build` fails for Quickview.
+**Problem**: `npm run build` fails for Frontend.
 
 **Solutions**:
 
 1. **TypeScript errors**
    ```bash
    # Run type checking
-   cd quickview
+   cd apps/frontend
    npx tsc --noEmit
-   
+
    # Check for ESLint errors
    npm run lint
    ```
@@ -373,14 +373,14 @@ This document covers common issues you might encounter when developing or deploy
 
 1. **API service not running**
    ```bash
-   # Ensure Ultron is running before generating clients
+   # Ensure Backend is running before generating clients
    curl http://localhost:3000/api-json
    ```
 
 2. **OpenAPI spec issues**
    - Verify API endpoint returns valid OpenAPI JSON
    - Check for breaking changes in API structure
-   - Regenerate after backend API updates: `npm run openapi:ultron`
+   - Regenerate after backend API updates: `npm run openapi:backend`
 
 ## 📱 Browser Issues
 
@@ -440,10 +440,10 @@ This document covers common issues you might encounter when developing or deploy
 3. **Database debugging**
    ```bash
    # PostgreSQL queries
-   docker-compose exec postgres psql -U admin -d ultron -c "SELECT * FROM users LIMIT 5;"
+   docker-compose exec postgres psql -U admin -d backend -c "SELECT * FROM users LIMIT 5;"
 
    # MongoDB queries (Development)
-   docker-compose exec mongodb mongosh ultron --eval "db.ranges.find().limit(5)"
+   docker-compose exec mongodb mongosh texas --eval "db.ranges.find().limit(5)"
 
    # MongoDB queries (Production - via MongoDB Atlas shell or Compass)
    mongosh "mongodb+srv://..." --eval "db.ranges.find().limit(5)"
@@ -482,8 +482,8 @@ curl -i http://localhost:3000/health
 curl -i http://localhost:8080
 
 # Database connectivity
-docker-compose exec ultron npm run migrate
-docker-compose exec ultron ping postgres
+docker-compose exec backend npm run migrate
+docker-compose exec backend ping postgres
 
 # Log analysis
 docker-compose logs --tail=50 <service>

@@ -25,44 +25,44 @@ variable "volume_size" {
   default     = 20
 }
 
-variable "ultron_jwt_secret" {
-  description = "JWT secret for Ultron"
+variable "backend_jwt_secret" {
+  description = "JWT secret for Backend"
   type        = string
   sensitive   = true
 }
 
-variable "ultron_jwt_refresh_secret" {
-  description = "JWT refresh secret for Ultron"
+variable "backend_jwt_refresh_secret" {
+  description = "JWT refresh secret for Backend"
   type        = string
   sensitive   = true
 }
 
-variable "ultron_jwt_email_secret" {
-  description = "JWT email secret for Ultron"
+variable "backend_jwt_email_secret" {
+  description = "JWT email secret for Backend"
   type        = string
   sensitive   = true
 }
 
-variable "ultron_postgres_user" {
-  description = "PostgreSQL username for Ultron"
+variable "backend_postgres_user" {
+  description = "PostgreSQL username for Backend"
   type        = string
   sensitive   = true
 }
 
-variable "ultron_postgres_password" {
-  description = "PostgreSQL password for Ultron"
+variable "backend_postgres_password" {
+  description = "PostgreSQL password for Backend"
   type        = string
   sensitive   = true
 }
 
-variable "ultron_postgres_host" {
-  description = "PostgreSQL host for Ultron (Supabase)"
+variable "backend_postgres_host" {
+  description = "PostgreSQL host for Backend (Supabase)"
   type        = string
   default     = "aws-0-eu-central-1.pooler.supabase.com"
 }
 
-variable "ultron_mongodb_uri" {
-  description = "MongoDB connection URI for Ultron (ranges data)"
+variable "backend_mongodb_uri" {
+  description = "MongoDB connection URI for Backend (ranges data)"
   type        = string
   sensitive   = true
 }

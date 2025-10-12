@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-01-15
+
+### Changed
+
+#### Architecture Simplification
+- **Service Consolidation**: Unified TypeScript stack with React frontend and NestJS backend
+- **Service Renaming**: QuickView → Frontend, Ultron → Backend for clearer nomenclature
+- **Directory Restructure**: Moved services to `apps/` folder (apps/frontend, apps/backend)
+- **Environment Variables**: Renamed `REACT_APP_ULTRON_API_URL` → `REACT_APP_BACKEND_API_URL`
+- **API Client Directory**: Renamed `ultron-api/` → `backend-api/`
+- **ECR Repositories**: Renamed to texas-frontend and texas-backend
+- **SSM Parameter Paths**: Updated from `/texas/ultron/*` to `/texas/backend/*`
+- **Docker Services**: Updated service names in docker-compose configurations (frontend, backend)
+- **CI/CD Pipeline**: Updated GitHub Actions workflows for new service names and paths
+
+#### Backend Enhancement
+- **MongoDB Integration**: Backend now handles both PostgreSQL (users/auth) and MongoDB (ranges)
+- **Unified API**: Single NestJS service manages all application domains
+- **Database Architecture**: Dual-database approach with PostgreSQL for relational data and MongoDB for flexible range structures
+- **Range Management**: Migrated poker range functionality from Vision to Backend service
+
+### Removed
+
+#### Vision Service Deprecation
+- **Spring Boot Service**: Removed Vision service (Java/Spring Boot)
+- **Java Stack**: Eliminated Java/Maven dependencies from project
+- **MongoDB Migration**: Range management now handled by Backend service
+- **Microservice Consolidation**: Simplified from 3-service to 2-service architecture
+- **ECR Cleanup**: Removed texas-vision repository
+- **Infrastructure**: Removed Vision-related Terraform resources and deployment configurations
+
+### Fixed
+- **Documentation**: Updated all documentation to reflect new architecture
+- **Configuration Service**: Fixed hardcoded SSM paths in Backend configuration (`/texas/ultron` → `/texas/backend`)
+- **API References**: Updated API client generation commands (`openapi:ultron` → `openapi:backend`)
+- **Database Names**: Updated database references (PostgreSQL: `ultron` → `backend`, MongoDB: `ultron` → `texas`)
+
+### Breaking Changes
+- **Service Names**: All references to "QuickView" and "Ultron" have been renamed
+- **Environment Variables**: Frontend requires new `REACT_APP_BACKEND_API_URL` variable
+- **API Clients**: Generated API client directory renamed from `ultron-api/` to `backend-api/`
+- **Infrastructure**: ECR repository names changed (requires re-deployment)
+- **SSM Parameters**: All parameter paths moved from `/texas/ultron/*` to `/texas/backend/*`
+
 ## [1.2.0] - 2025-09-14
 
 ### Added
@@ -59,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Storybook component development environment
 - Comprehensive test suite with Jest and React Testing Library
 
-#### Backend (Ultron)
+#### Backend
 - NestJS authentication and user management service
 - JWT-based authentication with refresh token support
 - PostgreSQL database with TypeORM

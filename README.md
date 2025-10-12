@@ -12,7 +12,7 @@ docker-compose up
 
 # Access applications
 # Frontend: http://localhost:8080
-# Ultron API: http://localhost:3000
+# Backend API: http://localhost:3000
 ```
 
 **New to the project?** See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed setup and development workflow.
@@ -21,27 +21,27 @@ docker-compose up
 
 ```
 ├── apps/
-│   ├── quickview/     # React frontend (TypeScript + Material-UI)
-│   └── ultron/        # NestJS API (PostgreSQL + MongoDB)
+│   ├── frontend/      # React frontend (TypeScript + Material-UI)
+│   └── backend/       # NestJS API (PostgreSQL + MongoDB)
 └── infrastructure/    # AWS deployment configuration
 ```
 
-**Frontend** → **Ultron API** → **PostgreSQL** (users, files)
-**Frontend** → **Ultron API** → **MongoDB** (ranges)
+**Frontend** → **Backend API** → **PostgreSQL** (users, files)
+**Frontend** → **Backend API** → **MongoDB** (ranges)
 
 ## 📚 Documentation
 
 - **[Contributing Guide](CONTRIBUTING.md)** - Development setup, workflow, and standards
-- **[System Architecture](docs/architecture.md)** - Technical design and component interactions  
+- **[System Architecture](docs/architecture.md)** - Technical design and component interactions
 - **[Infrastructure Guide](infrastructure/README.md)** - Production deployment on AWS
 - **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
 
 ### Service-Specific Documentation
-- [Frontend (apps/quickview/)](apps/quickview/README.md) - React app architecture
-- [Backend API (apps/ultron/)](apps/ultron/README.md) - NestJS backend service
+- [Frontend (apps/frontend/)](apps/frontend/README.md) - React app architecture
+- [Backend API (apps/backend/)](apps/backend/README.md) - NestJS backend service
 
 ### API Documentation
-- [Ultron API](http://localhost:3000/api) - Interactive Swagger docs
+- [Backend API](http://localhost:3000/api) - Interactive Swagger docs
 
 ## 🛠️ Tech Stack
 

@@ -16,8 +16,8 @@ graph TB
     end
 
     subgraph "Application Layer"
-        QV[Quickview Frontend<br/>React + TypeScript]
-        ULTRON[Ultron API<br/>NestJS + TypeORM + Mongoose]
+        FE[Frontend<br/>React + TypeScript]
+        BE[Backend API<br/>NestJS + TypeORM + Mongoose]
     end
 
     subgraph "Data Layer"
@@ -34,15 +34,15 @@ graph TB
 
     WEB --> NGINX
     MOBILE --> NGINX
-    NGINX --> QV
-    NGINX --> ULTRON
+    NGINX --> FE
+    NGINX --> BE
 
-    QV --> ULTRON
+    FE --> BE
 
-    ULTRON --> PG
-    ULTRON --> MONGO
-    ULTRON --> S3
-    ULTRON --> SSM
+    BE --> PG
+    BE --> MONGO
+    BE --> S3
+    BE --> SSM
 
     EC2 --> ECR
     EC2 --> SSM
@@ -52,7 +52,7 @@ graph TB
 
 ### Frontend Layer
 
-#### Quickview (React Application)
+#### Frontend (React Application)
 
 - **Technology**: React 18 + TypeScript + Material-UI
 - **Purpose**: User interface for poker range analysis
@@ -67,7 +67,7 @@ graph TB
 
 ### API Layer
 
-#### Ultron (Unified Backend Service)
+#### Backend (Unified NestJS Service)
 
 - **Technology**: NestJS + TypeScript + PostgreSQL + MongoDB
 - **Purpose**: User management, authentication, file handling, and poker range analysis
@@ -87,7 +87,7 @@ graph TB
 
 ### Data Layer
 
-#### PostgreSQL (Ultron Database)
+#### PostgreSQL (User Database)
 
 - **Provider**: Supabase (managed PostgreSQL)
 - **Purpose**: User accounts, authentication data, file metadata
@@ -96,20 +96,20 @@ graph TB
   - Files table (uploaded file metadata)
   - Refresh tokens (session management)
 
-#### MongoDB (Ultron Range Database)
+#### MongoDB (Range Database)
 
 - **Provider**: MongoDB Atlas (free tier)
 - **Purpose**: Poker range data storage
 - **Collections**:
   - Ranges (poker hand ranges with actions)
   - User-specific range isolation
-- **Integration**: Mongoose ODM in Ultron service
+- **Integration**: Mongoose ODM in Backend service
 
 #### AWS S3 (File Storage)
 
 - **Purpose**: User-uploaded files storage
 - **Configuration**: Public read access for certain files
-- **Integration**: Direct upload from Ultron API
+- **Integration**: Direct upload from Backend API
 
 ## 🔄 Data Flow Patterns
 
@@ -118,21 +118,21 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant User as User
-    participant QV as Quickview
-    participant Ultron as Ultron API
+    participant FE as Frontend
+    participant BE as Backend API
     participant PG as PostgreSQL
 
-    User->>QV: Enter credentials
-    QV->>Ultron: POST /auth/login
-    Ultron->>PG: Validate user
-    PG-->>Ultron: User data
-    Ultron-->>QV: JWT tokens (cookies)
-    QV-->>User: Authenticated session
+    User->>FE: Enter credentials
+    FE->>BE: POST /auth/login
+    BE->>PG: Validate user
+    PG-->>BE: User data
+    BE-->>FE: JWT tokens (cookies)
+    FE-->>User: Authenticated session
 
-    Note over QV,Ultron: Access token expires
-    QV->>Ultron: GET /auth/refresh
-    Ultron->>PG: Validate refresh token
-    Ultron-->>QV: New access token
+    Note over FE,BE: Access token expires
+    FE->>BE: GET /auth/refresh
+    BE->>PG: Validate refresh token
+    BE-->>FE: New access token
 ```
 
 ### Range Management Flow
@@ -140,16 +140,16 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant User as User
-    participant QV as Quickview
-    participant Ultron as Ultron API
+    participant FE as Frontend
+    participant BE as Backend API
     participant Mongo as MongoDB
 
-    User->>QV: Create/Edit range
-    QV->>Ultron: POST /ranges
-    Ultron->>Mongo: Store range data (Mongoose)
-    Mongo-->>Ultron: Confirmation
-    Ultron-->>QV: Range created
-    QV-->>User: Updated UI
+    User->>FE: Create/Edit range
+    FE->>BE: POST /ranges
+    BE->>Mongo: Store range data (Mongoose)
+    Mongo-->>BE: Confirmation
+    BE-->>FE: Range created
+    FE-->>User: Updated UI
 ```
 
 ## 🏭 Deployment Architecture

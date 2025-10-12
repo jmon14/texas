@@ -1,0 +1,499 @@
+{
+  "info": {
+    "_postman_id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+    "name": "Backend API",
+    "description": "Collection for Backend API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"your_username\",\n    \"password\": \"your_password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "refresh_token={{refresh_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "access_token={{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"your_email@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/reset",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "reset"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check Backend service health and status. Returns service status, timestamp, and service name."
+          },
+          "response": []
+        }
+      ],
+      "description": "Health check endpoints for monitoring Backend service status"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"new_user\",\n    \"email\": \"new_user@example.com\",\n    \"password\": \"your_password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/create",
+              "host": ["{{base_url}}"],
+              "path": ["users", "create"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"your_reset_token\",\n    \"password\": \"new_password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/reset-pwd",
+              "host": ["{{base_url}}"],
+              "path": ["users", "reset-pwd"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"your_confirmation_token\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["users", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Get User Files",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "access_token={{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/files",
+              "host": ["{{base_url}}"],
+              "path": ["users", "files"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "access_token={{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/:id",
+              "host": ["{{base_url}}"],
+              "path": ["users", ":id"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ranges",
+      "item": [
+        {
+          "name": "Get All Ranges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ranges",
+              "host": ["{{base_url}}"],
+              "path": ["ranges"]
+            },
+            "description": "Retrieve all ranges in the system"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Range by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ranges/{{rangeId}}",
+              "host": ["{{base_url}}"],
+              "path": ["ranges", "{{rangeId}}"]
+            },
+            "description": "Retrieve a specific range by its ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has required fields\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('userId');",
+                  "    pm.expect(jsonData).to.have.property('handsRange');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Ranges by User ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ranges/user/{{userId}}",
+              "host": ["{{base_url}}"],
+              "path": ["ranges", "user", "{{userId}}"]
+            },
+            "description": "Retrieve all ranges for a specific user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"All ranges belong to specified user\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const userId = pm.variables.get('userId');",
+                  "    jsonData.forEach(range => {",
+                  "        pm.expect(range.userId).to.equal(userId);",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"UTG Opening Range\",\n  \"userId\": \"{{userId}}\",\n  \"handsRange\": [\n    {\n      \"rangeFraction\": 1.0,\n      \"label\": \"AA\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    },\n    {\n      \"rangeFraction\": 1.0,\n      \"label\": \"KK\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    },\n    {\n      \"rangeFraction\": 1.0,\n      \"label\": \"QQ\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    },\n    {\n      \"rangeFraction\": 0.5,\n      \"label\": \"AK\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ranges",
+              "host": ["{{base_url}}"],
+              "path": ["ranges"]
+            },
+            "description": "Create a new range with hand ranges and actions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains success message\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText).to.include('Range created successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Range",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated UTG Opening Range\",\n  \"userId\": \"{{userId}}\",\n  \"handsRange\": [\n    {\n      \"rangeFraction\": 1.0,\n      \"label\": \"AA\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    },\n    {\n      \"rangeFraction\": 1.0,\n      \"label\": \"KK\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    },\n    {\n      \"rangeFraction\": 1.0,\n      \"label\": \"QQ\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    },\n    {\n      \"rangeFraction\": 1.0,\n      \"label\": \"AK\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 100.0}\n      ]\n    },\n    {\n      \"rangeFraction\": 0.8,\n      \"label\": \"AQ\",\n      \"actions\": [\n        {\"type\": \"RAISE\", \"percentage\": 80.0},\n        {\"type\": \"CALL\", \"percentage\": 20.0}\n      ]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ranges/{{rangeId}}",
+              "host": ["{{base_url}}"],
+              "path": ["ranges", "{{rangeId}}"]
+            },
+            "description": "Update an existing range by ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains success message\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText).to.include('Range updated successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Range",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ranges/{{rangeId}}",
+              "host": ["{{base_url}}"],
+              "path": ["ranges", "{{rangeId}}"]
+            },
+            "description": "Delete a range by ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains success message\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText).to.include('Range deleted successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Range management endpoints for creating, reading, updating, and deleting poker ranges"
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "your_access_token",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "your_refresh_token",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "your_jwt_bearer_token",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "your_user_id",
+      "type": "string"
+    },
+    {
+      "key": "rangeId",
+      "value": "your_range_id",
+      "type": "string"
+    }
+  ]
+}

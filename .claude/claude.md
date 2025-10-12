@@ -35,7 +35,7 @@ The multi-agent approach allows for:
 
 **Role**: React/TypeScript development
 
-- Quickview application development
+- Frontend application development
 - Component architecture (atomic design)
 - State management with Redux Toolkit
 - Performance optimization and testing
@@ -44,19 +44,11 @@ The multi-agent approach allows for:
 
 **Role**: NestJS/TypeScript API development
 
-- Ultron service development
+- Backend service development (unified API)
 - JWT authentication and authorization
-- PostgreSQL/TypeORM data modeling
+- PostgreSQL/TypeORM data modeling (users, files)
+- MongoDB/Mongoose integration (poker ranges)
 - API design and testing strategies
-
-### [Backend Java Agent](./agents/backend-java.md)
-
-**Role**: Spring Boot/Java development
-
-- Vision service development
-- MongoDB integration and optimization
-- Enterprise Java patterns
-- Testing with JUnit and TestContainers
 
 ### [DevOps Agent](./agents/devops.md)
 
@@ -87,8 +79,7 @@ Multi-Agent Coordination
 │
 ├── Development Agents
 │   ├── Frontend (React/TypeScript)
-│   ├── Backend Node.js (NestJS)
-│   └── Backend Java (Spring Boot)
+│   └── Backend (NestJS/TypeScript)
 │
 ├── Infrastructure Agent
 │   ├── DevOps (AWS/Docker)
@@ -130,10 +121,9 @@ The Frontend Agent will:
 ### 3. Backend Development
 
 ```markdown
-@backend-node: Create user profile API endpoints
-@backend-java: Add profile image storage service
+@backend: Create user profile API endpoints
 
-Each Backend Agent will:
+The Backend Agent will:
 
 - Design appropriate APIs
 - Implement business logic
@@ -201,7 +191,7 @@ The QA Agent will:
 ```markdown
 # Example: API Contract Discussion
 
-@backend-node @frontend: Need to define user profile API contract
+@backend @frontend: Need to define user profile API contract
 
 Backend Node.js Agent response:
 
@@ -226,8 +216,7 @@ Frontend Agent response:
 Project Manager coordinates investigation:
 
 - @frontend: Check rendering performance
-- @backend-node: Analyze API response times
-- @backend-java: Review image serving performance
+- @backend: Analyze API response times and database queries
 - @devops: Check infrastructure metrics
 - @qa: Reproduce and quantify issue
 ```
@@ -237,10 +226,11 @@ Project Manager coordinates investigation:
 ### Current Technology Stack
 
 - **Frontend**: React 18 + TypeScript + Material-UI + Redux Toolkit
-- **Backend API**: NestJS + PostgreSQL + TypeORM + JWT
-- **Vision Service**: Spring Boot + MongoDB + Maven
+- **Backend API**: NestJS + TypeScript + PostgreSQL + MongoDB
 - **Infrastructure**: AWS EC2 + ECR + Docker + Terraform
-- **Database**: PostgreSQL (Supabase) + MongoDB Atlas
+- **Databases**:
+  - PostgreSQL (Supabase) - User accounts, authentication, file metadata
+  - MongoDB (Atlas) - Poker range data and analysis
 
 ### Documentation Structure
 
@@ -258,9 +248,8 @@ The project follows a clear documentation hierarchy:
 
 ```
 Production Environment
-├── Quickview Frontend (Port 8080)
-├── Ultron API (Port 3000)
-├── Vision API (Port 3001)
+├── Frontend (Port 8080)
+├── Backend API (Port 3000)
 └── Nginx Reverse Proxy (Port 80/443)
 ```
 
@@ -276,17 +265,15 @@ docker-compose up
 
 # Access points:
 # - Frontend: http://localhost:8080
-# - Ultron API: http://localhost:3000/api (Swagger docs)
-# - Vision API: http://localhost:3001/v3/api-docs
+# - Backend API: http://localhost:3000/api (Swagger docs)
 ```
 
 #### Service-Specific Setup
 
 Each service requires environment configuration:
 
-- **Frontend**: See [quickview/README.md](../quickview/README.md) - API URLs and development settings
-- **Ultron API**: See [ultron/README.md](../ultron/README.md) - Database, JWT, and email configuration
-- **Vision API**: See [vision/README.md](../vision/README.md) - MongoDB connection setup
+- **Frontend**: See [apps/frontend/README.md](../apps/frontend/README.md) - API URLs and development settings
+- **Backend API**: See [apps/backend/README.md](../apps/backend/README.md) - Database (PostgreSQL + MongoDB), JWT, and email configuration
 
 #### Production Deployment
 
@@ -311,7 +298,7 @@ cd infrastructure/
 
 - **Git Workflow**: Feature branches → main → production (with release management)
 - **Local Development**: Docker Compose with hot reload for all services
-- **Testing**: Jest + React Testing Library + JUnit with comprehensive coverage
+- **Testing**: Jest + React Testing Library with comprehensive coverage
 - **Code Quality**: ESLint + Prettier with TypeScript strict mode
 - **Release Management**: Semantic versioning with [CHANGELOG.md](../CHANGELOG.md)
 - **Deployment**: Automated AWS deployment via [infrastructure/README.md](../infrastructure/README.md)
@@ -327,7 +314,7 @@ cd infrastructure/
 # Use specific agent for domain-focused work
 
 @frontend: Update user interface styling
-@backend-node: Add new API validation
+@backend: Add new API validation
 @devops: Update SSL certificate
 ```
 
@@ -341,8 +328,8 @@ cd infrastructure/
 Project Manager will coordinate using established workflows:
 
 - Reference CONTRIBUTING.md for development setup and git workflow
-- Frontend: UI components following quickview/README.md guidelines
-- Backend: WebSocket implementation per ultron/README.md patterns
+- Frontend: UI components following apps/frontend/README.md guidelines
+- Backend: WebSocket implementation per apps/backend/README.md patterns
 - DevOps: Infrastructure updates per infrastructure/README.md
 - QA: Testing strategies following project testing standards
 ```
@@ -357,8 +344,8 @@ Project Manager will coordinate using established workflows:
 Coordinated response using documentation resources:
 
 - DevOps: Infrastructure metrics (reference infrastructure/README.md)
-- Backend agents: Database and API performance (check service READMEs)
-- Frontend: Client-side performance (reference quickview/README.md)
+- Backend: Database and API performance (check apps/backend/README.md)
+- Frontend: Client-side performance (reference apps/frontend/README.md)
 - QA: Performance testing and benchmarks
 - Reference docs/troubleshooting.md for common issues and solutions
 ```
@@ -376,16 +363,16 @@ Coordinated response using documentation resources:
 ## 📁 File Organization
 
 ```
-claude/
-├── CLAUDE.md                    # Multi-agent system overview and project documentation
+.claude/
+├── claude.md                   # Multi-agent system overview and project documentation
 └── agents/
     ├── project-manager.md      # Project coordination and documentation
-    ├── architect.md           # Technical design and system architecture
-    ├── frontend.md            # React/TypeScript specialist
-    ├── backend-node.md        # NestJS/Node.js specialist
-    ├── backend-java.md        # Spring Boot/Java specialist
-    ├── devops.md             # Infrastructure and deployment
-    └── qa.md                 # Testing and quality assurance
+    ├── architect.md            # Technical design and system architecture
+    ├── frontend.md   # React/TypeScript specialist
+    ├── backend.md    # NestJS/TypeScript specialist
+    ├── devops-engineer.md      # Infrastructure and deployment
+    ├── test-automator.md       # Testing and quality assurance
+    └── documentation-expert.md # Documentation maintenance
 ```
 
 ## 🔧 System Evolution

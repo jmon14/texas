@@ -65,16 +65,16 @@ jobs:
             echo "TF_VAR_${TFVAR_NAME}=$VALUE" >> "$GITHUB_ENV"
           }
 
-          fetch "/texas/ultron/JWT_SECRET"              ultron_jwt_secret
-          fetch "/texas/ultron/JWT_REFRESH_SECRET"      ultron_jwt_refresh_secret
-          fetch "/texas/ultron/JWT_EMAIL_SECRET"        ultron_jwt_email_secret
-          fetch "/texas/ultron/POSTGRES_USER"           ultron_postgres_user
-          fetch "/texas/ultron/POSTGRES_PASSWORD"       ultron_postgres_password
-          fetch "/texas/ultron/POSTGRES_HOST"           ultron_postgres_host
-          fetch "/texas/ultron/MONGODB_URI"             ultron_mongodb_uri
-          fetch "/texas/ultron/AWS_SES_SMTP_USERNAME"   aws_ses_smtp_username
-          fetch "/texas/ultron/AWS_SES_SMTP_PASSWORD"   aws_ses_smtp_password
-          fetch "/texas/ultron/DOMAIN_EMAIL"            domain_email
+          fetch "/texas/backend/JWT_SECRET"              backend_jwt_secret
+          fetch "/texas/backend/JWT_REFRESH_SECRET"      backend_jwt_refresh_secret
+          fetch "/texas/backend/JWT_EMAIL_SECRET"        backend_jwt_email_secret
+          fetch "/texas/backend/POSTGRES_USER"           backend_postgres_user
+          fetch "/texas/backend/POSTGRES_PASSWORD"       backend_postgres_password
+          fetch "/texas/backend/POSTGRES_HOST"           backend_postgres_host
+          fetch "/texas/backend/MONGODB_URI"             backend_mongodb_uri
+          fetch "/texas/backend/AWS_SES_SMTP_USERNAME"   aws_ses_smtp_username
+          fetch "/texas/backend/AWS_SES_SMTP_PASSWORD"   aws_ses_smtp_password
+          fetch "/texas/backend/DOMAIN_EMAIL"            domain_email
 
       - name: Terraform plan
         run: terraform plan -input=false -out=tfplan
