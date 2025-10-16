@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+#### Claude Agent System Improvements
+- **Agent Reference Fixes**: Updated `.claude/CLAUDE.md` to reference actual agent filenames (frontend-developer.md, backend.md, devops-engineer.md, test-automator.md, documentation-expert.md)
+- **Agent Streamlining**: Removed redundant project context from all agent files in `.claude/agents/`
+- **Documentation Consolidation**: Agents now reference existing project documentation (CONTRIBUTING.md, service READMEs, docs/architecture.md) instead of duplicating content
+- **System Architecture**: Simplified agent coordination model by removing non-existent project-manager and architect agents
+- **Maintainability**: Established single source of truth for project context in CONTRIBUTING.md, reducing duplication across 5+ agent files
+
 ## [2.0.0] - 2025-01-15
 
 ### Changed
