@@ -1,0 +1,15 @@
+# Texas Poker Application - Cursor Rules
+
+## Documentation References
+
+- **Development Workflow**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Multi-Agent System**: See [.claude/claude.md](.claude/claude.md) for agent coordination
+- **Architecture**: See [docs/architecture.md](docs/architecture.md)
+- **MCP Configuration**: See [mcp.json](mcp.json) for AI context tools
+
+## Key Principles
+
+- Follow existing patterns in codebase
+- TypeScript strict mode, single quotes, async/await
+- All features require tests and documentation updates
+- Use MCP tools to understand current project state before making changes

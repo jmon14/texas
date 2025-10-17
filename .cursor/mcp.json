@@ -1,0 +1,12 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp.json",
+  "description": "MCP (Model Context Protocol) configuration for Texas Poker Application. Provides Claude with automatic access to project context via tools/texas-mcp-server/",
+  "mcpServers": {
+    "texas-project": {
+      "command": "node",
+      "args": ["./tools/texas-mcp-server/build/index.js"],
+      "env": {},
+      "disabled": false
+    }
+  }
+}

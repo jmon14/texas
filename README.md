@@ -23,11 +23,16 @@ docker-compose up
 ├── apps/
 │   ├── frontend/      # React frontend (TypeScript + Material-UI)
 │   └── backend/       # NestJS API (PostgreSQL + MongoDB)
-└── infrastructure/    # AWS deployment configuration
+├── infrastructure/    # AWS deployment configuration
+└── tools/             # Development tools (MCP server)
 ```
 
 **Frontend** → **Backend API** → **PostgreSQL** (users, files)
 **Frontend** → **Backend API** → **MongoDB** (ranges)
+
+### 🤖 AI-Assisted Development
+
+This project includes an MCP (Model Context Protocol) server that provides Claude with automatic access to project context. See [tools/texas-mcp-server/](tools/texas-mcp-server/) and `.cursor/mcp.json` for configuration.
 
 ## 📚 Documentation
 
