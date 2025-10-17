@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### MCP (Model Context Protocol) Integration
+- **MCP Server**: Created `tools/texas-mcp-server` providing AI agents with automatic project context
+- **Context Tools**: Implemented tools for project state, codebase summary, user preferences, and agent information
+- **Agent Coordination Tools**: Added `plan_task_with_agents`, `get_agent_context`, `track_agent_work`, and work log management
+- **Cursor Integration**: Configured `.cursor/mcp.json` for seamless AI assistant integration
+- **Automatic Context**: AI agents now automatically access git status, running services, tech stack, and user preferences
+
+#### Development Workflow Enhancements
+- **User Preferences System**: Centralized user preferences (Overmind greeting, code style, workflow rules) in MCP server
+- **Automatic Agent Coordination**: AI automatically delegates work to specialized agents (backend-architect, frontend-developer, documentation-expert, test-automator, devops-engineer)
+- **Commit Workflow Rules**: Established explicit approval process - AI never commits without user request
+- **Multi-Agent Orchestration**: AI automatically plans, coordinates, and tracks work across multiple specialized agents
+
 ### Changed
+
+#### AI Assistant Configuration
+- **User Addressing**: Updated to address user as "Overmind" with appropriate AI self-reference as "cerebrate/underling"
+- **Workflow Process**: Changed to require explicit user approval before commits (Make changes → Review → User requests commit)
+- **Agent Coordination**: AI now proactively uses agent system for all non-trivial tasks without user prompting
+- **Documentation Rules**: Added automatic agent coordination rules to `.cursorrules` for consistent AI behavior
 
 #### Claude Agent System Improvements
 - **Agent Reference Fixes**: Updated `.claude/CLAUDE.md` to reference actual agent filenames (frontend-developer.md, backend.md, devops-engineer.md, test-automator.md, documentation-expert.md)
