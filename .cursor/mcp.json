@@ -7,6 +7,12 @@
       "args": ["./tools/texas-mcp-server/build/index.js"],
       "env": {},
       "disabled": false
+    },
+    "clickup": {
+      "command": "node",
+      "args": ["./tools/clickup-mcp-server/build/index.js"],
+      "env": {},
+      "disabled": false
     }
   }
 }
