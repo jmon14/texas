@@ -22,12 +22,12 @@ interface AgentContext {
 export function getAgentContext(agentName: string): AgentContext {
   try {
     // Normalize agent name
-    const filename = agentName.includes('.md') 
-      ? agentName 
+    const filename = agentName.includes('.md')
+      ? agentName
       : agentName.endsWith('-architect')
-        ? 'backend.md'
-        : `${agentName}.md`;
-    
+      ? 'backend.md'
+      : `${agentName}.md`;
+
     const agentPath = resolve(AGENTS_DIR, filename);
     const content = readFileSync(agentPath, 'utf-8');
 
@@ -54,17 +54,21 @@ function parseAgentSections(content: string): AgentContext['sections'] {
   }
 
   // Extract responsibilities
-  const respMatch = content.match(/## (?:Responsibilities|Key Responsibilities)\n\n([\s\S]+?)(?=\n##|$)/);
+  const respMatch = content.match(
+    /## (?:Responsibilities|Key Responsibilities)\n\n([\s\S]+?)(?=\n##|$)/,
+  );
   if (respMatch) {
     const respText = respMatch[1];
     sections.responsibilities = respText
       .split('\n')
-      .filter(line => line.trim().startsWith('-'))
-      .map(line => line.replace(/^-\s*/, '').trim());
+      .filter((line) => line.trim().startsWith('-'))
+      .map((line) => line.replace(/^-\s*/, '').trim());
   }
 
   // Extract patterns section
-  const patternsMatch = content.match(/## (?:Patterns|Development Patterns|Architecture Patterns)\n\n([\s\S]+?)(?=\n##|$)/);
+  const patternsMatch = content.match(
+    /## (?:Patterns|Development Patterns|Architecture Patterns)\n\n([\s\S]+?)(?=\n##|$)/,
+  );
   if (patternsMatch) {
     sections.patterns = patternsMatch[1].trim();
   }
@@ -77,4 +81,3 @@ function parseAgentSections(content: string): AgentContext['sections'] {
 
   return sections;
 }
-

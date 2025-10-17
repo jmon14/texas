@@ -94,8 +94,7 @@ const TOOLS = [
   },
   {
     name: 'track_agent_work',
-    description:
-      'Record work done by an agent for coordination and progress tracking.',
+    description: 'Record work done by an agent for coordination and progress tracking.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -127,8 +126,7 @@ const TOOLS = [
   },
   {
     name: 'get_work_log',
-    description:
-      'Get the current work log showing all agent activity in this session.',
+    description: 'Get the current work log showing all agent activity in this session.',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -136,8 +134,7 @@ const TOOLS = [
   },
   {
     name: 'clear_work_log',
-    description:
-      'Clear the work log and start a new coordination session.',
+    description: 'Clear the work log and start a new coordination session.',
     inputSchema: {
       type: 'object',
       properties: {},

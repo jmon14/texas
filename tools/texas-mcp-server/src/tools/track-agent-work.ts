@@ -27,10 +27,10 @@ export function trackAgentWork(
   task: string,
   status: WorkEntry['status'],
   details?: string,
-  filesModified?: string[]
+  filesModified?: string[],
 ): WorkLog {
   const log = loadWorkLog();
-  
+
   const entry: WorkEntry = {
     timestamp: new Date().toISOString(),
     agent,
@@ -42,7 +42,7 @@ export function trackAgentWork(
 
   log.entries.push(entry);
   saveWorkLog(log);
-  
+
   return log;
 }
 
@@ -96,4 +96,3 @@ function saveWorkLog(log: WorkLog): void {
 function generateSessionId(): string {
   return `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
-

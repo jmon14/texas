@@ -26,12 +26,18 @@ export function planTaskWithAgents(taskDescription: string): TaskAnalysis {
   const agents = loadAllAgents();
   const plan: AgentPlan[] = [];
   const taskLower = taskDescription.toLowerCase();
-  
+
   // Detect task domains
   const domains = {
-    backend: /backend|api|endpoint|database|nest|postgres|mongo|auth|migration|schema/i.test(taskDescription),
-    frontend: /frontend|ui|component|react|redux|material-ui|mui|form|page|route|state/i.test(taskDescription),
-    devops: /deploy|infrastructure|docker|aws|terraform|ci\/cd|pipeline|server|nginx|ssl/i.test(taskDescription),
+    backend: /backend|api|endpoint|database|nest|postgres|mongo|auth|migration|schema/i.test(
+      taskDescription,
+    ),
+    frontend: /frontend|ui|component|react|redux|material-ui|mui|form|page|route|state/i.test(
+      taskDescription,
+    ),
+    devops: /deploy|infrastructure|docker|aws|terraform|ci\/cd|pipeline|server|nginx|ssl/i.test(
+      taskDescription,
+    ),
     testing: /test|spec|coverage|e2e|integration|unit test|mock|jest/i.test(taskDescription),
     docs: /document|readme|changelog|guide|documentation|wiki|api doc/i.test(taskDescription),
   };
@@ -118,7 +124,7 @@ export function planTaskWithAgents(taskDescription: string): TaskAnalysis {
 function loadAllAgents(): string[] {
   try {
     const files = readdirSync(AGENTS_DIR);
-    return files.filter(f => f.endsWith('.md')).map(f => f.replace('.md', ''));
+    return files.filter((f) => f.endsWith('.md')).map((f) => f.replace('.md', ''));
   } catch (err) {
     return [];
   }
@@ -126,34 +132,33 @@ function loadAllAgents(): string[] {
 
 function generateWorkflow(plan: AgentPlan[]): string[] {
   const workflow: string[] = [];
-  
+
   // Lead agents work in parallel
-  const leads = plan.filter(p => p.role === 'lead');
+  const leads = plan.filter((p) => p.role === 'lead');
   if (leads.length > 0) {
     workflow.push(`Phase 1: Development (Parallel)`);
-    leads.forEach(agent => {
+    leads.forEach((agent) => {
       workflow.push(`  - ${agent.agent}: ${agent.reason}`);
     });
   }
 
   // Support agents follow
-  const support = plan.filter(p => p.role === 'support');
+  const support = plan.filter((p) => p.role === 'support');
   if (support.length > 0) {
     workflow.push(`Phase 2: Infrastructure`);
-    support.forEach(agent => {
+    support.forEach((agent) => {
       workflow.push(`  - ${agent.agent}: ${agent.reason}`);
     });
   }
 
   // Review agents come last
-  const review = plan.filter(p => p.role === 'review');
+  const review = plan.filter((p) => p.role === 'review');
   if (review.length > 0) {
     workflow.push(`Phase 3: Quality Assurance`);
-    review.forEach(agent => {
+    review.forEach((agent) => {
       workflow.push(`  - ${agent.agent}: ${agent.reason}`);
     });
   }
 
   return workflow;
 }
-
