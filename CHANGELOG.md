@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MCP Server**: Created `tools/texas-mcp-server` providing AI agents with automatic project context
 - **Context Tools**: Implemented tools for project state, codebase summary, user preferences, and agent information
 - **Agent Coordination Tools**: Added `plan_task_with_agents`, `get_agent_context`, `track_agent_work`, and work log management
+- **ClickUp MCP Server**: Created `tools/clickup-mcp-server` for task management integration
+  - Browse ClickUp spaces, lists, and tasks directly from AI
+  - Create and update tasks with priorities, tags, and assignees
+  - Filter tasks by status, assignee, and tags
+  - Automated task tracking and progress monitoring
+  - Secure authentication via Personal API Token with environment variables
 - **Cursor Integration**: Configured `.cursor/mcp.json` for seamless AI assistant integration
 - **Automatic Context**: AI agents now automatically access git status, running services, tech stack, and user preferences
 
