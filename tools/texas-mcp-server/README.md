@@ -36,6 +36,17 @@ The `.cursor/mcp.json` file (in project root) should contain:
 
 **Restart Cursor** after configuration changes (Cmd+Q, reopen).
 
+## How Automatic Coordination Works
+
+When you request a task, Claude will:
+1. **Analyze** the task using `plan_task_with_agents` to determine domains (backend, frontend, etc.)
+2. **Load** relevant agent context using `get_agent_context` 
+3. **Execute** work by adopting each agent's persona and following their patterns
+4. **Track** progress using `track_agent_work` for coordination
+5. **Report** back with a summary of what each agent accomplished
+
+You just describe what you want, Claude handles the multi-agent orchestration automatically.
+
 ## Testing
 
 ### Manual Test
@@ -48,12 +59,22 @@ Ask Claude: `"What's my current git branch?"` - Should answer without asking for
 
 ## Available Tools
 
+### Context Tools
 | Tool | Purpose |
 |------|---------|
 | `get_user_preferences` | Your coding standards and how to address you |
 | `get_project_state` | Git branch, uncommitted files, recent commits |
 | `get_codebase_summary` | Tech stack, services, documentation |
 | `get_agent_info` | Available agents and their specializations |
+
+### Agent Coordination Tools
+| Tool | Purpose |
+|------|---------|
+| `plan_task_with_agents` | Analyze task and determine which agents to use |
+| `get_agent_context` | Load full context/instructions for a specific agent |
+| `track_agent_work` | Record agent work for coordination tracking |
+| `get_work_log` | View all agent activity in current session |
+| `clear_work_log` | Start a new coordination session |
 
 ## Troubleshooting
 
