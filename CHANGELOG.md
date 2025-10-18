@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Jest Setup File**: Created `jest.setup.ts` for automatic mock reset and test isolation
 - **Mock Helper Functions**: Added `resetConfigurationServiceMock()` helper in `mocks.ts` for DRY mock management
 - **Test Quality**: Added `await` keywords to all async test expectations to prevent silent test failures
-- **Test Coverage**: All existing backend unit tests passing (38 tests across 8 test suites)
+- **Files Module Tests**: Complete unit and controller test coverage with AWS S3 mocking (17 tests)
+- **Ranges Module Tests**: Complete unit and controller test coverage with MongoDB/Mongoose mocking (24 tests)
+- **Test Coverage**: Increased from 45.79% to 72.01% overall coverage (79 tests across 12 test suites)
 
 #### MCP (Model Context Protocol) Integration
 - **MCP Server**: Created `tools/texas-mcp-server` providing AI agents with automatic project context
