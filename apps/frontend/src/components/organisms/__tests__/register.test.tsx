@@ -8,6 +8,10 @@ import Register from '../register';
 // Utils
 import { renderWithProviders } from '../../../utils/test-utils';
 
+// MSW
+import { server } from '../../../msw/server';
+import { userErrorHandlers } from '../../../msw/handlers/index';
+
 describe('register form', () => {
   it('should display required errors if submitting form with empty data', async () => {
     // Render without values
@@ -86,13 +90,16 @@ describe('register form', () => {
   });
 
   it('should display error message when request fails', async () => {
-    // Render form with
+    // Use error handler for registration failure
+    server.use(userErrorHandlers.signupDuplicateUsername);
+
+    // Render form with valid data (will fail due to error handler)
     renderWithProviders(
       <MemoryRouter>
         <Register
           initialValues={{
-            username: 'repeated',
-            email: 'bad@test.com',
+            username: 'testuser',
+            email: 'test@test.com',
             password: 'Password#7',
             confirmPassword: 'Password#7',
           }}

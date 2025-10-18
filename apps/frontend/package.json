@@ -33,12 +33,12 @@
     "react-router-dom": "6.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.17.10",
-    "@babel/core": "7.18.5",
-    "@babel/preset-env": "7.18.2",
-    "@babel/preset-react": "7.17.12",
-    "@babel/preset-typescript": "7.17.12",
-    "@babel/runtime": "7.18.3",
+    "@babel/cli": "7.25.9",
+    "@babel/core": "7.25.9",
+    "@babel/preset-env": "7.25.9",
+    "@babel/preset-react": "7.25.9",
+    "@babel/preset-typescript": "7.25.9",
+    "@babel/runtime": "7.25.9",
     "@chromatic-com/storybook": "3.2.4",
     "@emotion/babel-plugin": "11.10.2",
     "@emotion/react": "11.10.4",

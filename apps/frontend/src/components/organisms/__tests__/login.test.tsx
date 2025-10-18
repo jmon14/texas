@@ -5,6 +5,10 @@ import { MemoryRouter } from 'react-router-dom';
 // Test utils
 import { renderWithProviders } from '../../../utils/test-utils';
 
+// MSW
+import { server } from '../../../msw/server';
+import { authErrorHandlers } from '../../../msw/handlers/index';
+
 // Components
 import Login from '../login';
 
@@ -28,10 +32,13 @@ describe('login form', () => {
   });
 
   it('should display form error for invalid data', async () => {
-    // Render form with invalid data
+    // Use error handler for login failure
+    server.use(authErrorHandlers.loginError);
+
+    // Render form with any data (will fail due to error handler)
     renderWithProviders(
       <MemoryRouter>
-        <Login initialValues={{ username: 'wronguser', password: 'wrongpwd' }} />
+        <Login initialValues={{ username: 'testuser', password: 'testpwd' }} />
       </MemoryRouter>,
     );
 

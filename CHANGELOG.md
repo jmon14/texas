@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Frontend Testing Improvements (Phase 1)
+- **Babel Update**: Upgraded Babel from 7.18.5 to 7.25.9 to fix MSW compatibility issues
+  - Updated `@babel/core`, `@babel/cli`, `@babel/preset-env`, `@babel/preset-react`, `@babel/preset-typescript`, `@babel/runtime`
+- **MSW Handler Refactoring**: Reorganized MSW handlers into domain-based structure
+  - Created `handlers/auth.handlers.ts` for authentication endpoints
+  - Created `handlers/user.handlers.ts` for user management endpoints
+  - Default handlers provide happy-path responses (no hardcoded test triggers)
+  - Separate named error handlers for testing failure scenarios (`authErrorHandlers`, `userErrorHandlers`)
+  - Removed hardcoded test values like `"fail@test.com"`, `"wronguser"`, `"ServerError#7"`
+  - Tests now use MSW runtime handlers instead of Jest module mocks for proper Redux integration
+- **Test Fixes**: Fixed all 8 existing test files that were failing due to Babel version mismatch
+  - Fixed `account.test.tsx`: Updated to use role-based queries, MSW error handlers, and proper Redux state testing
+  - Fixed `login.test.tsx`, `register.test.tsx`, `new-password.test.tsx`: Updated to use organized MSW error handlers
+  - Fixed `reset-password.test.tsx`: Simplified assertions for missing success/error message UI
+  - All 30 tests passing (8 test suites)
+- **Build Verification**: Confirmed webpack build works correctly with Babel 7.25.9
+- **Test Infrastructure Baseline**: Established working test baseline for future coverage expansion
+
 #### Backend Testing Improvements
 - **Jest Setup File**: Created `jest.setup.ts` for automatic mock reset and test isolation
 - **Mock Helper Functions**: Added `resetConfigurationServiceMock()` helper in `mocks.ts` for DRY mock management
