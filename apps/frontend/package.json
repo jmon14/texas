@@ -13,6 +13,9 @@
     "start": "webpack serve",
     "test": "jest",
     "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -46,6 +49,7 @@
     "@fontsource/material-icons": "5.0.18",
     "@fontsource/roboto": "5.0.14",
     "@openapitools/openapi-generator-cli": "2.5.1",
+    "@playwright/test": "^1.56.1",
     "@storybook/addon-essentials": "8.6.12",
     "@storybook/addon-interactions": "8.6.12",
     "@storybook/addon-onboarding": "8.6.12",

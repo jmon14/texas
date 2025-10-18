@@ -7,6 +7,7 @@ const config: Config = {
   testEnvironmentOptions: {
     customExportConditions: ['msw'],
   },
+  testPathIgnorePatterns: ['/node_modules/', '/e2e/'],
 };
 
 export default config;

@@ -64,6 +64,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MSW Handler Extensions**: Added handlers for logout, resend-verification, confirm endpoints
 - **Test Results**: 149 tests passing across 20 test suites with 0 lint errors
 
+#### Frontend Testing Improvements (Phase 4 - E2E Testing)
+- **Playwright Setup**: Installed and configured Playwright for E2E testing
+  - Configuration for Chromium browser
+  - Auto-start dev server before tests
+  - HTML reporter with trace on failure
+  - Browser binaries installed
+- **Authentication E2E Tests**: Basic page rendering tests (4 tests)
+  - Login page displays with all form elements
+  - Register page displays with all form elements
+  - Navigation links are present and have correct hrefs
+- **Protected Routes E2E Tests**: Auth redirect behavior (2 tests)
+  - Unauthenticated users redirected to login
+  - Root route redirects to login when not authenticated
+- **NPM Scripts**: Added E2E test commands
+  - `npm run test:e2e` - Run E2E tests
+  - `npm run test:e2e:ui` - Run with UI mode
+  - `npm run test:e2e:debug` - Run with debugger
+- **Documentation**: Created `e2e/README.md` with setup and usage instructions
+- **Test Results**: 6 E2E tests covering critical page rendering and auth redirects
+- **Note**: Form validation and authenticated flows are covered by unit/component tests; E2E focuses on basic smoke tests
+
 #### Backend Testing Improvements
 - **Jest Setup File**: Created `jest.setup.ts` for automatic mock reset and test isolation
 - **Mock Helper Functions**: Added `resetConfigurationServiceMock()` helper in `mocks.ts` for DRY mock management
