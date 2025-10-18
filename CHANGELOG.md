@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### CI/CD Test Integration
+- **Backend Test Job**: Added automated testing to GitHub Actions workflow
+  - PostgreSQL and MongoDB service containers with health checks
+  - Unit tests: 10 suites, 38 tests
+  - E2E tests: Full API integration tests
+  - Test environment variables configured for CI
+  - Blocks deployment if tests fail
+- **Frontend Test Job**: Added automated testing to GitHub Actions workflow
+  - Unit/Integration tests: 20 suites, 149 tests
+  - E2E tests: Playwright with Chromium browser
+  - MSW mocking for backend API
+  - Playwright reports uploaded as artifacts on failure
+  - Blocks deployment if tests fail
+- **Pipeline Flow**: Updated deployment workflow with quality gates
+  - Tests run after linting/formatting
+  - Docker builds only proceed if tests pass
+  - Deploy job checks all test results before deployment
+- **ClickUp Updates**: 
+  - Updated CI/CD pipeline ticket (#8699xx3r9) with implementation details
+  - Created coverage reporting ticket (#869aw5ju8) for future enhancement
+
 #### Frontend Testing Improvements (Phase 1)
 - **Babel Update**: Upgraded Babel from 7.18.5 to 7.25.9 to fix MSW compatibility issues
   - Updated `@babel/core`, `@babel/cli`, `@babel/preset-env`, `@babel/preset-react`, `@babel/preset-typescript`, `@babel/runtime`

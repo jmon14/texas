@@ -25,5 +25,19 @@ export async function getUserPreferences() {
       tone: 'Professional but respectful of the Overmind',
       behavior: "Proactive, thorough, and always acknowledge the Overmind's supreme authority",
     },
+    troubleshooting: {
+      mcpAuthErrors: {
+        pattern: 'When MCP tools return authentication/connection errors (401, 403, OAUTH errors)',
+        action:
+          'ALWAYS check tools/<server-name>/README.md for setup requirements including .env configuration',
+        examples: [
+          'ClickUp 401 error → Read tools/clickup-mcp-server/README.md for .env setup',
+          'Any MCP server auth failure → Check server README for environment variable requirements',
+        ],
+        note: 'All MCP servers in tools/ may require their own .env file with API tokens/credentials',
+      },
+      generalPattern:
+        'Before asking the Overmind about recurring issues, check documentation and apply learned patterns proactively',
+    },
   };
 }
