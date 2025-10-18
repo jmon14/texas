@@ -1,6 +1,5 @@
 // NestJS
 import { HttpException, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 
 // Passport strategy
@@ -11,10 +10,11 @@ import { UserEntity } from 'src/database/entities/user.entity';
 
 // Services
 import { UsersService } from 'src/users/users.service';
+import { ConfigurationService } from 'src/config/configuration.service';
 
 // Mocks
 import {
-  mockedConfigService,
+  mockedConfigurationService,
   mockedUsersService,
   mockTokenPayload,
   mockRequest,
@@ -30,8 +30,8 @@ describe('JwtRefreshStrategy', () => {
     const module = await Test.createTestingModule({
       providers: [
         {
-          provide: ConfigService,
-          useValue: mockedConfigService,
+          provide: ConfigurationService,
+          useValue: mockedConfigurationService,
         },
         {
           provide: UsersService,
@@ -46,24 +46,26 @@ describe('JwtRefreshStrategy', () => {
   });
 
   describe('validate', () => {
-    it('should return user fetch from user service', () => {
+    it('should return user fetch from user service', async () => {
       jest.spyOn(userService, 'getByIdRefresh').mockResolvedValue(user);
-      expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).resolves.toEqual(user);
+      await expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).resolves.toEqual(
+        user,
+      );
     });
 
-    it('should throw UnauthorizedException if no user is fetched', () => {
+    it('should throw UnauthorizedException if no user is fetched', async () => {
       jest.spyOn(userService, 'getByIdRefresh').mockResolvedValue(null);
-      expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).rejects.toThrow(
+      await expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).rejects.toThrow(
         'Invalid refresh token',
       );
-      expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).rejects.toThrow(
+      await expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).rejects.toThrow(
         UnauthorizedException,
       );
     });
 
-    it('should throw HttpExceptionError if service throws', () => {
+    it('should throw HttpExceptionError if service throws', async () => {
       jest.spyOn(userService, 'getByIdRefresh').mockRejectedValue(new Error());
-      expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).rejects.toThrow(
+      await expect(jwtRefreshStrategy.validate(mockRequest, mockTokenPayload)).rejects.toThrow(
         HttpException,
       );
     });

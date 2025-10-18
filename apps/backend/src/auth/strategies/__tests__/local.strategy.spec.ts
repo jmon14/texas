@@ -32,23 +32,23 @@ describe('LocalStrategy', () => {
   });
 
   describe('validate', () => {
-    it('should return user fetched with username / pwd', () => {
+    it('should return user fetched with username / pwd', async () => {
       jest.spyOn(mockedAuthService, 'validateUser').mockResolvedValue(user);
-      expect(localStrategy.validate('testname', 'testpwrd')).resolves.toEqual(user);
+      await expect(localStrategy.validate('testname', 'testpwrd')).resolves.toEqual(user);
     });
 
-    it('should throw UnauthorizedException if no user found', () => {
+    it('should throw UnauthorizedException if no user found', async () => {
       jest.spyOn(mockedAuthService, 'validateUser').mockResolvedValue(null);
 
-      expect(localStrategy.validate('testname', 'testpwrd')).rejects.toThrow(
+      await expect(localStrategy.validate('testname', 'testpwrd')).rejects.toThrow(
         'Wrong credentials provided',
       );
     });
 
-    it('should throw HttpException error when fetch fails', () => {
+    it('should throw HttpException error when fetch fails', async () => {
       jest.spyOn(mockedAuthService, 'validateUser').mockRejectedValue(new Error());
 
-      expect(localStrategy.validate('testname', 'testpwrd')).rejects.toThrow(HttpException);
+      await expect(localStrategy.validate('testname', 'testpwrd')).rejects.toThrow(HttpException);
     });
   });
 });

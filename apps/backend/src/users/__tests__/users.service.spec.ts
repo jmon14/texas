@@ -44,48 +44,53 @@ describe('The UsersService', () => {
   });
 
   describe('getByUsername', () => {
-    it('should return the user', () => {
+    it('should return the user', async () => {
       findOne.mockResolvedValue(user);
-      expect(usersService.getByUsername('testname')).resolves.toEqual(user);
+      await expect(usersService.getByUsername('testname')).resolves.toEqual(user);
     });
   });
 
   describe('getByIdRefresh', () => {
-    it('should return null if user not found', () => {
+    it('should return null if user not found', async () => {
       findOne.mockResolvedValue(null);
-      expect(usersService.getByIdRefresh('refreshToken', 'id')).resolves.toBeNull();
+      const result = await usersService.getByIdRefresh('refreshToken', 'id');
+      expect(result).toBeNull();
     });
 
-    it('should return null if user found but refresh token doesnt match', () => {
+    it('should return null if user found but refresh token doesnt match', async () => {
+      user.refreshToken = 'differentToken';
       findOne.mockResolvedValue(user);
-      jest.spyOn(bcrypt, 'compare').mockImplementation(() => false);
-      expect(usersService.getByIdRefresh('refreshToken', 'id')).resolves.toBeNull();
+      const result = await usersService.getByIdRefresh('refreshToken', 'id');
+      expect(result).toBeNull();
     });
 
-    it('should return user if found and refresh token match', () => {
+    it('should return user if found and refresh token match', async () => {
+      user.refreshToken = 'refreshToken';
       findOne.mockResolvedValue(user);
-      jest.spyOn(bcrypt, 'compare').mockImplementation(() => true);
-      expect(usersService.getByIdRefresh('refreshToken', 'id')).resolves.toEqual(user);
+      const result = await usersService.getByIdRefresh('refreshToken', 'id');
+      expect(result).toEqual(user);
     });
   });
 
   describe('createUser', () => {
-    it('should save user and return it', () => {
+    it('should save user and return it', async () => {
       save.mockResolvedValue(user);
-      expect(usersService.createUser(mockUserDto)).resolves.toEqual(user);
+      await expect(usersService.createUser(mockUserDto)).resolves.toEqual(user);
     });
 
-    it('should throw unique violation error', () => {
+    it('should throw unique violation error', async () => {
       save.mockRejectedValue({ code: '23505', detail: 'username' });
-      expect(usersService.createUser(mockUserDto)).rejects.toThrow('Username already exists');
+      await expect(usersService.createUser(mockUserDto)).rejects.toThrow('Username already exists');
     });
   });
 
   describe('confirmEmail', () => {
-    it('should throw email already confirmed error', () => {
+    it('should throw email already confirmed error', async () => {
       user.active = true;
       findOneBy.mockResolvedValue(user);
-      expect(usersService.confirmEmail('test@test.com')).rejects.toThrow('Email already confirmed');
+      await expect(usersService.confirmEmail('test@test.com')).rejects.toThrow(
+        'Email already confirmed',
+      );
     });
 
     it('should update user in repository if its not active', async () => {

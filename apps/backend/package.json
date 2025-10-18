@@ -77,6 +77,9 @@
   },
   "jest": {
     "resetMocks": true,
+    "setupFilesAfterEnv": [
+      "<rootDir>/../jest.setup.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "js"

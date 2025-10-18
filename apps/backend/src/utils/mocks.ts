@@ -15,6 +15,7 @@ import { ResetPwdDto } from 'src/users/dtos/reset-password.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { EmailService } from 'src/email/email.service';
 import { UsersService } from 'src/users/users.service';
+import { ConfigurationService } from 'src/config/configuration.service';
 
 // Interfaces
 import { TokenPayload } from 'src/auth/interfaces/token.interface';
@@ -38,6 +39,51 @@ export const mockedConfigService: Partial<ConfigService> = {
     }
   },
 };
+
+/**
+ * Default implementation for ConfigurationService mock
+ * Used by resetConfigurationServiceMock to restore default behavior
+ */
+const defaultConfigurationServiceImpl = (key: string) => {
+  switch (key) {
+    case 'JWT_SECRET':
+    case 'JWT_REFRESH_SECRET':
+    case 'JWT_EMAIL_SECRET':
+      return Promise.resolve('SECRET');
+    case 'JWT_EXPIRATION_TIME':
+      return Promise.resolve('3600');
+    case 'JWT_REFRESH_EXPIRATION_TIME':
+      return Promise.resolve('18000');
+    case 'JWT_EMAIL_EXPIRATION_TIME':
+      return Promise.resolve('3600');
+    case 'DOMAIN':
+      return Promise.resolve('localhost');
+    case 'UI_URL':
+      return Promise.resolve('http://localhost:3001/');
+    case 'EMAIL_FROM':
+      return Promise.resolve('contact@allinrange.com');
+    case 'NODE_ENV':
+      return Promise.resolve('test');
+    default:
+      return Promise.resolve(undefined);
+  }
+};
+
+export const mockedConfigurationService: Partial<ConfigurationService> = {
+  get: jest.fn(defaultConfigurationServiceImpl),
+};
+
+/**
+ * Reset ConfigurationService mock to default implementation
+ * Call this in beforeEach if you need to override the mock in specific tests
+ *
+ * @param customImpl - Optional custom implementation to use instead of default
+ */
+export function resetConfigurationServiceMock(customImpl?: typeof defaultConfigurationServiceImpl) {
+  (mockedConfigurationService.get as jest.Mock).mockImplementation(
+    customImpl || defaultConfigurationServiceImpl,
+  );
+}
 
 export const mockedJwtService: Partial<JwtService> = {
   sign: jest.fn(),

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Backend Testing Improvements
+- **Jest Setup File**: Created `jest.setup.ts` for automatic mock reset and test isolation
+- **Mock Helper Functions**: Added `resetConfigurationServiceMock()` helper in `mocks.ts` for DRY mock management
+- **Test Quality**: Added `await` keywords to all async test expectations to prevent silent test failures
+- **Test Coverage**: All existing backend unit tests passing (38 tests across 8 test suites)
+
 #### MCP (Model Context Protocol) Integration
 - **MCP Server**: Created `tools/texas-mcp-server` providing AI agents with automatic project context
 - **Context Tools**: Implemented tools for project state, codebase summary, user preferences, and agent information
@@ -30,6 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+#### Backend Testing Infrastructure
+- **Mock Management**: Refactored ConfigurationService mock to use centralized helper function
+- **Test Isolation**: Automatic mock reset via Jest setup file ensures clean state between tests
+- **DRY Principle**: Eliminated duplicate mock implementations across test files
+- **Flexibility**: Tests can override default mocks when needed while maintaining DRY code
+
 #### AI Assistant Configuration
 - **User Addressing**: Updated to address user as "Overmind" with appropriate AI self-reference as "cerebrate/underling"
 - **Workflow Process**: Changed to require explicit user approval before commits (Make changes → Review → User requests commit)
@@ -42,6 +54,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation Consolidation**: Agents now reference existing project documentation (CONTRIBUTING.md, service READMEs, docs/architecture.md) instead of duplicating content
 - **System Architecture**: Simplified agent coordination model by removing non-existent project-manager and architect agents
 - **Maintainability**: Established single source of truth for project context in CONTRIBUTING.md, reducing duplication across 5+ agent files
+
+### Fixed
+
+#### Backend Unit Tests
+- **ConfigurationService Mock**: Fixed failing `sendEmailLink` tests by ensuring `EMAIL_FROM` is properly mocked after Jest's `resetMocks`
+- **Async Test Handling**: Added missing `await` keywords to 25+ async test expectations across all test files
+- **Test Reliability**: Eliminated potential for silent test failures and flaky test behavior
 
 ## [2.0.0] - 2025-01-15
 

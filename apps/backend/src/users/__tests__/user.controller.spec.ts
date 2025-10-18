@@ -51,14 +51,16 @@ describe('the user controller', () => {
   });
 
   describe('createUser', () => {
-    it('should return created user', () => {
+    it('should return created user', async () => {
       jest.spyOn(userService, 'createUser').mockResolvedValue(user);
-      expect(usersController.createUser(mockUserDto, mockRequest)).resolves.toEqual(user);
+      await expect(usersController.createUser(mockUserDto, mockRequest)).resolves.toEqual(user);
     });
 
-    it('should throw HttpException if service fails', () => {
+    it('should throw HttpException if service fails', async () => {
       jest.spyOn(userService, 'createUser').mockRejectedValue(new Error());
-      expect(usersController.createUser(mockUserDto, mockRequest)).rejects.toThrow(HttpException);
+      await expect(usersController.createUser(mockUserDto, mockRequest)).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 
@@ -69,16 +71,16 @@ describe('the user controller', () => {
       expect(userService.updatePwd).toHaveBeenCalled();
     });
 
-    it('should throw TokenExpiredError if token is expired', () => {
+    it('should throw TokenExpiredError if token is expired', async () => {
       jest.spyOn(authService, 'decodeToken').mockRejectedValue({
         name: 'TokenExpiredError',
       });
-      expect(usersController.resetPwd(mockResetPwdData)).rejects.toThrow('Token expired');
+      await expect(usersController.resetPwd(mockResetPwdData)).rejects.toThrow('Token expired');
     });
 
-    it('should throwHttpException if service throws', () => {
+    it('should throwHttpException if service throws', async () => {
       jest.spyOn(authService, 'decodeToken').mockRejectedValue(new Error());
-      expect(usersController.resetPwd(mockResetPwdData)).rejects.toThrow(HttpException);
+      await expect(usersController.resetPwd(mockResetPwdData)).rejects.toThrow(HttpException);
     });
   });
 
@@ -89,16 +91,16 @@ describe('the user controller', () => {
       expect(userService.confirmEmail).toHaveBeenCalledWith(mockMailDto.email);
     });
 
-    it('should throw TokenExpiredError if token is expired', () => {
+    it('should throw TokenExpiredError if token is expired', async () => {
       jest.spyOn(authService, 'decodeToken').mockRejectedValue({
         name: 'TokenExpiredError',
       });
-      expect(usersController.confirm(mockTokenData)).rejects.toThrow('Token expired');
+      await expect(usersController.confirm(mockTokenData)).rejects.toThrow('Token expired');
     });
 
-    it('should throwHttpException if service throws', () => {
+    it('should throwHttpException if service throws', async () => {
       jest.spyOn(authService, 'decodeToken').mockRejectedValue(new Error());
-      expect(usersController.confirm(mockTokenData)).rejects.toThrow(HttpException);
+      await expect(usersController.confirm(mockTokenData)).rejects.toThrow(HttpException);
     });
   });
 });
