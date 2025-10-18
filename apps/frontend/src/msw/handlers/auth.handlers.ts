@@ -21,8 +21,18 @@ export const authHandlers = [
     return HttpResponse.json(mockUser);
   }),
 
+  // POST /auth/logout - Logs out user
+  http.post('http://localhost:3000/auth/logout', () => {
+    return HttpResponse.json({}, { status: 200 });
+  }),
+
   // POST /auth/reset - Sends password reset email
   http.post<never, EmailDto>('http://localhost:3000/auth/reset', () => {
+    return HttpResponse.json({}, { status: 200 });
+  }),
+
+  // POST /auth/resend-verification - Resends verification email
+  http.post<never, EmailDto>('http://localhost:3000/auth/resend-verification', () => {
     return HttpResponse.json({}, { status: 200 });
   }),
 ];

@@ -17,6 +17,11 @@ export const userHandlers = [
   http.post<never, ResetPwdDto>('http://localhost:3000/users/reset-pwd', () => {
     return HttpResponse.json({}, { status: 200 });
   }),
+
+  // POST /users/confirm - Confirm email with token
+  http.post<never, { token: string }>('http://localhost:3000/users/confirm', () => {
+    return HttpResponse.json({}, { status: 200 });
+  }),
 ];
 
 /**

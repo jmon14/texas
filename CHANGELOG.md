@@ -41,6 +41,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MSW Range Handlers**: Created `handlers/range.handlers.ts` with error scenarios
 - **Test Results**: 83 tests passing across 14 test suites with 0 lint errors
 
+#### Frontend Testing Improvements (Phase 3 - Additional Component Coverage)
+- **User Slice Tests**: Redux auth state management (13 tests)
+  - Async thunks for login, logout, signup, reset, newPassword, validate, resendVerification
+  - Reducers for setUser and clearState
+- **Theme Slice Tests**: Redux theme switching (7 tests)
+  - Initial state loading from localStorage
+  - Theme persistence and mode changes
+- **useUser Hook Tests**: User auth hook integration (8 tests)
+  - State updates and Redux integration
+  - Error handling and state cleanup
+- **Form Select Component Tests**: Form integration tests (9 tests)
+  - Rendering with labels and options
+  - Initial values and disabled states
+- **Action Component Tests**: Poker action UI (10 tests)
+  - Percentage input with debounced onChange
+  - Input validation and clamping (0-100)
+  - Different action types (RAISE, CALL, FOLD)
+- **Table Component Tests**: Generic data table (10 tests)
+  - Dynamic headers from object keys
+  - Multi-row and multi-column rendering
+- **MSW Handler Extensions**: Added handlers for logout, resend-verification, confirm endpoints
+- **Test Results**: 149 tests passing across 20 test suites with 0 lint errors
+
 #### Backend Testing Improvements
 - **Jest Setup File**: Created `jest.setup.ts` for automatic mock reset and test isolation
 - **Mock Helper Functions**: Added `resetConfigurationServiceMock()` helper in `mocks.ts` for DRY mock management
