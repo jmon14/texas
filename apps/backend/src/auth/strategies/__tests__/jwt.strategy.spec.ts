@@ -1,12 +1,14 @@
 // NestJS
-import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 
 // Passport strategy
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 
+// Services
+import { ConfigurationService } from 'src/config/configuration.service';
+
 // Mocks
-import { mockedConfigService, mockTokenPayload } from 'src/utils/mocks';
+import { mockedConfigurationService, mockTokenPayload } from 'src/utils/mocks';
 
 describe('JwtStrategy', () => {
   let jwtStrategy: JwtStrategy;
@@ -16,8 +18,8 @@ describe('JwtStrategy', () => {
       providers: [
         JwtStrategy,
         {
-          provide: ConfigService,
-          useValue: mockedConfigService,
+          provide: ConfigurationService,
+          useValue: mockedConfigurationService,
         },
       ],
     }).compile();
@@ -26,8 +28,8 @@ describe('JwtStrategy', () => {
   });
 
   describe('validate', () => {
-    it('should return unmodified payload', () => {
-      expect(jwtStrategy.validate(mockTokenPayload)).resolves.toEqual(mockTokenPayload);
+    it('should return unmodified payload', async () => {
+      await expect(jwtStrategy.validate(mockTokenPayload)).resolves.toEqual(mockTokenPayload);
     });
   });
 });

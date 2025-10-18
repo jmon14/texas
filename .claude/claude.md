@@ -13,25 +13,16 @@ The multi-agent approach allows for:
 
 ## 🤖 Available Agents
 
-### [Project Manager Agent](./agents/project-manager.md)
+### [Backend Architect Agent](./agents/backend.md)
 
-**Role**: Project coordination and documentation
+**Role**: Backend system architecture and API development
 
-- ClickUp kanban workflow management
-- Feature breakdown into tickets
-- Documentation maintenance
-- Cross-service coordination
+- NestJS backend architecture and API patterns
+- Database design (PostgreSQL + MongoDB)
+- Authentication and authorization strategies
+- API-first design with OpenAPI/Swagger
 
-### [Architect Agent](./agents/architect.md)
-
-**Role**: Technical design and system architecture
-
-- System architecture and integration patterns
-- API contract design and specifications
-- Database schema planning and optimization
-- Technical decision records and documentation
-
-### [Frontend Agent](./agents/frontend.md)
+### [Frontend Developer Agent](./agents/frontend-developer.md)
 
 **Role**: React/TypeScript development
 
@@ -40,17 +31,7 @@ The multi-agent approach allows for:
 - State management with Redux Toolkit
 - Performance optimization and testing
 
-### [Backend Node.js Agent](./agents/backend-node.md)
-
-**Role**: NestJS/TypeScript API development
-
-- Backend service development (unified API)
-- JWT authentication and authorization
-- PostgreSQL/TypeORM data modeling (users, files)
-- MongoDB/Mongoose integration (poker ranges)
-- API design and testing strategies
-
-### [DevOps Agent](./agents/devops.md)
+### [DevOps Engineer Agent](./agents/devops-engineer.md)
 
 **Role**: Infrastructure and deployment
 
@@ -59,58 +40,64 @@ The multi-agent approach allows for:
 - CI/CD pipeline automation
 - Monitoring and security
 
-### [QA Agent](./agents/qa.md)
+### [Test Automator Agent](./agents/test-automator.md)
 
 **Role**: Quality assurance and testing
 
 - Comprehensive testing strategies
 - Test automation and performance testing
 - Quality gates and CI/CD integration
-- Security and accessibility testing
+- Cross-service integration testing
+
+### [Documentation Expert Agent](./agents/documentation-expert.md)
+
+**Role**: Technical writing and documentation
+
+- API documentation with OpenAPI/Swagger
+- Developer guides and setup instructions
+- Architecture and troubleshooting documentation
+- Release management and CHANGELOG maintenance
 
 ## 🏗️ System Architecture
 
 ```
 Multi-Agent Coordination
-├── Project Manager (Orchestrator)
-│   ├── Task Planning & Coordination
-│   ├── Architecture Decisions
-│   └── Progress Monitoring
-│
 ├── Development Agents
-│   ├── Frontend (React/TypeScript)
-│   └── Backend (NestJS/TypeScript)
+│   ├── Backend Architect (NestJS/TypeScript)
+│   └── Frontend Developer (React/TypeScript)
 │
 ├── Infrastructure Agent
-│   ├── DevOps (AWS/Docker)
+│   ├── DevOps Engineer (AWS/Docker)
 │   └── Deployment Automation
 │
-└── Quality Agent
-    ├── Testing Strategies
-    └── Quality Assurance
+├── Quality Agent
+│   └── Test Automator (Testing & QA)
+│
+└── Documentation Agent
+    └── Documentation Expert (Technical Writing)
 ```
 
 ## 🚀 How to Use the Multi-Agent System
 
-### 1. Starting a New Feature
+### 1. Backend Development
 
 ```markdown
-@project-manager: Plan implementation of user profile management feature
+@backend-architect: Create user profile API endpoints
 
-The Project Manager will:
+The Backend Architect will:
 
-- Break down the feature into tasks
-- Identify cross-service dependencies
-- Coordinate with relevant agents
-- Create implementation timeline
+- Design appropriate APIs with OpenAPI specs
+- Implement business logic
+- Add data validation
+- Create integration tests
 ```
 
 ### 2. Frontend Development
 
 ```markdown
-@frontend: Implement user profile components with form validation
+@frontend-developer: Implement user profile components with form validation
 
-The Frontend Agent will:
+The Frontend Developer will:
 
 - Design component architecture
 - Implement with TypeScript/React
@@ -118,25 +105,12 @@ The Frontend Agent will:
 - Create comprehensive tests
 ```
 
-### 3. Backend Development
+### 3. Infrastructure & Deployment
 
 ```markdown
-@backend: Create user profile API endpoints
+@devops-engineer: Deploy user profile feature to production
 
-The Backend Agent will:
-
-- Design appropriate APIs
-- Implement business logic
-- Add data validation
-- Create integration tests
-```
-
-### 4. Infrastructure & Deployment
-
-```markdown
-@devops: Deploy user profile feature to staging
-
-The DevOps Agent will:
+The DevOps Engineer will:
 
 - Update deployment configurations
 - Manage environment variables
@@ -144,45 +118,58 @@ The DevOps Agent will:
 - Coordinate production deployment
 ```
 
-### 5. Quality Assurance
+### 4. Quality Assurance
 
 ```markdown
-@qa: Test user profile feature end-to-end
+@test-automator: Test user profile feature end-to-end
 
-The QA Agent will:
+The Test Automator will:
 
 - Create comprehensive test plans
 - Execute automated test suites
-- Perform security and performance testing
-- Validate cross-browser compatibility
+- Perform integration testing
+- Validate cross-service functionality
+```
+
+### 5. Documentation
+
+```markdown
+@documentation-expert: Document new user profile feature
+
+The Documentation Expert will:
+
+- Update API documentation
+- Create developer guides
+- Update CHANGELOG
+- Document troubleshooting scenarios
 ```
 
 ## 🔄 Agent Collaboration Patterns
 
 ### Feature Development Flow
 
-1. **Planning Phase**
+1. **Design Phase**
 
-   - Project Manager coordinates requirements
-   - Agents provide domain-specific estimates
-   - Technical architecture decisions made
+   - Backend Architect designs API contracts
+   - Frontend Developer plans component architecture
+   - Technical architecture decisions documented
 
 2. **Implementation Phase**
 
-   - Parallel development across domains
-   - Regular check-ins via Project Manager
+   - Parallel development across services
    - Continuous integration testing
+   - Regular code reviews
 
-3. **Integration Phase**
+3. **Testing Phase**
 
-   - Cross-service integration testing
+   - Test Automator creates comprehensive test suites
+   - Integration testing across services
    - Performance and security validation
-   - DevOps coordinates deployment
 
-4. **Quality Assurance Phase**
-   - Comprehensive testing across all layers
-   - User acceptance testing
-   - Production readiness validation
+4. **Deployment Phase**
+   - DevOps Engineer coordinates deployment
+   - Documentation Expert updates all relevant docs
+   - Production monitoring and validation
 
 ### Communication Protocols
 
@@ -191,15 +178,15 @@ The QA Agent will:
 ```markdown
 # Example: API Contract Discussion
 
-@backend @frontend: Need to define user profile API contract
+@backend-architect @frontend-developer: Need to define user profile API contract
 
-Backend Node.js Agent response:
+Backend Architect response:
 
 - Proposed endpoints and data structures
 - Authentication requirements
 - Error handling patterns
 
-Frontend Agent response:
+Frontend Developer response:
 
 - UI requirements and data needs
 - Validation requirements
@@ -211,14 +198,14 @@ Frontend Agent response:
 ```markdown
 # Example: Performance Issue
 
-@project-manager: User reports slow profile loading
+User reports slow profile loading
 
-Project Manager coordinates investigation:
+Coordinated investigation:
 
-- @frontend: Check rendering performance
-- @backend: Analyze API response times and database queries
-- @devops: Check infrastructure metrics
-- @qa: Reproduce and quantify issue
+- @frontend-developer: Check rendering performance
+- @backend-architect: Analyze API response times and database queries
+- @devops-engineer: Check infrastructure metrics
+- @test-automator: Reproduce and quantify issue
 ```
 
 ## 📊 Project Context & Development Guide
@@ -313,25 +300,28 @@ cd infrastructure/
 ```markdown
 # Use specific agent for domain-focused work
 
-@frontend: Update user interface styling
-@backend: Add new API validation
-@devops: Update SSL certificate
+@frontend-developer: Update user interface styling
+@backend-architect: Add new API validation
+@devops-engineer: Update SSL certificate
+@test-automator: Add unit tests for new feature
+@documentation-expert: Update API documentation
 ```
 
 #### Cross-Domain Features
 
 ```markdown
-# Start with Project Manager for coordination
+# Coordinate multiple agents for complex features
 
-@project-manager: Implement real-time notifications
+@backend-architect @frontend-developer: Implement real-time notifications
 
-Project Manager will coordinate using established workflows:
+Coordinated approach using established workflows:
 
 - Reference CONTRIBUTING.md for development setup and git workflow
-- Frontend: UI components following apps/frontend/README.md guidelines
 - Backend: WebSocket implementation per apps/backend/README.md patterns
+- Frontend: UI components following apps/frontend/README.md guidelines
+- Test Automator: Integration testing for WebSocket communication
 - DevOps: Infrastructure updates per infrastructure/README.md
-- QA: Testing strategies following project testing standards
+- Documentation: Update architecture and API docs
 ```
 
 #### Complex Problem Solving
@@ -339,15 +329,15 @@ Project Manager will coordinate using established workflows:
 ```markdown
 # Use multiple agents for comprehensive analysis
 
-@project-manager: Investigate production performance issues
+Investigate production performance issues
 
 Coordinated response using documentation resources:
 
-- DevOps: Infrastructure metrics (reference infrastructure/README.md)
-- Backend: Database and API performance (check apps/backend/README.md)
-- Frontend: Client-side performance (reference apps/frontend/README.md)
-- QA: Performance testing and benchmarks
-- Reference docs/troubleshooting.md for common issues and solutions
+- @devops-engineer: Infrastructure metrics (reference infrastructure/README.md)
+- @backend-architect: Database and API performance (check apps/backend/README.md)
+- @frontend-developer: Client-side performance (reference apps/frontend/README.md)
+- @test-automator: Performance testing and benchmarks
+- @documentation-expert: Update troubleshooting.md with findings
 ```
 
 ### Agent Interaction Guidelines
@@ -358,18 +348,16 @@ Coordinated response using documentation resources:
 4. **Architecture Awareness**: Reference [docs/architecture.md](../docs/architecture.md) for system design decisions
 5. **Problem Resolution**: Use [docs/troubleshooting.md](../docs/troubleshooting.md) for debugging guidance
 6. **Version Management**: Follow [CHANGELOG.md](../CHANGELOG.md) patterns for releases
-7. **Coordination**: Use Project Manager for complex multi-agent tasks
+7. **Coordination**: Coordinate directly between agents for multi-domain tasks
 
 ## 📁 File Organization
 
 ```
 .claude/
-├── claude.md                   # Multi-agent system overview and project documentation
+├── CLAUDE.md                   # Multi-agent system overview and project documentation
 └── agents/
-    ├── project-manager.md      # Project coordination and documentation
-    ├── architect.md            # Technical design and system architecture
-    ├── frontend.md   # React/TypeScript specialist
-    ├── backend.md    # NestJS/TypeScript specialist
+    ├── backend.md              # Backend architecture and NestJS development
+    ├── frontend-developer.md   # React/TypeScript development
     ├── devops-engineer.md      # Infrastructure and deployment
     ├── test-automator.md       # Testing and quality assurance
     └── documentation-expert.md # Documentation maintenance

@@ -5,6 +5,10 @@ import { MemoryRouter } from 'react-router-dom';
 // Utils
 import { renderWithProviders } from '../../../utils/test-utils';
 
+// MSW
+import { server } from '../../../msw/server';
+import { userErrorHandlers } from '../../../msw/handlers/index';
+
 // Components
 import NewPassword from '../new-password';
 
@@ -88,12 +92,13 @@ describe('new password form', () => {
   });
 
   it('should display server error when request fails', async () => {
-    // Render form with valid data
+    // Use error handler for reset password failure
+    server.use(userErrorHandlers.resetPasswordInvalidToken);
+
+    // Render form with valid data (will fail due to error handler)
     renderWithProviders(
       <MemoryRouter initialEntries={['?token=token']}>
-        <NewPassword
-          initialValues={{ password: 'ServerError#7', confirmPassword: 'ServerError#7' }}
-        />
+        <NewPassword initialValues={{ password: 'Password#7', confirmPassword: 'Password#7' }} />
       </MemoryRouter>,
     );
 

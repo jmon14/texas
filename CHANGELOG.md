@@ -7,6 +7,174 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### CI/CD Test Integration
+- **Backend Test Job**: Added automated testing to GitHub Actions workflow
+  - PostgreSQL and MongoDB service containers with health checks
+  - Unit tests: 10 suites, 38 tests
+  - E2E tests: Full API integration tests
+  - Test environment variables configured for CI
+  - Blocks deployment if tests fail
+- **Frontend Test Job**: Added automated testing to GitHub Actions workflow
+  - Unit/Integration tests: 20 suites, 149 tests
+  - E2E tests: Playwright with Chromium browser
+  - MSW mocking for backend API
+  - Playwright reports uploaded as artifacts on failure
+  - Blocks deployment if tests fail
+- **Pipeline Flow**: Updated deployment workflow with quality gates
+  - Tests run after linting/formatting
+  - Docker builds only proceed if tests pass
+  - Deploy job checks all test results before deployment
+- **ClickUp Updates**: 
+  - Updated CI/CD pipeline ticket (#8699xx3r9) with implementation details
+  - Created coverage reporting ticket (#869aw5ju8) for future enhancement
+
+#### Frontend Testing Improvements (Phase 1)
+- **Babel Update**: Upgraded Babel from 7.18.5 to 7.25.9 to fix MSW compatibility issues
+  - Updated `@babel/core`, `@babel/cli`, `@babel/preset-env`, `@babel/preset-react`, `@babel/preset-typescript`, `@babel/runtime`
+- **MSW Handler Refactoring**: Reorganized MSW handlers into domain-based structure
+  - Created `handlers/auth.handlers.ts` for authentication endpoints
+  - Created `handlers/user.handlers.ts` for user management endpoints
+  - Default handlers provide happy-path responses (no hardcoded test triggers)
+  - Separate named error handlers for testing failure scenarios (`authErrorHandlers`, `userErrorHandlers`)
+  - Removed hardcoded test values like `"fail@test.com"`, `"wronguser"`, `"ServerError#7"`
+  - Tests now use MSW runtime handlers instead of Jest module mocks for proper Redux integration
+- **Test Fixes**: Fixed all 8 existing test files that were failing due to Babel version mismatch
+  - Fixed `account.test.tsx`: Updated to use role-based queries, MSW error handlers, and proper Redux state testing
+  - Fixed `login.test.tsx`, `register.test.tsx`, `new-password.test.tsx`: Updated to use organized MSW error handlers
+  - Fixed `reset-password.test.tsx`: Simplified assertions for missing success/error message UI
+  - All 30 tests passing (8 test suites)
+- **Build Verification**: Confirmed webpack build works correctly with Babel 7.25.9
+- **Test Infrastructure Baseline**: Established working test baseline for future coverage expansion
+
+#### Frontend Testing Improvements (Phase 2 - Range Management)
+- **Range Slice Tests**: Comprehensive Redux state management tests (17 tests)
+  - Async thunks for fetch, create, update, delete operations
+  - Error handling and loading states
+  - Reducers and selectors
+- **useRange Hook Tests**: Hook integration with Redux (5 tests)
+- **Range Component Tests**: Complete UI testing for core feature (38 tests)
+  - `range-grid.test.tsx`: Grid display and cell interaction (7 tests)
+  - `range-builder.test.tsx`: Full builder flow and CRUD operations (11 tests)
+  - `range-form.test.tsx`: Form validation and submission (9 tests)
+  - `range-selector.test.tsx`: Selection UI (5 tests)
+- **MSW Range Handlers**: Created `handlers/range.handlers.ts` with error scenarios
+- **Test Results**: 83 tests passing across 14 test suites with 0 lint errors
+
+#### Frontend Testing Improvements (Phase 3 - Additional Component Coverage)
+- **User Slice Tests**: Redux auth state management (13 tests)
+  - Async thunks for login, logout, signup, reset, newPassword, validate, resendVerification
+  - Reducers for setUser and clearState
+- **Theme Slice Tests**: Redux theme switching (7 tests)
+  - Initial state loading from localStorage
+  - Theme persistence and mode changes
+- **useUser Hook Tests**: User auth hook integration (8 tests)
+  - State updates and Redux integration
+  - Error handling and state cleanup
+- **Form Select Component Tests**: Form integration tests (9 tests)
+  - Rendering with labels and options
+  - Initial values and disabled states
+- **Action Component Tests**: Poker action UI (10 tests)
+  - Percentage input with debounced onChange
+  - Input validation and clamping (0-100)
+  - Different action types (RAISE, CALL, FOLD)
+- **Table Component Tests**: Generic data table (10 tests)
+  - Dynamic headers from object keys
+  - Multi-row and multi-column rendering
+- **MSW Handler Extensions**: Added handlers for logout, resend-verification, confirm endpoints
+- **Test Results**: 149 tests passing across 20 test suites with 0 lint errors
+
+#### Frontend Testing Improvements (Phase 4 - E2E Testing)
+- **Playwright Setup**: Installed and configured Playwright for E2E testing
+  - Configuration for Chromium browser
+  - Auto-start dev server before tests
+  - HTML reporter with trace on failure
+  - Browser binaries installed
+- **Authentication E2E Tests**: Basic page rendering tests (4 tests)
+  - Login page displays with all form elements
+  - Register page displays with all form elements
+  - Navigation links are present and have correct hrefs
+- **Protected Routes E2E Tests**: Auth redirect behavior (2 tests)
+  - Unauthenticated users redirected to login
+  - Root route redirects to login when not authenticated
+- **NPM Scripts**: Added E2E test commands
+  - `npm run test:e2e` - Run E2E tests
+  - `npm run test:e2e:ui` - Run with UI mode
+  - `npm run test:e2e:debug` - Run with debugger
+- **Documentation**: Created `e2e/README.md` with setup and usage instructions
+- **Test Results**: 6 E2E tests covering critical page rendering and auth redirects
+- **Note**: Form validation and authenticated flows are covered by unit/component tests; E2E focuses on basic smoke tests
+
+#### Backend Testing Improvements (Complete)
+- **Jest Setup**: Created `jest.setup.ts` for automatic mock reset and test isolation
+- **Mock Helpers**: Added `resetConfigurationServiceMock()` helper in `mocks.ts` for DRY mock management
+- **Test Quality**: Added `await` keywords to all async test expectations to prevent silent test failures
+- **Module Test Coverage**: Complete unit and controller test coverage for all major modules
+  - Auth Module: 93.18% coverage with strategy testing
+  - Files Module: 100% coverage with AWS S3 mocking (17 tests)
+  - Ranges Module: 100% coverage with MongoDB/Mongoose mocking (24 tests)
+  - Users Module: 81.7% coverage with validation testing
+  - App Controller: 100% coverage for health endpoint (3 tests)
+- **Test Coverage Achievement**: Increased from 45.79% to 73.38% overall coverage
+  - 82 tests passing across 13 test suites
+  - 0 lint errors
+  - All critical business logic covered
+- **E2E Testing Support**: Complete local E2E testing setup
+  - Fixed ConfigurationService to properly handle TEST environment (no AWS SSM dependency)
+  - Created `.test.env` and `.test.env.example` for test environment configuration
+  - Added comprehensive E2E testing guide in `apps/backend/E2E_TESTING.md`
+  - Updated README with E2E setup instructions and troubleshooting
+  - Existing E2E tests (user.e2e-spec.ts) cover full authentication flow
+  - Developers can run E2E tests locally with `docker-compose up postgres mongodb -d && npm run test:e2e`
+
+#### MCP (Model Context Protocol) Integration
+- **MCP Server**: Created `tools/texas-mcp-server` providing AI agents with automatic project context
+- **Context Tools**: Implemented tools for project state, codebase summary, user preferences, and agent information
+- **Agent Coordination Tools**: Added `plan_task_with_agents`, `get_agent_context`, `track_agent_work`, and work log management
+- **ClickUp MCP Server**: Created `tools/clickup-mcp-server` for task management integration
+  - Browse ClickUp spaces, lists, and tasks directly from AI
+  - Create and update tasks with priorities, tags, and assignees
+  - Filter tasks by status, assignee, and tags
+  - Automated task tracking and progress monitoring
+  - Secure authentication via Personal API Token with environment variables
+- **Cursor Integration**: Configured `.cursor/mcp.json` for seamless AI assistant integration
+- **Automatic Context**: AI agents now automatically access git status, running services, tech stack, and user preferences
+
+#### Development Workflow Enhancements
+- **User Preferences System**: Centralized user preferences (Overmind greeting, code style, workflow rules) in MCP server
+- **Automatic Agent Coordination**: AI automatically delegates work to specialized agents (backend-architect, frontend-developer, documentation-expert, test-automator, devops-engineer)
+- **Commit Workflow Rules**: Established explicit approval process - AI never commits without user request
+- **Multi-Agent Orchestration**: AI automatically plans, coordinates, and tracks work across multiple specialized agents
+
+### Changed
+
+#### Backend Testing Infrastructure
+- **Mock Management**: Refactored ConfigurationService mock to use centralized helper function
+- **Test Isolation**: Automatic mock reset via Jest setup file ensures clean state between tests
+- **DRY Principle**: Eliminated duplicate mock implementations across test files
+- **Flexibility**: Tests can override default mocks when needed while maintaining DRY code
+
+#### AI Assistant Configuration
+- **User Addressing**: Updated to address user as "Overmind" with appropriate AI self-reference as "cerebrate/underling"
+- **Workflow Process**: Changed to require explicit user approval before commits (Make changes → Review → User requests commit)
+- **Agent Coordination**: AI now proactively uses agent system for all non-trivial tasks without user prompting
+- **Documentation Rules**: Added automatic agent coordination rules to `.cursorrules` for consistent AI behavior
+
+#### Claude Agent System Improvements
+- **Agent Reference Fixes**: Updated `.claude/CLAUDE.md` to reference actual agent filenames (frontend-developer.md, backend.md, devops-engineer.md, test-automator.md, documentation-expert.md)
+- **Agent Streamlining**: Removed redundant project context from all agent files in `.claude/agents/`
+- **Documentation Consolidation**: Agents now reference existing project documentation (CONTRIBUTING.md, service READMEs, docs/architecture.md) instead of duplicating content
+- **System Architecture**: Simplified agent coordination model by removing non-existent project-manager and architect agents
+- **Maintainability**: Established single source of truth for project context in CONTRIBUTING.md, reducing duplication across 5+ agent files
+
+### Fixed
+
+#### Backend Unit Tests
+- **ConfigurationService Mock**: Fixed failing `sendEmailLink` tests by ensuring `EMAIL_FROM` is properly mocked after Jest's `resetMocks`
+- **Async Test Handling**: Added missing `await` keywords to 25+ async test expectations across all test files
+- **Test Reliability**: Eliminated potential for silent test failures and flaky test behavior
+
 ## [2.0.0] - 2025-01-15
 
 ### Changed

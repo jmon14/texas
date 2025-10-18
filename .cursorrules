@@ -1,0 +1,25 @@
+# Texas Poker Application - Cursor Rules
+
+## MCP Integration (Primary Source of Truth)
+
+- **ALWAYS call `get_user_preferences` at start of conversation** for workflow rules, preferences, and how to address the user
+- **Use MCP tools before making changes**: `get_project_state`, `get_codebase_summary`, `get_agent_info`
+- **For any non-trivial task**: Use `plan_task_with_agents` → `get_agent_context` → adopt agent persona → `track_agent_work`
+- MCP server configured in `.cursor/mcp.json` provides automatic project context
+
+## Documentation References
+
+- **Development Workflow**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Multi-Agent System**: See [.claude/claude.md](.claude/claude.md) for agent coordination
+- **Architecture**: See [docs/architecture.md](docs/architecture.md)
+- **MCP Configuration**: See [mcp.json](mcp.json) for AI context tools
+
+## Key Principles
+
+- Follow existing patterns in codebase
+- TypeScript strict mode, single quotes, async/await
+- All features require tests and documentation updates
+
+## Critical Safety Rule
+
+- **NEVER commit changes unless explicitly requested by the user**

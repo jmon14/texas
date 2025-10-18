@@ -34,7 +34,8 @@ export class ConfigurationService {
         return configValue;
       }
 
-      if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT) {
+      // For development and test environments, return undefined if not in env
+      if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT || process.env.NODE_ENV === NODE_ENV.TEST) {
         return undefined;
       }
 

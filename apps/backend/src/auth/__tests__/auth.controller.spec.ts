@@ -31,30 +31,30 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    it('should return user provided in request and set auth cookies', () => {
-      expect(authController.login(mockUserReq)).resolves.toEqual(mockUserReq.user);
+    it('should return user provided in request and set auth cookies', async () => {
+      await expect(authController.login(mockUserReq)).resolves.toEqual(mockUserReq.user);
 
       const payload = { id: mockUserReq.user.uuid };
       expect(authService.setAuthCookies).toHaveBeenCalledWith(mockUserReq.res, payload);
     });
 
-    it('should throw when authService fails', () => {
+    it('should throw when authService fails', async () => {
       jest.spyOn(authService, 'setAuthCookies').mockRejectedValue(new Error());
-      expect(authController.login(mockUserReq)).rejects.toThrow();
+      await expect(authController.login(mockUserReq)).rejects.toThrow();
     });
   });
 
   describe('refresh', () => {
-    it('should return user provided in request and set auth cookies', () => {
-      expect(authController.refresh(mockUserReq)).resolves.toEqual(mockUserReq.user);
+    it('should return user provided in request and set auth cookies', async () => {
+      await expect(authController.refresh(mockUserReq)).resolves.toEqual(mockUserReq.user);
 
       const payload = { id: mockUserReq.user.uuid };
       expect(authService.setAuthCookies).toHaveBeenCalledWith(mockUserReq.res, payload);
     });
 
-    it('should throw when authService fails', () => {
+    it('should throw when authService fails', async () => {
       jest.spyOn(authService, 'setAuthCookies').mockRejectedValue(new Error());
-      expect(authController.refresh(mockUserReq)).rejects.toThrow();
+      await expect(authController.refresh(mockUserReq)).rejects.toThrow();
     });
   });
 

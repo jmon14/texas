@@ -56,6 +56,8 @@ export const getRangeById = createAsyncThunk(
 );
 
 // Async thunk for updating range
+// TODO: Fix type mismatch - should accept UpdateRangeDto instead of Omit<RangeResponseDto, '_id'>
+// Currently passing extra fields (userId) that backend doesn't expect
 export const updateRange = createAsyncThunk(
   'range/update',
   async (

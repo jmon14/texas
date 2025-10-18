@@ -29,8 +29,13 @@ build/
 # Jest coverage
 coverage
 
+# Playwright
+playwright-report/
+test-results/
+
 # IDE
 .vscode/
+.cursor/agent-work.json
 
 # OS files
 Thumbs.db

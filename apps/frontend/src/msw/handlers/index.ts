@@ -1,0 +1,24 @@
+// Auth handlers
+import { authHandlers, authErrorHandlers } from './auth.handlers';
+
+// User handlers
+import { userHandlers, userErrorHandlers } from './user.handlers';
+
+// Range handlers
+import { rangeHandlers, rangeErrorHandlers } from './range.handlers';
+
+/**
+ * Default handlers for all API endpoints
+ * These provide happy-path responses for all tests by default
+ */
+export const handlers = [...authHandlers, ...userHandlers, ...rangeHandlers];
+
+/**
+ * Export error handlers for test-specific overrides
+ */
+export { authErrorHandlers, userErrorHandlers, rangeErrorHandlers };
+
+/**
+ * Export mock data for tests
+ */
+export { mockRange, mockRanges } from './range.handlers';
