@@ -4,12 +4,26 @@
 
 This directory contains end-to-end (E2E) tests for the Texas Poker application using Playwright.
 
+## How It Works
+
+E2E tests run in a **real browser** with:
+- **MSW (Mock Service Worker)**: Intercepts API calls and returns mock responses
+- **No backend required**: All API responses are mocked via MSW browser worker
+- **Automatic setup**: MSW is enabled automatically via `REACT_APP_ENABLE_MSW=true` environment variable
+
+This approach ensures:
+- ✅ Tests work in CI/CD without backend infrastructure
+- ✅ Fast, reliable tests with consistent mock data
+- ✅ No database dependencies
+- ✅ Same mock handlers as unit tests (defined in `src/msw/handlers/`)
+
 ## Running E2E Tests
 
 ### Prerequisites
 
 - Frontend dev server will be automatically started by Playwright
-- **For full authenticated tests**: Backend server must be running on `http://localhost:3000`
+- MSW browser worker will be initialized automatically
+- **No backend required** - all API calls are mocked
 
 ### Commands
 
@@ -78,6 +92,27 @@ See `playwright.config.ts` for:
 - Browser settings
 - Test timeouts
 - Reporter options
+- **MSW enablement**: `REACT_APP_ENABLE_MSW=true` in webServer environment
+
+## MSW Integration
+
+The E2E tests use MSW (Mock Service Worker) to intercept API calls:
+
+### How MSW is Enabled
+
+1. **Playwright config** sets `REACT_APP_ENABLE_MSW=true` in `webServer.env`
+2. **App initialization** (`src/index.tsx`) checks this variable
+3. **MSW browser worker** is started before rendering the app
+4. **API calls** are intercepted and return mock data from `src/msw/handlers/`
+
+### Mock Handlers
+
+All mock handlers are defined in `src/msw/handlers/`:
+- `auth.handlers.ts` - Authentication endpoints
+- `user.handlers.ts` - User management endpoints  
+- `range.handlers.ts` - Range management endpoints
+
+These are the **same handlers** used in unit tests, ensuring consistency across test types.
 
 ## Notes
 

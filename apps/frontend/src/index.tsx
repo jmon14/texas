@@ -10,12 +10,17 @@ import { setupStore } from './store/store';
 // Components
 import App from './App';
 
+// MSW initialization (E2E tests only)
+import { initMSW } from './msw/init';
+
 // Create root element
 const root = createRoot(document.getElementById('root') as HTMLElement);
 
-// Render react tree
-root.render(
-  <Provider store={setupStore()}>
-    <App />
-  </Provider>,
-);
+// Initialize MSW for E2E tests (if enabled), then render the app
+initMSW().then(() => {
+  root.render(
+    <Provider store={setupStore()}>
+      <App />
+    </Provider>,
+  );
+});

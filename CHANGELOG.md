@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+#### Frontend E2E Tests - MSW Browser Worker Integration
+- **MSW Browser Worker**: Added Mock Service Worker for browser-based E2E tests
+  - Created `src/msw/browser.ts` with browser worker setup using `msw/browser`
+  - Created `src/msw/init.ts` for isolated MSW initialization logic (separation of concerns)
+  - Updated `src/index.tsx` to conditionally initialize MSW before app render
+  - MSW only activates when `REACT_APP_ENABLE_MSW=true` environment variable is set
+- **Webpack Environment Variables**: Fixed webpack not passing environment variables from Playwright to React app
+  - Updated `webpack.config.ts` to merge `process.env` with `.env` file variables in development mode
+  - Allows Playwright's `webServer.env` variables to override file-based env vars
+  - Fixed root cause: webpack was only loading `.env` files, ignoring `process.env` in development
+- **Playwright Configuration**: Added `REACT_APP_ENABLE_MSW=true` to `webServer.env` in `playwright.config.ts`
+- **Documentation**: Updated `e2e/README.md` with MSW integration architecture and workflow
+- **Result**: All 6 E2E tests passing locally and ready for CI/CD
+  - No backend infrastructure required for E2E tests
+  - Same MSW handlers as unit tests ensure consistency
+  - Fast, reliable tests with predictable mock data
+
 #### CI/CD Quality Gate Enforcement (Critical Security Fix)
 - **Deploy Job Dependencies**: Fixed critical flaw where deployment proceeded despite linting failures
   - Added `backend-quality` and `frontend-quality` jobs to deploy job dependencies

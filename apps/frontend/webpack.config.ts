@@ -30,9 +30,14 @@ const config = (env: WebpackEnv): Configuration => {
     const finalPath = fs.existsSync(envPath) ? envPath : basePath;
     // Set the path parameter in the dotenv config
     const fileEnv = dotenv.config({ path: finalPath }).parsed as EnvIndex;
+
+    // Merge file env with process.env (process.env takes precedence)
+    // This allows environment variables set by test runners (like Playwright) to work
+    const mergedEnv = { ...fileEnv, ...process.env };
+
     // Reduce it to a process env object
-    envKeys = Object.keys(fileEnv || {}).reduce<EnvIndex>((prev, next) => {
-      prev[`process.env.${next}`] = JSON.stringify(fileEnv[next]);
+    envKeys = Object.keys(mergedEnv || {}).reduce<EnvIndex>((prev, next) => {
+      prev[`process.env.${next}`] = JSON.stringify(mergedEnv[next]);
       return prev;
     }, {});
   } else {
