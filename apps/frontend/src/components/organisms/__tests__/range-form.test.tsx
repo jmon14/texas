@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import userEvent from '@testing-library/user-event';
+import user from '@testing-library/user-event';
 import RangeForm from '../range-form';
 import rangeReducer from '../../../store/slices/range-slice';
 
@@ -49,7 +49,7 @@ describe('RangeForm', () => {
   });
 
   it('should call onNameChange when name changes', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const store = createTestStore();
     const onSubmit = jest.fn();
     const onNameChange = jest.fn();
@@ -64,7 +64,7 @@ describe('RangeForm', () => {
     const nameInput = screen.getByRole('textbox');
 
     // Type in the input
-    await user.type(nameInput, 'New Range');
+    await userInteraction.type(nameInput, 'New Range');
 
     // onNameChange should be called as user types
     await waitFor(() => {
@@ -73,7 +73,7 @@ describe('RangeForm', () => {
   });
 
   it('should handle submit', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const store = createTestStore();
     const onSubmit = jest.fn();
 
@@ -88,10 +88,10 @@ describe('RangeForm', () => {
 
     // Fill in the form
     const nameInput = screen.getByRole('textbox');
-    await user.type(nameInput, 'Test Range');
+    await userInteraction.type(nameInput, 'Test Range');
 
     // Submit the form
-    await user.click(submitButton);
+    await userInteraction.click(submitButton);
 
     // onSubmit should be called
     await waitFor(() => {
@@ -115,7 +115,7 @@ describe('RangeForm', () => {
   });
 
   it('should call onDelete when delete button is clicked', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const store = createTestStore();
     const onSubmit = jest.fn();
     const onDelete = jest.fn();
@@ -128,7 +128,7 @@ describe('RangeForm', () => {
 
     // Click delete button (only present when id is provided)
     const deleteButton = screen.getByRole('button', { name: /delete/i });
-    await user.click(deleteButton);
+    await userInteraction.click(deleteButton);
 
     expect(onDelete).toHaveBeenCalled();
   });

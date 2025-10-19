@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import user from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ActionComponent from '../action';
 import { ActionDto } from '../../../../backend-api/api';
@@ -32,25 +32,25 @@ describe('ActionComponent', () => {
   });
 
   it('should update percentage value when user types', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
 
     const input = screen.getByRole('textbox');
-    await user.clear(input);
-    await user.type(input, '75');
+    await userInteraction.clear(input);
+    await userInteraction.type(input, '75');
 
     expect(input).toHaveValue('75');
   });
 
   it('should call onChange with updated percentage (debounced)', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
 
     const input = screen.getByRole('textbox');
-    await user.clear(input);
-    await user.type(input, '80');
+    await userInteraction.clear(input);
+    await userInteraction.type(input, '80');
 
     // Wait for debounce
     await waitFor(
@@ -65,13 +65,13 @@ describe('ActionComponent', () => {
   });
 
   it('should clamp percentage to maximum 100', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
 
     const input = screen.getByRole('textbox');
-    await user.clear(input);
-    await user.type(input, '150');
+    await userInteraction.clear(input);
+    await userInteraction.type(input, '150');
 
     // Value should be clamped to 100
     await waitFor(
@@ -83,13 +83,13 @@ describe('ActionComponent', () => {
   });
 
   it('should clamp percentage to minimum 0', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
 
     const input = screen.getByRole('textbox');
-    await user.clear(input);
-    await user.type(input, '-10');
+    await userInteraction.clear(input);
+    await userInteraction.type(input, '-10');
 
     // Value should be clamped to 0
     await waitFor(
@@ -132,13 +132,13 @@ describe('ActionComponent', () => {
   });
 
   it('should handle invalid percentage input', async () => {
-    const user = userEvent.setup();
+    const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
 
     const input = screen.getByRole('textbox');
-    await user.clear(input);
-    await user.type(input, 'abc');
+    await userInteraction.clear(input);
+    await userInteraction.type(input, 'abc');
 
     // Should still allow typing
     expect(input).toHaveValue('abc');
