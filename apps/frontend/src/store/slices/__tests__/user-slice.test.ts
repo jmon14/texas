@@ -14,6 +14,7 @@ import userReducer, {
   clearState,
   selectUser,
   selectAuthenticatedUser,
+  UserState,
 } from '../user-slice';
 
 // MSW
@@ -23,8 +24,7 @@ import { authErrorHandlers, userErrorHandlers } from '../../../msw/handlers';
 // Constants
 import { FetchStatus } from '../../../constants';
 
-// Types
-import type { UserState } from '../user-slice';
+// Test utils
 import { mockUser } from '../../../utils/test-utils';
 
 // Helper to create test store
@@ -166,7 +166,7 @@ describe('user-slice', () => {
         );
 
         // Check loading state immediately
-        let state = store.getState().user;
+        const state = store.getState().user;
         expect(state.status).toBe(FetchStatus.LOADING);
 
         await promise;
@@ -258,7 +258,7 @@ describe('user-slice', () => {
         const promise = store.dispatch(reset('test@example.com'));
 
         // Check loading state immediately
-        let state = store.getState().user;
+        const state = store.getState().user;
         expect(state.resetPasswordStatus).toBe(FetchStatus.LOADING);
 
         await promise;
@@ -352,7 +352,7 @@ describe('user-slice', () => {
         const promise = store.dispatch(resendVerification('test@example.com'));
 
         // Check loading state immediately
-        let state = store.getState().user;
+        const state = store.getState().user;
         expect(state.resendVerificationStatus).toBe(FetchStatus.LOADING);
 
         await promise;

@@ -12,7 +12,6 @@ import { UserEntity } from 'src/database/entities/user.entity';
 import { mockUserDto, testEmail } from 'src/utils/mocks';
 
 // External libraries
-import * as bcrypt from 'bcrypt';
 
 describe('The UsersService', () => {
   let usersService: UsersService;

@@ -2,9 +2,6 @@
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-// AWS
-import { S3 } from 'aws-sdk';
-
 // Services
 import { FilesService } from 'src/files/files.service';
 import { ConfigurationService } from 'src/config/configuration.service';
@@ -39,7 +36,7 @@ describe('FilesService', () => {
     mockUpload.mockReturnValue({ promise: mockPromise });
 
     // Mock S3 constructor
-    const { S3 } = require('aws-sdk');
+    const { S3 } = jest.requireMock('aws-sdk');
     (S3 as jest.Mock).mockImplementation(() => ({
       upload: mockUpload,
     }));

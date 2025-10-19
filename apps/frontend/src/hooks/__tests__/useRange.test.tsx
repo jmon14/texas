@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import useRange from '../useRange';
-import rangeReducer, { clearState, getRangesByUserId } from '../../store/slices/range-slice';
+import rangeReducer, { getRangesByUserId } from '../../store/slices/range-slice';
 import { mockRanges } from '../../msw/handlers';
 import { FetchStatus } from '../../constants';
 
@@ -17,9 +17,11 @@ const createTestStore = () => {
 
 // Wrapper component for hook testing
 const createWrapper = (store: ReturnType<typeof createTestStore>) => {
-  return ({ children }: { children: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <Provider store={store}>{children}</Provider>
   );
+  Wrapper.displayName = 'RangeTestWrapper';
+  return Wrapper;
 };
 
 describe('useRange', () => {
@@ -113,4 +115,3 @@ describe('useRange', () => {
     });
   });
 });
-

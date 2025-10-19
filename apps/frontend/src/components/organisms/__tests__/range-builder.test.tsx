@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import userEvent from '@testing-library/user-event';
+import user from '@testing-library/user-event';
 import RangeBuilder from '../range-builder';
 import rangeReducer from '../../../store/slices/range-slice';
 import userReducer from '../../../store/slices/user-slice';
@@ -79,7 +79,7 @@ describe('RangeBuilder', () => {
   });
 
   it('should handle range creation', async () => {
-    const user = userEvent.setup();
+    const userEvent = user.setup();
     const store = createTestStore();
 
     render(
@@ -90,12 +90,12 @@ describe('RangeBuilder', () => {
 
     // Find the name input (first textbox is the range name)
     const nameInput = screen.getAllByRole('textbox')[0];
-    await user.clear(nameInput);
-    await user.type(nameInput, 'New Test Range');
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'New Test Range');
 
     // Find and click submit button
     const submitButton = screen.getByRole('button', { name: /save|submit|create/i });
-    await user.click(submitButton);
+    await userEvent.click(submitButton);
 
     // Should dispatch create action
     await waitFor(() => {
@@ -106,7 +106,7 @@ describe('RangeBuilder', () => {
   });
 
   it('should handle range update when range has ID', async () => {
-    const user = userEvent.setup();
+    const userEvent = user.setup();
     const store = createTestStore({
       range: {
         ranges: mockRanges,
@@ -124,12 +124,12 @@ describe('RangeBuilder', () => {
 
     // Type in the name field (first textbox is the range name)
     const nameInput = screen.getAllByRole('textbox')[0];
-    await user.clear(nameInput);
-    await user.type(nameInput, 'Updated Range');
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Updated Range');
 
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /save|submit|update/i });
-    await user.click(submitButton);
+    await userEvent.click(submitButton);
 
     // Should dispatch update or create action
     await waitFor(() => {
@@ -139,7 +139,7 @@ describe('RangeBuilder', () => {
   });
 
   it('should handle range deletion', async () => {
-    const user = userEvent.setup();
+    const userEvent = user.setup();
     const store = createTestStore({
       range: {
         ranges: mockRanges,
@@ -159,7 +159,7 @@ describe('RangeBuilder', () => {
     const deleteButton = screen.queryByRole('button', { name: /delete/i });
 
     if (deleteButton) {
-      await user.click(deleteButton);
+      await userEvent.click(deleteButton);
 
       // Should dispatch delete action
       await waitFor(() => {
@@ -170,7 +170,6 @@ describe('RangeBuilder', () => {
   });
 
   it('should handle cell clicks on range grid', async () => {
-    const user = userEvent.setup();
     const store = createTestStore();
 
     const { container } = render(
@@ -179,11 +178,7 @@ describe('RangeBuilder', () => {
       </Provider>,
     );
 
-    // The range grid should be rendered
-    // Looking for any cell that can be clicked
-    const cells = container.querySelectorAll('[role="button"]');
-
-    // Should have rendered some interactive elements
+    // The range grid should be rendered and have interactive elements
     expect(container.firstChild).toBeInTheDocument();
   });
 
@@ -223,7 +218,7 @@ describe('RangeBuilder', () => {
   });
 
   it('should update range when name changes', async () => {
-    const user = userEvent.setup();
+    const userEvent = user.setup();
     const store = createTestStore();
 
     render(
@@ -235,7 +230,7 @@ describe('RangeBuilder', () => {
     // Find the name input by label (Range Name)
     const nameInput = screen.getByLabelText(/range name/i) as HTMLInputElement;
     const initialValue = nameInput.value;
-    await user.type(nameInput, 'Updated Name');
+    await userEvent.type(nameInput, 'Updated Name');
 
     // Name should be updated in the form (appended to existing value)
     expect(nameInput.value).toContain('Updated Name');

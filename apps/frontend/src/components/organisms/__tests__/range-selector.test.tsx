@@ -1,9 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import RangeSelector from '../range-selector';
 import rangeReducer from '../../../store/slices/range-slice';
-import userEvent from '@testing-library/user-event';
 import { mockRanges } from '../../../msw/handlers';
 
 // Helper to create test store
@@ -40,7 +39,6 @@ describe('RangeSelector', () => {
   });
 
   it('should call onRangeSelectChange when selection changes', async () => {
-    const user = userEvent.setup();
     const store = createTestStore({
       range: {
         ranges: mockRanges,

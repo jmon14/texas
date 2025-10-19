@@ -1,0 +1,23 @@
+{
+  "name": "texas-poker-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Texas Poker Application - Monorepo",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2"
+  },
+  "lint-staged": {
+    "apps/backend/**/*.ts": [
+      "cd apps/backend && npm run format",
+      "cd apps/backend && npm run lint"
+    ],
+    "apps/frontend/**/*.{ts,tsx}": [
+      "cd apps/frontend && npm run format",
+      "cd apps/frontend && npm run lint"
+    ]
+  }
+}

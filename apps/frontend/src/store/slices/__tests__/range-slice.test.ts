@@ -11,6 +11,7 @@ import rangeReducer, {
   setCurrentRange,
   clearState,
   selectRange,
+  RangeState,
 } from '../range-slice';
 
 // MSW
@@ -19,9 +20,6 @@ import { rangeErrorHandlers, mockRange, mockRanges } from '../../../msw/handlers
 
 // Constants
 import { FetchStatus } from '../../../constants';
-
-// Types
-import { RangeState } from '../range-slice';
 
 // Helper to create test store
 const createTestStore = (preloadedState?: { range: RangeState }) => {
@@ -115,7 +113,7 @@ describe('range-slice', () => {
         const promise = store.dispatch(getRangesByUserId('user-123'));
 
         // Check loading state immediately
-        let state = store.getState().range;
+        const state = store.getState().range;
         expect(state.status).toBe(FetchStatus.LOADING);
 
         await promise;

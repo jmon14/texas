@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import useUser from '../useUser';
-import userReducer, { login, clearState } from '../../store/slices/user-slice';
+import userReducer, { login } from '../../store/slices/user-slice';
 import { mockUser } from '../../utils/test-utils';
 import { FetchStatus } from '../../constants';
 import { server } from '../../msw/server';
@@ -19,9 +19,11 @@ const createTestStore = () => {
 
 // Wrapper component for hook testing
 const createWrapper = (store: ReturnType<typeof createTestStore>) => {
-  return ({ children }: { children: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <Provider store={store}>{children}</Provider>
   );
+  Wrapper.displayName = 'UserTestWrapper';
+  return Wrapper;
 };
 
 describe('useUser', () => {

@@ -34,7 +34,6 @@ import EmailDto from 'src/users/dtos/email.dto';
 import { confirmationLink, LinkMail, resetLink } from 'src/auth/auth.constants';
 
 describe('AuthService', () => {
-  let configurationService: ConfigurationService;
   let usersService: UsersService;
   let emailService: EmailService;
   let authService: AuthService;
@@ -71,7 +70,6 @@ describe('AuthService', () => {
     authService = module.get(AuthService);
     emailService = module.get(EmailService);
     usersService = module.get(UsersService);
-    configurationService = module.get(ConfigurationService);
   });
 
   describe('validateUser', () => {
@@ -169,10 +167,11 @@ describe('AuthService', () => {
 
     it('should send email with confirmation link', async () => {
       jest.spyOn(jwtService, 'sign').mockReturnValue('SIGNED_TOKEN');
+      const linkUrl = `http://localhost:3001/${confirmationLink.url}?token=SIGNED_TOKEN`;
       mail = {
         from: 'contact@allinrange.com',
         subject: confirmationLink.subject,
-        text: `${confirmationLink.content} http://localhost:3001/${confirmationLink.url}?token=SIGNED_TOKEN`,
+        text: `${confirmationLink.content} ${linkUrl}`,
         to: mockMailDto.email,
       };
       await authService.sendEmailLink(mockMailDto, LinkMail.confirm);

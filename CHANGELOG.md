@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Pre-commit Linting with Husky
+- **Husky v9**: Git hooks management for automated quality checks
+- **lint-staged v15**: Run linters only on staged files
+- **Pre-commit Hook**: Automatically formats and lints code before commit
+  - Backend: Prettier + ESLint on TypeScript files
+  - Frontend: Prettier + ESLint on TypeScript/TSX files
+  - Prevents commits with linting errors
+  - Auto-fixes issues when possible
+
 #### CI/CD Test Integration
 - **Backend Test Job**: Added automated testing to GitHub Actions workflow
   - PostgreSQL and MongoDB service containers with health checks

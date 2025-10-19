@@ -15,7 +15,7 @@ import { RootState } from '../store';
 import { authApi, userApi } from '../../api/api';
 
 // User state structure
-type UserState = {
+export type UserState = {
   error: unknown;
   status: FetchStatus;
   user: UserEntity | undefined;
