@@ -3,22 +3,18 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
     "target": "ES5",
-    "noImplicitThis": true
+    "noImplicitThis": true,
+    "types": ["node", "jest"]
   },
   "ts-node": {
     "compilerOptions": {
       "module": "commonJS"
     }
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src", "playwright.config.ts", "jest.setup.ts"]
 }
