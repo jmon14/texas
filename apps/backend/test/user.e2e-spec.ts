@@ -24,7 +24,7 @@ import { EmailService } from 'src/email/email.service';
 import { UserEntity } from 'src/database/entities/user.entity';
 
 // Mocks
-import { mockUserDto, testEmail } from 'src/utils/mocks';
+import { mockRegisterDto, testEmail } from 'src/utils/mocks';
 
 // Constants
 import { confirmationLink } from 'src/auth/auth.constants';
@@ -85,7 +85,7 @@ describe('App (e2e)', () => {
       res = await request(server)
         .post('/users/create/')
         .expect('Content-Type', /json/)
-        .send(mockUserDto)
+        .send(mockRegisterDto)
         .expect(HttpStatus.CREATED);
       // It should return created entity
       expect(res.body).toEqual(
@@ -100,7 +100,7 @@ describe('App (e2e)', () => {
       // It should call email service with mail options
       expect(emailService.sendMail).toHaveBeenCalledWith(
         expect.objectContaining({
-          from: 'contact@allinrange.com',
+          from: 'test@allinrange.com',
           subject: confirmationLink.subject,
           to: testEmail,
         }),
@@ -115,14 +115,14 @@ describe('App (e2e)', () => {
       res = await request(server)
         .post('/users/create/')
         .expect('Content-Type', /json/)
-        .send(mockUserDto)
+        .send(mockRegisterDto)
         .expect(HttpStatus.BAD_REQUEST);
       expect(res.body).toEqual(expect.objectContaining({ message: 'Username already exists' }));
       // It should error if trying to create user with duplicate email
       res = await request(server)
         .post('/users/create/')
         .expect('Content-Type', /json/)
-        .send({ ...mockUserDto, username: 'newusername' })
+        .send({ ...mockRegisterDto, username: 'newusername' })
         .expect(HttpStatus.BAD_REQUEST);
       expect(res.body).toEqual(expect.objectContaining({ message: 'Email already exists' }));
       // It should update pwd

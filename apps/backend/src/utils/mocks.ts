@@ -7,7 +7,7 @@ import { Request, Response } from 'express';
 
 // DTOs
 import EmailDto from 'src/users/dtos/email.dto';
-import { UserDto } from 'src/users/dtos/user.dto';
+import { RegisterDto, UserDto } from 'src/users/dtos/user.dto';
 import TokenDto from 'src/users/dtos/confirm-email.dto';
 import { ResetPwdDto } from 'src/users/dtos/reset-password.dto';
 
@@ -142,6 +142,12 @@ export const mockPayloadReq = {
 /**
  * DTOs
  */
+export const mockRegisterDto: RegisterDto = {
+  email: testEmail,
+  username: 'testuser',
+  password: 'testpwrd',
+};
+
 export const mockUserDto: UserDto = {
   email: testEmail,
   username: 'testuser',
