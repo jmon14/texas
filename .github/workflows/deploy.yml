@@ -300,12 +300,14 @@ jobs:
       [
         detect-changes,
         infra-terraform,
+        backend-quality,
         backend-test,
         backend-build,
+        frontend-quality,
         frontend-test,
         frontend-build,
       ]
-    if: always() && needs.detect-changes.result == 'success' && (needs.infra-terraform.result == 'success' || needs.infra-terraform.result == 'skipped') && (needs.backend-test.result == 'success' || needs.backend-test.result == 'skipped') && (needs.backend-build.result == 'success' || needs.backend-build.result == 'skipped') && (needs.frontend-test.result == 'success' || needs.frontend-test.result == 'skipped') && (needs.frontend-build.result == 'success' || needs.frontend-build.result == 'skipped')
+    if: always() && needs.detect-changes.result == 'success' && (needs.infra-terraform.result == 'success' || needs.infra-terraform.result == 'skipped') && (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') && (needs.backend-test.result == 'success' || needs.backend-test.result == 'skipped') && (needs.backend-build.result == 'success' || needs.backend-build.result == 'skipped') && (needs.frontend-quality.result == 'success' || needs.frontend-quality.result == 'skipped') && (needs.frontend-test.result == 'success' || needs.frontend-test.result == 'skipped') && (needs.frontend-build.result == 'success' || needs.frontend-build.result == 'skipped')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
