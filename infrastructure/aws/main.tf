@@ -102,6 +102,12 @@ resource "aws_instance" "texas_server" {
     nginx_conf   = file("${path.module}/../nginx/nginx.conf")
     domain_email = var.domain_email
   })
+
+  # Ignore AMI changes to prevent accidental instance replacement
+  # AMI updates require manual intervention and planned migration
+  lifecycle {
+    ignore_changes = [ami]
+  }
 }
 
 # =============================================================================
