@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+#### CI/CD Quality Gate Enforcement (Critical Security Fix)
+- **Deploy Job Dependencies**: Fixed critical flaw where deployment proceeded despite linting failures
+  - Added `backend-quality` and `frontend-quality` jobs to deploy job dependencies
+  - Updated deploy conditional to check quality gate results
+  - Linting failures now properly block deployment as intended
+  - Prevents deployment of code that fails quality checks
+
+#### Frontend E2E Test Environment
+- **Playwright Configuration**: Added missing `REACT_APP_BACKEND_API_URL` environment variable
+  - Added to `webServer.env` in `playwright.config.ts`
+  - Fixes issue where React app loaded but didn't render properly in CI
+  - All 6 E2E tests now pass in CI
+- **TypeScript Configuration**: Fixed linter errors in test files
+  - Added `node` and `jest` types to `tsconfig.json` compiler options
+  - Included `playwright.config.ts` and `jest.setup.ts` in compilation
+  - Resolved `process.env` errors and Jest global type issues
+  - Fixed `@testing-library/jest-dom` type errors (toBeInTheDocument)
+
+#### Backend E2E Test Environment  
+- **Test Database Setup**: Created missing test environment configuration
+  - Created `.test.env` from `.test.env.example` template
+  - Created `texas_test` PostgreSQL database
+  - Ran database migrations for test schema
+  - Backend E2E tests now pass locally
+- **Mock Data Fixes**: Corrected test data for user creation endpoint
+  - Added `mockRegisterDto` (RegisterDto without uuid) for `/users/create` endpoint
+  - Updated E2E tests to use correct DTO type
+  - Fixed email FROM address assertion to match test environment config
+  - All backend E2E tests passing (1 test suite, 1 test)
+
+#### Frontend Test Linting
+- **ESLint Import Warnings**: Fixed `import/no-named-as-default` warnings
+  - Renamed `userEvent` import to `user` in test files
+  - Updated all test usages from `user` variable to `userInteraction`
+  - Affects `action.test.tsx` and `range-form.test.tsx`
+  - All tests passing with no lint errors
+
 ### Added
 
 #### Pre-commit Linting with Husky
