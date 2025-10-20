@@ -165,11 +165,22 @@ docker-compose exec mongodb mongosh texas_test --eval "db.dropDatabase()"
 
 ## CI/CD Integration
 
-When setting up CI/CD pipeline, the E2E tests are ready to run with:
-- Containerized databases (PostgreSQL and MongoDB)
-- Environment variables from `.test.env` configuration
-- Standard `npm run test:e2e` command
-- Test results in standard Jest format
+E2E tests run automatically in the CI/CD pipeline with:
+- **Containerized databases** (PostgreSQL and MongoDB service containers)
+- **Automatic database migrations** run before E2E tests
+- **Environment variables** configured in workflow (see `.github/workflows/deploy.yml`)
+- **Standard Jest format** for test results
+
+### CI/CD Migration Flow
+```yaml
+1. Install dependencies
+2. Run unit tests
+3. Build backend (npm run build)
+4. Run migrations (node dist/scripts/migrate.js)
+5. Run E2E tests (npm run test:e2e)
+```
+
+This ensures the `texas_test` database has all required tables before tests run.
 
 ## Best Practices
 
