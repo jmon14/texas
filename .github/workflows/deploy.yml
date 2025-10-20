@@ -158,22 +158,55 @@ jobs:
         working-directory: apps/backend
         run: npm test
 
+      - name: Debug service containers
+        run: |
+          echo "=== Debugging Service Containers ==="
+          echo "Checking network connectivity..."
+          ping -c 2 postgres || echo "Cannot ping postgres"
+
+          echo ""
+          echo "Checking if postgres port is open..."
+          nc -zv postgres 5432 || echo "Port 5432 not reachable"
+
+          echo ""
+          echo "DNS resolution for 'postgres':"
+          nslookup postgres || echo "DNS lookup failed"
+
+          echo ""
+          echo "Available hosts:"
+          cat /etc/hosts | grep -v "^#"
+
       - name: Wait for PostgreSQL
         run: |
           echo "Installing PostgreSQL client..."
           sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          sudo apt-get install -y postgresql-client netcat-openbsd
 
+          echo ""
           echo "Waiting for PostgreSQL to be ready..."
-          for i in {1..30}; do
+          for i in {1..10}; do
+            echo "Attempt $i:"
+            echo "  - Testing with pg_isready..."
+            pg_isready -h postgres -p 5432 -U admin || echo "    pg_isready failed"
+            
+            echo "  - Testing with netcat..."
+            nc -zv postgres 5432 || echo "    netcat failed"
+            
+            echo "  - Testing direct connection..."
+            psql -h postgres -U admin -d texas_test -c "SELECT 1;" 2>&1 || echo "    psql failed"
+            
             if pg_isready -h postgres -p 5432 -U admin > /dev/null 2>&1; then
               echo "PostgreSQL is ready!"
               exit 0
             fi
-            echo "Waiting for PostgreSQL... ($i/30)"
-            sleep 2
+            
+            echo "  Not ready yet, waiting..."
+            sleep 3
           done
-          echo "PostgreSQL failed to become ready in time"
+
+          echo ""
+          echo "PostgreSQL failed to become ready. Final diagnostics:"
+          docker ps || echo "Cannot list containers"
           exit 1
 
       - name: Run database migrations
