@@ -3,7 +3,6 @@
 This guide explains how to run End-to-End (E2E) tests locally for the Texas Poker backend.
 
 > **Note**: E2E tests now run automatically in CI/CD with proper database setup and migrations.
-> Debugging service container connectivity issues.
 
 ## Quick Start
 

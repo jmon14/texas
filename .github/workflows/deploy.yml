@@ -121,12 +121,12 @@ jobs:
           --health-retries 5
     env:
       NODE_ENV: test
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: texas_test
-      MONGODB_URI: mongodb://mongodb:27017/texas_test
+      MONGODB_URI: mongodb://localhost:27017/texas_test
       JWT_SECRET: test_jwt_secret
       JWT_EXPIRATION_TIME: 3600
       JWT_REFRESH_SECRET: test_jwt_refresh_secret
@@ -158,55 +158,19 @@ jobs:
         working-directory: apps/backend
         run: npm test
 
-      - name: Debug service containers
-        run: |
-          echo "=== Debugging Service Containers ==="
-          echo "Checking network connectivity..."
-          ping -c 2 postgres || echo "Cannot ping postgres"
-
-          echo ""
-          echo "Checking if postgres port is open..."
-          nc -zv postgres 5432 || echo "Port 5432 not reachable"
-
-          echo ""
-          echo "DNS resolution for 'postgres':"
-          nslookup postgres || echo "DNS lookup failed"
-
-          echo ""
-          echo "Available hosts:"
-          cat /etc/hosts | grep -v "^#"
-
       - name: Wait for PostgreSQL
         run: |
-          echo "Installing PostgreSQL client..."
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client netcat-openbsd
-
-          echo ""
-          echo "Waiting for PostgreSQL to be ready..."
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          echo "Waiting for PostgreSQL to be ready on localhost..."
           for i in {1..10}; do
-            echo "Attempt $i:"
-            echo "  - Testing with pg_isready..."
-            pg_isready -h postgres -p 5432 -U admin || echo "    pg_isready failed"
-            
-            echo "  - Testing with netcat..."
-            nc -zv postgres 5432 || echo "    netcat failed"
-            
-            echo "  - Testing direct connection..."
-            psql -h postgres -U admin -d texas_test -c "SELECT 1;" 2>&1 || echo "    psql failed"
-            
-            if pg_isready -h postgres -p 5432 -U admin > /dev/null 2>&1; then
+            if pg_isready -h localhost -p 5432 -U admin > /dev/null 2>&1; then
               echo "PostgreSQL is ready!"
               exit 0
             fi
-            
-            echo "  Not ready yet, waiting..."
-            sleep 3
+            echo "Waiting for PostgreSQL... ($i/10)"
+            sleep 2
           done
-
-          echo ""
-          echo "PostgreSQL failed to become ready. Final diagnostics:"
-          docker ps || echo "Cannot list containers"
+          echo "PostgreSQL failed to become ready in time"
           exit 1
 
       - name: Run database migrations
