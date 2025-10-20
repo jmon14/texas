@@ -158,13 +158,9 @@ jobs:
         working-directory: apps/backend
         run: npm test
 
-      - name: Build backend (for migrations)
-        working-directory: apps/backend
-        run: npm run build
-
       - name: Run database migrations
         working-directory: apps/backend
-        run: node dist/scripts/migrate.js
+        run: npm run migrate
 
       - name: Run E2E tests
         working-directory: apps/backend
