@@ -11,6 +11,7 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "baseUrl": "./",
     "incremental": true,
     "strictNullChecks": false,
@@ -18,5 +19,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts", "jest.setup.ts"]
 }

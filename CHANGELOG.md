@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+#### Backend Docker Build - Module Not Found Error
+- **Root Cause**: `jest.setup.ts` file at project root caused TypeScript to change output structure
+  - Without `rootDir` set, TypeScript preserved directory structure creating `dist/src/main.js`
+  - Docker container start command expected `dist/main.js` causing "Cannot find module" error
+  - Issue introduced when jest.setup.ts was added for test improvements after commit `3b0b296`
+- **Fix Applied**:
+  - Added `rootDir: "./src"` to `tsconfig.json` to ensure proper output structure
+  - Added `jest.setup.ts` to `.dockerignore` to exclude it from Docker builds
+  - Added exclude list to `tsconfig.json` to prevent compilation of test files
+- **Result**: Backend builds correctly with `dist/main.js` in proper location
+  - Container starts successfully
+  - Health endpoint accessible at `/api/health`
+  - Production deployments now functional
+
 #### Frontend E2E Tests - MSW Browser Worker Integration
 - **MSW Browser Worker**: Added Mock Service Worker for browser-based E2E tests
   - Created `src/msw/browser.ts` with browser worker setup using `msw/browser`
