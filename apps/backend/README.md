@@ -2,7 +2,7 @@
 
 A NestJS backend service for the Texas Poker application, providing a unified API for user management, authentication, file uploads, email notifications, and poker range analysis.
 
-> **CI/CD**: Automatically built and deployed via GitHub Actions when backend changes are detected.
+> **CI/CD**: Automatically built and deployed via GitHub Actions when backend changes are detected. Docker images are built fresh and deployed to production via Amazon ECR.
 
 ## 🏗️ Architecture Overview
 
