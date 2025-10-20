@@ -175,11 +175,12 @@ E2E tests run automatically in the CI/CD pipeline with:
 ```yaml
 1. Install dependencies
 2. Run unit tests
-3. Run migrations (npm run migrate)
-4. Run E2E tests (npm run test:e2e)
+3. Wait for PostgreSQL to be ready
+4. Run migrations (npm run migrate)
+5. Run E2E tests (npm run test:e2e)
 ```
 
-Migrations use `ts-node` to run directly from TypeScript source, ensuring the `texas_test` database has all required tables before tests run.
+The workflow waits for service containers to be ready before running migrations, then uses `ts-node` to run migrations directly from TypeScript source, ensuring the `texas_test` database has all required tables before tests run.
 
 ## Best Practices
 
