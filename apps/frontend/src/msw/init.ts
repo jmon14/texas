@@ -12,7 +12,8 @@
  */
 export async function initMSW(): Promise<void> {
   // Only enable MSW when explicitly requested (E2E tests)
-  if (process.env.REACT_APP_ENABLE_MSW !== 'true') {
+  // Check if process is defined to avoid errors in production builds
+  if (typeof process === 'undefined' || process.env.REACT_APP_ENABLE_MSW !== 'true') {
     return;
   }
 
