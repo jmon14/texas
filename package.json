@@ -1,10 +1,14 @@
 {
   "name": "texas-poker-monorepo",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Texas Poker Application - Monorepo",
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "install:all": "npm install && npm run install:backend && npm run install:frontend && npm run install:tools",
+    "install:backend": "cd apps/backend && npm install",
+    "install:frontend": "cd apps/frontend && npm install",
+    "install:tools": "cd tools/texas-mcp-server && npm install && cd ../clickup-mcp-server && npm install"
   },
   "devDependencies": {
     "husky": "^9.0.11",
