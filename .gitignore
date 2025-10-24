@@ -25,6 +25,7 @@ node_modules
 # Build app
 dist
 build/
+*.tsbuildinfo
 
 # Jest coverage
 coverage
