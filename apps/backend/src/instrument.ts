@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/nestjs';
-
-import packageJson from '../package.json';
 import { NODE_ENV } from './utils/constants';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJson = require('../../package.json');
 
 // Only initialize Sentry in production environment
 // Skip in development to avoid polluting error tracking with local dev errors
