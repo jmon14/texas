@@ -75,6 +75,7 @@ jobs:
           fetch "/texas/backend/AWS_SES_SMTP_USERNAME"   aws_ses_smtp_username
           fetch "/texas/backend/AWS_SES_SMTP_PASSWORD"   aws_ses_smtp_password
           fetch "/texas/backend/DOMAIN_EMAIL"            domain_email
+          fetch "/texas/backend/SENTRY_DSN"              sentry_dsn
 
       - name: Terraform plan
         run: terraform plan -input=false -out=tfplan
