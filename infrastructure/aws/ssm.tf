@@ -176,6 +176,14 @@ resource "aws_ssm_parameter" "domain_email" {
   value       = var.domain_email
 }
 
+# Sentry Configuration
+resource "aws_ssm_parameter" "sentry_dsn" {
+  name        = "/texas/backend/SENTRY_DSN"
+  description = "Sentry DSN for error tracking"
+  type        = "SecureString"
+  value       = var.sentry_dsn
+}
+
 output "ssm_parameters" {
   description = "SSM parameter ARNs"
   value = {
@@ -189,5 +197,6 @@ output "ssm_parameters" {
     aws_ses_smtp_username      = aws_ssm_parameter.aws_ses_smtp_username.arn
     aws_ses_smtp_password      = aws_ssm_parameter.aws_ses_smtp_password.arn
     domain_email               = aws_ssm_parameter.domain_email.arn
+    sentry_dsn                 = aws_ssm_parameter.sentry_dsn.arn
   }
 }

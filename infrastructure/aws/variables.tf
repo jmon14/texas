@@ -83,3 +83,9 @@ variable "domain_email" {
   description = "Email address for Let's Encrypt/Certbot"
   type        = string
 }
+
+variable "sentry_dsn" {
+  description = "Sentry DSN for error tracking"
+  type        = string
+  sensitive   = true
+}

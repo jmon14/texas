@@ -74,6 +74,8 @@ ENV_SETUP_RESULT=$(aws ssm send-command \
         'echo \"ECR_REGISTRY=\$ECR_REGISTRY\" > .env',
         'echo \"BACKEND_TAG=latest\" >> .env',
         'echo \"FRONTEND_TAG=latest\" >> .env',
+        'SENTRY_DSN=$(aws ssm get-parameter --name "/texas/backend/SENTRY_DSN" --query "Parameter.Value" --output text)',
+        'echo \"SENTRY_DSN=\$SENTRY_DSN\" >> .env',
         'echo \"Environment variables configured successfully\"'
     ]" \
     --query 'Command.CommandId' \

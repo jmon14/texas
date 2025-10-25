@@ -24,4 +24,7 @@ aws_ses_smtp_username     = "your_ses_smtp_username"
 aws_ses_smtp_password     = "your_ses_smtp_password"
 
 # Domain Configuration
-domain_email              = "admin@example.com" 
+domain_email              = "admin@example.com"
+
+# Sentry Configuration
+sentry_dsn                = "https://your_sentry_dsn_here@sentry.io/project_id" 
