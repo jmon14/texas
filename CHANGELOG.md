@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-10-25
+
+### Added
+
+#### Sentry Error Tracking Integration
+- **Automatic Error Tracking**: Integrated Sentry for production error monitoring and tracking
+  - Captures unhandled exceptions with full stack traces and context
+  - Tracks release versions with git SHA for precise error correlation
+  - Performance monitoring with configurable trace sampling (10% default)
+- **Environment-Based Initialization**: Sentry only runs in production
+  - Completely disabled in development to avoid polluting error tracking
+  - No setup required for local development
+  - Console logs clearly indicate Sentry status
+- **Release Tracking**: Hybrid versioning system combining semantic version with git SHA
+  - Format: `backend@{version}+{git-sha}` (e.g., `backend@2.1.0+a3f5c9d`)
+  - Automatic version reading from `package.json`
+  - Links Sentry errors directly to GitHub commits
+- **Global Exception Filter**: Automatic error capture via NestJS global filter
+  - Applied only in production environment
+  - Safe fallback checks prevent crashes if Sentry not initialized
+  - Continues with default exception handling after capture
+- **Infrastructure Configuration**: Secure DSN management via AWS SSM Parameter Store
+  - SSM parameter: `/texas/backend/SENTRY_DSN` (SecureString)
+  - Managed by Terraform in `infrastructure/aws/ssm.tf`
+  - Automatically fetched during deployment
+- **Deployment Integration**: Seamless integration with existing CI/CD pipeline
+  - GitHub Actions passes git SHA for release tracking
+  - Deploy script fetches DSN from SSM
+  - Docker Compose injects environment variables
+- **Documentation**: Comprehensive Sentry integration guide (`apps/backend/SENTRY.md`)
+  - Architecture overview and component descriptions
+  - Configuration and deployment instructions
+  - Best practices and troubleshooting
+  - Future improvements roadmap
+
+### Fixed
+
+#### Backend Build Configuration
+- **TypeScript Output Structure**: Fixed production build output location
+  - Issue: Changing `rootDir` to `"./"` caused compiled files to output to `dist/src/` instead of `dist/`
+  - Docker container expected `dist/main.js` but found `dist/src/main.js`
+  - Fix: Override `rootDir` to `"./src"` in `tsconfig.build.json`
+  - Result: Production builds output to correct location while development linting works for test files
+
+#### Backend E2E Test Linting
+- **TypeScript Configuration**: Fixed linter errors in test files
+  - Added `test/**/*` to `include` array in `tsconfig.json`
+  - Changed `rootDir` from `"./src"` to `"./"` to encompass both src and test directories
+  - Added explicit `"types": ["jest", "node"]` for Jest globals recognition
+  - Resolved 26 linter errors (describe, it, expect, beforeAll, afterAll, beforeEach not found)
+  - Fixed `ResetPwdDto` type errors with proper token field recognition
+
+### Changed
+
+#### Sentry Configuration
+- **Trace Sample Rate**: Production default set to 10% (0.1)
+  - Balances error visibility with cost efficiency
+  - Configurable via `SENTRY_TRACES_SAMPLE_RATE` environment variable
+  - Can be adjusted based on traffic and monitoring needs
+
 ### Fixed
 
 #### Backend Docker Build - Module Not Found Error

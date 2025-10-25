@@ -418,15 +418,29 @@ docker run -p 3000:3000 texas-backend
 2. **Production**: Supabase PostgreSQL + MongoDB Atlas + AWS SES
 3. **Configuration**: AWS SSM Parameter Store (`/texas/backend/*`)
 
-## 📚 API Documentation
+## 📚 Documentation
 
-### Swagger UI
+### API Documentation (Swagger UI)
 
 Access interactive API documentation at:
 
 ```
 http://localhost:3000/api
 ```
+
+### Additional Documentation
+
+- **[SENTRY.md](./SENTRY.md)** - Sentry error tracking integration guide
+  - Environment-based initialization
+  - Release tracking and versioning
+  - Configuration and deployment
+  - Best practices and troubleshooting
+  
+- **[E2E_TESTING.md](./E2E_TESTING.md)** - End-to-end testing guide
+  - Local E2E test setup
+  - Database configuration
+  - Running E2E tests
+  - Troubleshooting guide
 
 ### OpenAPI Specification
 

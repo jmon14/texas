@@ -1,3 +1,5 @@
+import './instrument';
+
 // NestJS
 import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
@@ -14,6 +16,9 @@ import { NODE_ENV } from './utils/constants';
 
 // Services
 import { ConfigurationService } from './config/configuration.service';
+
+// Filters
+import { SentryExceptionFilter } from 'src/filters';
 
 /**
  * Bootstrap application
@@ -59,6 +64,12 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
+
+  // Global Sentry exception filter for automatic error tracking in production
+  if (nodeEnv === NODE_ENV.PRODUCTION) {
+    const httpAdapter = app.getHttpAdapter();
+    app.useGlobalFilters(new SentryExceptionFilter(httpAdapter));
+  }
 
   // Open API documentation
   const config = new DocumentBuilder()

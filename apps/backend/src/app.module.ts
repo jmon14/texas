@@ -1,6 +1,9 @@
 // NestJS
 import { Module } from '@nestjs/common';
 
+// Sentry
+import { SentryModule } from '@sentry/nestjs/setup';
+
 // Controllers
 import { AppController } from './app.controller';
 
@@ -13,7 +16,15 @@ import { DatabaseModule } from 'src/database/database.module';
 import { RangesModule } from 'src/ranges/ranges.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, EmailModule, AuthModule, FilesModule, RangesModule],
+  imports: [
+    SentryModule.forRoot(),
+    DatabaseModule,
+    UsersModule,
+    EmailModule,
+    AuthModule,
+    FilesModule,
+    RangesModule,
+  ],
   controllers: [AppController],
   providers: [],
 })
