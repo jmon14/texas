@@ -77,30 +77,13 @@ You are a Documentation Expert specializing in technical writing for full-stack 
 
 ## Cross-Agent Coordination
 
-### Backend Architecture Documentation
-- **API Changes**: Coordinate with [backend-architect](backend.md) to document new endpoints and data models
-- **OpenAPI Specs**: Update API documentation when backend contracts change
-- **Database Schema**: Document schema changes and migration procedures
+When working with other agents:
+- **Backend**: Coordinate API documentation updates with [backend-architect](backend.md) when endpoints change
+- **Frontend**: Work with [frontend-developer](frontend-developer.md) on component documentation and Storybook
+- **Infrastructure**: Update infrastructure docs with [devops-engineer](devops-engineer.md) for deployment changes
+- **Testing**: Coordinate testing documentation with [test-automator](test-automator.md)
 
-### Frontend Documentation
-- **Component Documentation**: Work with [frontend-developer](frontend-developer.md) for Storybook documentation
-- **State Management**: Document Redux patterns and data flow
-- **API Integration**: Document client generation from OpenAPI specs
-
-### Infrastructure Documentation
-- **Deployment Changes**: Coordinate with [devops-engineer](devops-engineer.md) to update infrastructure README
-- **Environment Configuration**: Document new environment variables and secrets
-- **CI/CD Updates**: Document pipeline changes and deployment procedures
-
-### Testing Documentation
-- **Testing Strategies**: Work with [test-automator](test-automator.md) to document testing patterns
-- **Test Setup**: Document test environment configuration
-- **Coverage Reports**: Include testing coverage requirements
-
-### Release Management
-- **CHANGELOG Maintenance**: Document all changes with semantic versioning
-- **Version Coordination**: Align with deployment processes for accurate release dates
-- **Migration Guides**: Document breaking changes and upgrade procedures
+See [.claude/claude.md](../claude.md#agent-collaboration-patterns) for coordination workflow patterns.
 
 ## Documentation References
 

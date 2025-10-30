@@ -312,76 +312,32 @@ npm run test:watch
 
 ### E2E Tests
 
-E2E tests require running databases. Here's how to set them up:
-
-#### Prerequisites
-
-1. **Start databases using Docker Compose** (from project root):
-   ```bash
-   # Start only the databases
-   docker-compose up postgres mongodb -d
-   
-   # Or start all services
-   docker-compose up -d
-   ```
-
-2. **Verify databases are running**:
-   ```bash
-   docker ps | grep -E 'postgres|mongodb'
-   ```
-
-#### Running E2E Tests
+E2E tests require running databases:
 
 ```bash
-# Run all E2E tests
+# From project root: Start databases
+docker-compose up postgres mongodb -d
+
+# From apps/backend: Run E2E tests
 npm run test:e2e
-
-# Run specific E2E test file
-npm run test:e2e -- user.e2e-spec.ts
-
-# Run with verbose output
-npm run test:e2e -- --verbose
 ```
 
-#### E2E Test Configuration
+**Configuration:**
+- Uses `.test.env` file (automatically loaded when `NODE_ENV=test`)
+- Databases: PostgreSQL `localhost:5432` (`texas_test`), MongoDB `localhost:27017` (`texas_test`)
+- Email service mocked (no actual emails sent)
 
-- Test environment uses `.test.env` file
-- Database connections:
-  - PostgreSQL: `localhost:5432` (database: `texas_test`)
-  - MongoDB: `localhost:27017` (database: `texas_test`)
-- Email service is mocked (no actual emails sent)
-- AWS S3 operations should be mocked in tests
+**Troubleshooting:**
+- Verify databases running: `docker-compose ps`
+- Check logs: `docker-compose logs postgres mongodb`
+- Clean restart: `docker-compose down -v && docker-compose up postgres mongodb -d`
 
-#### Troubleshooting E2E Tests
-
-If E2E tests fail with database connection errors:
-
-1. **Check databases are running**:
-   ```bash
-   docker-compose ps
-   ```
-
-2. **Check database logs**:
-   ```bash
-   docker-compose logs postgres
-   docker-compose logs mongodb
-   ```
-
-3. **Restart databases**:
-   ```bash
-   docker-compose restart postgres mongodb
-   ```
-
-4. **Clean and restart**:
-   ```bash
-   docker-compose down -v
-   docker-compose up postgres mongodb -d
-   ```
+**Current Coverage:** `user.e2e-spec.ts` covers authentication flow (user creation, email verification, password reset, JWT validation)
 
 ### Test Structure
 
 - **Unit tests**: Individual service/controller testing with mocked dependencies
-- **E2E tests**: Full API integration testing with real database connections (see `E2E_TESTING.md`)
+- **E2E tests**: Full API integration testing with real database connections
 - **Mock services**: Isolated testing environment (EmailService mocked in E2E tests)
 - **Test coverage**: 73.38% overall coverage - run `npm run test:cov` for detailed report
 
@@ -428,20 +384,6 @@ Access interactive API documentation at:
 http://localhost:3000/api
 ```
 
-### Additional Documentation
-
-- **[SENTRY.md](./SENTRY.md)** - Sentry error tracking integration guide
-  - Environment-based initialization
-  - Release tracking and versioning
-  - Configuration and deployment
-  - Best practices and troubleshooting
-  
-- **[E2E_TESTING.md](./E2E_TESTING.md)** - End-to-end testing guide
-  - Local E2E test setup
-  - Database configuration
-  - Running E2E tests
-  - Troubleshooting guide
-
 ### OpenAPI Specification
 
 Automatically generated from:
@@ -463,6 +405,17 @@ Automatically generated from:
 - **Structured logging**: JSON format
 - **Environment-based**: Different log levels
 - **Error tracking**: Detailed error information
+
+### Sentry Error Tracking
+
+**Production Only**: All unhandled exceptions are automatically captured via a global exception filter (disabled in development).
+
+**Configuration:**
+- DSN stored in AWS SSM: `/texas/backend/SENTRY_DSN`
+- Release tracking: `backend@{version}+{git-sha}` (e.g., `backend@2.1.0+a3f5c9d`)
+- Trace sampling: 10% default (configurable via `SENTRY_TRACES_SAMPLE_RATE`)
+
+**View Errors:** https://sentry.io/organizations/texas-poker/
 
 ## 🤝 Contributing
 

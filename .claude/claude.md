@@ -146,6 +146,23 @@ The Documentation Expert will:
 
 ## 🔄 Agent Collaboration Patterns
 
+### Coordination Workflow
+
+When agents need to work together, the coordination is handled automatically:
+
+1. **Task Planning**: Use `plan_task_with_agents` to identify which agents should be involved
+2. **Agent Loading**: Use `get_agent_context` to load each agent's full documentation and patterns
+3. **Persona Adoption**: Adopt the agent persona and follow their documented patterns
+4. **Work Tracking**: Use `track_agent_work` to log progress and coordinate efforts
+5. **Direct Coordination**: Agents coordinate directly based on their "Cross-Agent Coordination" sections
+
+Each agent's documentation includes a "Cross-Agent Coordination" section that specifies:
+- **Who** to coordinate with (which agents)
+- **What** to coordinate (specific topics)
+- **When** coordination is needed (specific scenarios)
+
+The coordination workflow itself (how to plan, load, and track) is handled by the MCP tools, not documented in each agent file.
+
 ### Feature Development Flow
 
 1. **Design Phase**

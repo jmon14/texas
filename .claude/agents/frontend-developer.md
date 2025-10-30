@@ -49,27 +49,13 @@ You are a frontend developer specializing in React applications with Material-UI
 
 ## Cross-Agent Coordination
 
-### API Integration Workflow
-1. **API Contracts**: Coordinate with [backend-architect](backend.md) for API design and OpenAPI specs
-2. **Client Generation**: Run `npm run openapi:backend` after backend changes to generate TypeScript clients
-3. **Type Safety**: Leverage auto-generated TypeScript types for API requests/responses
-4. **Error Handling**: Implement consistent error handling patterns for API calls
+When working with other agents:
+- **Backend**: Coordinate API contracts and OpenAPI specs with [backend-architect](backend.md), regenerate clients after API changes
+- **Testing**: Update tests and MSW handlers with [test-automator](test-automator.md) when APIs change
+- **Documentation**: Coordinate component docs with [documentation-expert](documentation-expert.md) for Storybook
+- **Infrastructure**: Coordinate build configuration and API URLs with [devops-engineer](devops-engineer.md)
 
-### Testing Strategy
-- **Component Testing**: Work with [test-automator](test-automator.md) for React Testing Library patterns
-- **MSW Mocking**: Update MSW handlers when backend APIs change
-- **E2E Testing**: Ensure UI changes align with cross-service testing strategy
-- **Accessibility Testing**: Include a11y testing in component test suites
-
-### Documentation
-- **Component Documentation**: Coordinate with [documentation-expert](documentation-expert.md) for Storybook stories
-- **Props Documentation**: Document component APIs with JSDoc comments
-- **State Documentation**: Document Redux store structure and data flow
-
-### Deployment
-- **Build Configuration**: Work with [devops-engineer](devops-engineer.md) for build-time environment variables
-- **API URL Configuration**: Coordinate on environment-based API URL settings
-- **Bundle Analysis**: Monitor and optimize bundle sizes for production
+See [.claude/claude.md](../claude.md#agent-collaboration-patterns) for coordination workflow patterns.
 
 ## Documentation References
 

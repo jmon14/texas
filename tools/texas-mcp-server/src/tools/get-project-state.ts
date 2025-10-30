@@ -1,6 +1,79 @@
 import { execSync } from 'child_process';
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
 
 const PROJECT_ROOT = process.cwd();
+
+/**
+ * Extract unreleased items and latest version from CHANGELOG.md
+ */
+function getChangelogInfo() {
+  const changelogPath = resolve(PROJECT_ROOT, 'CHANGELOG.md');
+  if (!existsSync(changelogPath)) {
+    return { unreleased: null, latestVersion: null };
+  }
+
+  try {
+    const content = readFileSync(changelogPath, 'utf-8');
+    const lines = content.split('\n');
+
+    // Find [Unreleased] section
+    const unreleasedIndex = lines.findIndex((line) =>
+      line.trim().toLowerCase().includes('[unreleased]'),
+    );
+
+    // Find latest released version (first version after [Unreleased])
+    let latestVersion: string | null = null;
+    let latestVersionIndex = -1;
+
+    if (unreleasedIndex !== -1) {
+      // Look for the first version header after [Unreleased]
+      for (let i = unreleasedIndex + 1; i < lines.length; i++) {
+        const match = lines[i].match(/^## \[(\d+\.\d+\.\d+)\]/);
+        if (match) {
+          latestVersion = match[1];
+          latestVersionIndex = i;
+          break;
+        }
+      }
+    } else {
+      // If no [Unreleased] section, find the first version
+      for (let i = 0; i < lines.length; i++) {
+        const match = lines[i].match(/^## \[(\d+\.\d+\.\d+)\]/);
+        if (match) {
+          latestVersion = match[1];
+          latestVersionIndex = i;
+          break;
+        }
+      }
+    }
+
+    // Extract unreleased content (everything between [Unreleased] and next version)
+    let unreleased: string[] | null = null;
+    if (unreleasedIndex !== -1) {
+      const nextVersionIndex =
+        latestVersionIndex !== -1 && latestVersionIndex > unreleasedIndex
+          ? latestVersionIndex
+          : lines.length;
+
+      const unreleasedLines = lines
+        .slice(unreleasedIndex + 1, nextVersionIndex)
+        .filter((line) => line.trim())
+        .map((line) => line.trim());
+
+      if (unreleasedLines.length > 0) {
+        unreleased = unreleasedLines;
+      }
+    }
+
+    return {
+      unreleased: unreleased && unreleased.length > 0 ? unreleased : null,
+      latestVersion,
+    };
+  } catch {
+    return { unreleased: null, latestVersion: null };
+  }
+}
 
 export async function getProjectState() {
   try {
@@ -34,6 +107,9 @@ export async function getProjectState() {
       encoding: 'utf-8',
     }).trim();
 
+    // Get changelog information
+    const changelogInfo = getChangelogInfo();
+
     return {
       git: {
         currentBranch: gitBranch,
@@ -44,6 +120,10 @@ export async function getProjectState() {
         runningServices: dockerServices,
       },
       recentCommits: recentCommits.split('\n'),
+      changelog: {
+        unreleased: changelogInfo.unreleased,
+        latestVersion: changelogInfo.latestVersion,
+      },
       projectRoot: PROJECT_ROOT,
     };
   } catch (error) {

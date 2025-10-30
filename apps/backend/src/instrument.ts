@@ -11,7 +11,7 @@ const isProduction = nodeEnv === NODE_ENV.PRODUCTION;
 const dsn = process.env.SENTRY_DSN;
 const gitSha = process.env.GIT_SHA;
 
-if (isProduction && dsn && gitSha) {
+if (isProduction) {
   if (!dsn || !gitSha) {
     console.error('SENTRY_DSN and GIT_SHA environment variables are required in production');
   } else {

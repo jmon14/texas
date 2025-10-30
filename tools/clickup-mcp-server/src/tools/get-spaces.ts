@@ -3,7 +3,13 @@ import { ClickUpClient } from '../clickup-client.js';
 /**
  * Get spaces (workspaces) from a ClickUp team
  */
-export async function getSpaces(client: ClickUpClient, teamId: string): Promise<any> {
+export async function getSpaces(client: ClickUpClient): Promise<any> {
+  const teamId = process.env.CLICKUP_TEAM_ID;
+
+  if (!teamId) {
+    throw new Error('Team ID is required. Set CLICKUP_TEAM_ID in .env file.');
+  }
+
   const response = await client.get<{ spaces: any[] }>(`/team/${teamId}/space`);
 
   return {

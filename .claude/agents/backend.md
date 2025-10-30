@@ -42,20 +42,12 @@ You are a backend system architect specializing in NestJS backend architecture.
 
 ## Cross-Agent Coordination
 
-### Frontend Integration
-- **API Contracts**: Coordinate with [frontend-developer](frontend-developer.md) on API design and OpenAPI specs
-- **Client Generation**: Frontend generates TypeScript clients from OpenAPI specifications
-- **Authentication Flow**: JWT tokens with refresh token rotation
+When working with other agents:
+- **Frontend**: Coordinate API contracts and OpenAPI specs with [frontend-developer](frontend-developer.md)
+- **Testing**: Ensure test coverage with [test-automator](test-automator.md) for new endpoints
+- **Infrastructure**: Coordinate deployment and environment variables with [devops-engineer](devops-engineer.md)
 
-### Testing Strategy
-- **Unit/Integration Tests**: Work with [test-automator](test-automator.md) for comprehensive test coverage
-- **E2E Testing**: Coordinate on Supertest-based API testing strategies
-- **Database Mocking**: Align on test database isolation patterns
-
-### Infrastructure Coordination
-- **Deployment**: Work with [devops-engineer](devops-engineer.md) for production configurations
-- **Environment Variables**: Coordinate SSM Parameter Store usage for secrets
-- **Database Connections**: Align on Supabase (PostgreSQL) and MongoDB Atlas configurations
+See [.claude/claude.md](../claude.md#agent-collaboration-patterns) for coordination workflow patterns.
 
 ## Documentation References
 

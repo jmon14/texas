@@ -3,6 +3,7 @@
 import { config } from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { existsSync } from 'fs';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -14,10 +15,20 @@ import { updateTask } from './tools/update-task.js';
 import { getLists } from './tools/get-lists.js';
 import { getSpaces } from './tools/get-spaces.js';
 
-// Load environment variables from .env file in the same directory as this server
+// Load environment variables from .env file
+// __dirname is tools/clickup-mcp-server/build/, so ../.env is tools/clickup-mcp-server/.env
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-config({ path: join(__dirname, '../.env') });
+const envPath = join(__dirname, '../.env');
+
+if (existsSync(envPath)) {
+  config({ path: envPath });
+} else if (!process.env.CLICKUP_API_TOKEN) {
+  console.error(
+    `Warning: .env file not found at ${envPath}\n` +
+      'Please ensure CLICKUP_API_TOKEN is set as environment variable or create .env file.',
+  );
+}
 
 // Create MCP server
 const server = new Server(
@@ -47,16 +58,10 @@ const TOOLS = [
   {
     name: 'get_spaces',
     description:
-      'Get all spaces (workspaces) from a ClickUp team. Use this to discover space IDs for other operations.',
+      'Get all spaces (workspaces) from a ClickUp team. Use this to discover space IDs for other operations. Team ID is read from CLICKUP_TEAM_ID in .env file.',
     inputSchema: {
       type: 'object',
-      properties: {
-        team_id: {
-          type: 'string',
-          description: 'The ClickUp team ID (workspace ID)',
-        },
-      },
-      required: ['team_id'],
+      properties: {},
     },
   },
   {
@@ -281,8 +286,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     switch (name) {
       case 'get_spaces': {
-        const { team_id } = args as { team_id: string };
-        result = await getSpaces(clickupClient, team_id);
+        result = await getSpaces(clickupClient);
         break;
       }
 

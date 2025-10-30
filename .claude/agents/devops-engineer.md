@@ -91,22 +91,13 @@ docker ps && docker logs texas-backend-1
 
 ## Cross-Agent Coordination
 
-### Frontend Integration
-- **Build Configuration**: Coordinate with [frontend-developer](frontend-developer.md) for build-time API URL configuration
-- **Static Assets**: Ensure proper Nginx serving of frontend assets
+When working with other agents:
+- **Frontend**: Coordinate build configuration and API URLs with [frontend-developer](frontend-developer.md)
+- **Backend**: Coordinate deployment timing and migrations with [backend-architect](backend.md), manage SSM parameters
+- **Testing**: Align CI/CD quality gates with [test-automator](test-automator.md)
+- **Documentation**: Update infrastructure docs with [documentation-expert](documentation-expert.md)
 
-### Backend Integration
-- **Database Migrations**: Work with [backend-architect](backend.md) for migration timing during deployments
-- **Environment Variables**: Coordinate SSM Parameter Store structure for backend configuration
-- **External Services**: Align on AWS S3, SES, and database connection configurations
-
-### Testing Pipeline
-- **Quality Gates**: Align with [test-automator](test-automator.md) for CI/CD testing requirements
-- **E2E Testing**: Coordinate on deployment validation strategies
-
-### Documentation
-- **Infrastructure Changes**: Work with [documentation-expert](documentation-expert.md) to update infrastructure README
-- **Deployment Procedures**: Keep infrastructure documentation current with actual processes
+See [.claude/claude.md](../claude.md#agent-collaboration-patterns) for coordination workflow patterns.
 
 ## Documentation References
 

@@ -50,9 +50,10 @@ npm run build
    cp .env.example .env
    ```
 
-2. Edit `.env` and add your ClickUp API token:
+2. Edit `.env` and add your ClickUp credentials:
    ```bash
    CLICKUP_API_TOKEN=pk_12345_YOUR_ACTUAL_TOKEN_HERE
+   CLICKUP_TEAM_ID=123456
    ```
 
 3. The `.env` file is already in `.gitignore` so your token won't be committed.
@@ -94,7 +95,7 @@ Once Cursor is restarted, try these commands with your AI assistant:
 
 1. **Discover your workspace structure:**
    ```
-   "Get all spaces from my ClickUp team 123456"
+   "Get all spaces from my ClickUp team"
    ```
 
 2. **See lists in a space:**
@@ -128,16 +129,14 @@ OR use the AI once integrated:
 ## Available Tools
 
 ### 1. `get_spaces`
-Get all spaces (workspaces) from your ClickUp team.
+Get all spaces (workspaces) from your ClickUp team. Uses `CLICKUP_TEAM_ID` from `.env` file.
 
 **Parameters:**
-- `team_id` (required): Your ClickUp team ID
+- None (team ID is read from `CLICKUP_TEAM_ID` environment variable)
 
 **Example:**
 ```typescript
-{
-  "team_id": "123456"
-}
+{}
 ```
 
 ### 2. `get_lists`

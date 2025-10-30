@@ -49,11 +49,6 @@ You just describe what you want, Claude handles the multi-agent orchestration au
 
 ## Testing
 
-### Manual Test
-```bash
-node test-manual.js  # Should show project info
-```
-
 ### In Cursor
 Ask Claude: `"What's my current git branch?"` - Should answer without asking for context.
 
@@ -62,9 +57,9 @@ Ask Claude: `"What's my current git branch?"` - Should answer without asking for
 ### Context Tools
 | Tool | Purpose |
 |------|---------|
-| `get_user_preferences` | Your coding standards and how to address you |
-| `get_project_state` | Git branch, uncommitted files, recent commits |
-| `get_codebase_summary` | Tech stack, services, documentation |
+| `get_user_preferences` | Your coding standards, workflow preferences, and how to address you |
+| `get_project_state` | Git branch, uncommitted files, recent commits, Docker services, and changelog info (unreleased items, latest version) |
+| `get_codebase_summary` | Project structure, tech stack, services, extracts summaries from documentation files (README.md, architecture.md, service READMEs) |
 | `get_agent_info` | Available agents and their specializations |
 
 ### Agent Coordination Tools
@@ -97,16 +92,19 @@ npm run watch  # Auto-rebuild on changes
 ### Project Structure
 ```
 src/
-├── index.ts              # MCP server entry point
-└── tools/                # Tool implementations
-    ├── get-user-preferences.ts
-    ├── get-project-state.ts
-    ├── get-codebase-summary.ts
-    └── get-agent-info.ts
+├── index.ts                      # MCP server entry point
+└── tools/                        # Tool implementations
+    ├── get-user-preferences.ts   # User preferences and workflow rules
+    ├── get-project-state.ts      # Git status, Docker services, changelog
+    ├── get-codebase-summary.ts   # Codebase overview from documentation
+    ├── get-agent-info.ts         # Available agents and capabilities
+    ├── plan-task-with-agents.ts  # Task analysis and agent planning
+    ├── get-agent-context.ts      # Load agent documentation
+    └── track-agent-work.ts       # Work tracking and coordination
 ```
 
 ### Adding New Tools
 1. Create tool file in `src/tools/`
 2. Register in `src/index.ts` (TOOLS array + switch case)
 3. Rebuild: `npm run build`
-4. Test: `node test-manual.js`
+4. Restart Cursor to test
