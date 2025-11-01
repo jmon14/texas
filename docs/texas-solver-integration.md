@@ -57,7 +57,7 @@ The `TexasSolverService` provides:
 ### Required Files
 
 ```
-tools/TexasSolver/
+apps/backend/tools/TexasSolver/
 ├── console_solver          # Executable binary (macOS)
 └── resources/              # Runtime data files
     ├── compairer/          # Card comparison dictionaries
@@ -67,7 +67,8 @@ tools/TexasSolver/
 ```
 
 **Binary Location:**
-- macOS: `tools/TexasSolver/console_solver`
+- Development: `apps/backend/tools/TexasSolver/console_solver`
+- Production (Docker): Included in backend container at `/usr/src/app/tools/TexasSolver/console_solver`
 - Linux (production): Will need Linux binary from releases
 
 **Resource Directory:**
@@ -351,14 +352,20 @@ TexasSolverService.formatRangeForSolver(['AA', 'KK', 'AKs'])
 
 ### Paths
 
-Paths are resolved relative to project root:
+Paths are resolved relative to backend root (`apps/backend/`):
 
 ```typescript
-const projectRoot = path.resolve(__dirname, '../../../../');
-this.solverBinary = path.join(projectRoot, 'tools/TexasSolver/console_solver');
-this.resourcesDir = path.join(projectRoot, 'tools/TexasSolver/resources');
-this.tempDir = path.join(projectRoot, 'tmp/texas-solver');
+// From apps/backend/src/ranges/ -> go up 2 levels to apps/backend/
+const backendRoot = path.resolve(__dirname, '../..');
+this.solverBinary = path.join(backendRoot, 'tools/TexasSolver/console_solver');
+this.resourcesDir = path.join(backendRoot, 'tools/TexasSolver/resources');
+this.tempDir = path.join(backendRoot, 'tmp/texas-solver');
 ```
+
+**Why Backend Root?**
+- TexasSolver is backend-specific, so it lives within the backend service directory
+- This ensures it's included in the Docker build context for production deployments
+- Simpler path resolution using `__dirname` relative paths (matches NestJS patterns)
 
 ### Solver Settings
 
@@ -383,8 +390,8 @@ Default settings (can be customized in `generateConfigFile`):
 **Error:** `ENOENT: no such file or directory`
 
 **Solution:**
-- Verify `tools/TexasSolver/console_solver` exists
-- Check file permissions: `chmod +x tools/TexasSolver/console_solver`
+- Verify `apps/backend/tools/TexasSolver/console_solver` exists
+- Check file permissions: `chmod +x apps/backend/tools/TexasSolver/console_solver`
 - For production, ensure Linux binary is downloaded
 
 #### 2. Resources Directory Missing
@@ -392,7 +399,7 @@ Default settings (can be customized in `generateConfigFile`):
 **Error:** `Solver execution failed`
 
 **Solution:**
-- Verify `tools/TexasSolver/resources/` directory exists
+- Verify `apps/backend/tools/TexasSolver/resources/` directory exists
 - Check all subdirectories are present (compairer, gametree, etc.)
 
 #### 3. Output File Not Generated
@@ -527,7 +534,7 @@ console.log('First hand:', testRange.handsRange[0]);
 ## References
 
 - **TexasSolver GitHub**: https://github.com/bupticybee/TexasSolver
-- **TexasSolver Documentation**: See `tools/TexasSolver/resources/text/` for examples
+- **TexasSolver Documentation**: See `apps/backend/tools/TexasSolver/resources/text/` for examples
 - **MVP Specification**: `docs/mvp-poker-calculator.md`
 - **Service Code**: `apps/backend/src/ranges/services/texas-solver.service.ts`
 
