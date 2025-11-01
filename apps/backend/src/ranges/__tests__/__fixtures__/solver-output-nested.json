@@ -1,0 +1,22 @@
+{
+  "node_type": "action_node",
+  "player": 0,
+  "strategy": {
+    "actions": ["FOLD", "CALL"],
+    "strategy": {}
+  },
+  "childrens": {
+    "BET": {
+      "node_type": "action_node",
+      "player": 1,
+      "strategy": {
+        "actions": ["CHECK", "BET 1.000000"],
+        "strategy": {
+          "AcKc": [0.5, 0.5],
+          "AdAc": [0.0, 1.0]
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,13 @@
+{
+  "node_type": "action_node",
+  "player": 0,
+  "strategy": {
+    "actions": ["FOLD", "CALL", "RAISE"],
+    "strategy": {
+      "AcKc": [0.0, 0.5, 0.5],
+      "AcKd": [0.0, 0.3, 0.7],
+      "AdKc": [0.0, 0.7, 0.3]
+    }
+  }
+}
+

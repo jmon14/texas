@@ -1,0 +1,14 @@
+{
+  "node_type": "action_node",
+  "player": 1,
+  "strategy": {
+    "actions": ["CHECK", "BET 1.000000"],
+    "strategy": {
+      "AcKc": [0.0, 1.0],
+      "AcKd": [0.0, 1.0],
+      "AdAc": [0.0, 1.0],
+      "AdKc": [0.0, 1.0]
+    }
+  }
+}
+

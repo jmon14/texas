@@ -40,3 +40,6 @@ test-results/
 
 # OS files
 Thumbs.db
+
+# Temporary files (TexasSolver runtime artifacts)
+tmp/**/*

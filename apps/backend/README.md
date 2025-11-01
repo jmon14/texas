@@ -46,7 +46,7 @@ apps/backend/
 │   │   ├── config.module.ts
 │   │   └── configuration.service.ts
 │   └── utils/            # Utilities
-└── test/                 # E2E tests
+└── e2e/                 # E2E tests
 ```
 
 ## 🚀 Development
