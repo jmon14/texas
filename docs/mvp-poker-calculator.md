@@ -232,8 +232,14 @@ interface Action {
 ```
 
 **Notes:**
-- `ev` and `equity` fields are optional - populated from TexasSolver exports when available
+- `ev` and `equity` fields are optional - **NOT part of MVP**
+- **MVP Decision:** EV/equity will be omitted from MVP. Strategy frequencies are sufficient for range comparison and learning features.
+- **Future Enhancement (Post-MVP):** May fork TexasSolver and modify source code to export EV/equity data (see [GitHub Issue #202](https://github.com/bupticybee/TexasSolver/issues/202))
+  - TexasSolver is open-source (AGPL v3), so source modification is possible
+  - CFR solvers calculate EV during solving, so data may be available in memory
+  - Would require C++ knowledge and maintaining a fork of TexasSolver
 - User-built ranges won't have these fields until comparison with GTO reference ranges
+- See `docs/texas-solver-integration.md` for detailed discussion on EV/equity options
 
 ---
 

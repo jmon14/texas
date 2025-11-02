@@ -1,0 +1,59 @@
+/**
+ * TexasSolver Service Constants
+ *
+ * Centralized constants for TexasSolver integration to avoid magic numbers
+ * and improve maintainability.
+ */
+
+/**
+ * Solver Configuration Defaults
+ */
+export const SOLVER_DEFAULTS = {
+  /** Convergence accuracy (lower = more accurate) */
+  ACCURACY: 0.5,
+  /** Maximum solver iterations (more = better convergence) */
+  MAX_ITERATIONS: 200,
+  /** All-in threshold as fraction of pot */
+  ALL_IN_THRESHOLD: 0.67,
+  /** Number of CPU threads to use */
+  THREAD_COUNT: 8,
+  /** Print interval for solver progress updates */
+  PRINT_INTERVAL: 10,
+  /** Use card isomorphism optimization (1 = enabled, 0 = disabled) */
+  USE_ISOMORPHISM: 1,
+} as const;
+
+/**
+ * Solver Execution Settings
+ */
+export const SOLVER_EXECUTION = {
+  /** Timeout in milliseconds (5 minutes) */
+  TIMEOUT_MS: 300000,
+  /** Maximum buffer size for solver output (10MB) */
+  MAX_BUFFER_BYTES: 1024 * 1024 * 10,
+  /** Maximum characters to log from stdout for debugging */
+  STDOUT_LOG_MAX_LENGTH: 500,
+} as const;
+
+/**
+ * Player Position IDs
+ * TexasSolver uses numeric IDs: 0 = In Position (IP), 1 = Out of Position (OOP)
+ */
+export const PLAYER_IDS = {
+  IP: 0,
+  OOP: 1,
+} as const;
+
+/**
+ * Poker Calculation Constants
+ */
+export const POKER_CONSTANTS = {
+  /** Multiplier to convert frequency (0-1) to percentage (0-100) */
+  PERCENTAGE_MULTIPLIER: 100,
+  /** Range fraction for preflop scenarios (all combos available) */
+  PREFLOP_RANGE_FRACTION: 100,
+  /** Expected length of combo label (e.g., "AcKc" = 4 characters) */
+  COMBO_LABEL_LENGTH: 4,
+  /** Card rank order (highest to lowest) */
+  RANK_ORDER: 'AKQJT98765432',
+} as const;

@@ -181,6 +181,8 @@ TexasSolver outputs a deeply nested JSON structure representing the game tree.
 - **`strategy.actions`**: Array of action names corresponding to frequencies
 - **`childrens`**: Child nodes in the game tree
 
+**Note:** The JSON output does NOT contain EV (Expected Value) or equity fields. TexasSolver only outputs strategy frequencies for Nash Equilibrium computation.
+
 ### Example Hand Entry
 
 ```json
@@ -224,6 +226,7 @@ This means:
 
 ```typescript
 import { TexasSolverService } from './ranges/services/texas-solver.service';
+import { PlayerPosition } from './ranges/schemas/player-position.enum';
 
 // Inject service (in controller or another service)
 constructor(private texasSolverService: TexasSolverService) {}
@@ -235,7 +238,7 @@ const result = await this.texasSolverService.solveScenario({
   pot: 1.5, // SB + BB
   rangeIp: 'AA,KK,QQ,JJ,TT,99,AKs,AKo,AQs,AQo,AJs,AJo',
   rangeOop: 'AA,KK,QQ,JJ,TT,99,88,77,AKs,AKo',
-  playerPosition: 'ip', // Extract IP player's strategy
+  playerPosition: PlayerPosition.IP, // Extract IP player's strategy
 });
 
 // result is a Range object:
@@ -246,7 +249,7 @@ const result = await this.texasSolverService.solveScenario({
 //     { label: 'KK', rangeFraction: 100, actions: [{ type: 'raise', percentage: 100 }] },
 //     ...
 //   ],
-//   userId: 'system'
+//   userId: 'system' // Note: System user enhancement planned for Phase 2+
 // }
 ```
 
@@ -265,7 +268,7 @@ const utgOpenRange = await texasSolverService.solveScenario({
     'JTs'
   ]),
   rangeOop: 'AA,KK,QQ,JJ,TT,99,88,77,66,55,AKs,AKo,AQs,AQo',
-  playerPosition: 'ip',
+  playerPosition: PlayerPosition.IP,
 });
 ```
 
@@ -278,7 +281,7 @@ const btn3betRange = await texasSolverService.solveScenario({
   pot: 1.5,
   rangeIp: 'AA,KK,QQ,JJ,TT,99,88,77,66,55,AKs,AKo,AQs,AQo,AJs,AJo,ATs,ATo,A9s,A8s,A7s,A6s,A5s,A4s,A3s,A2s,KQs,KQo,KJs,KJo,KTs,KTo,QJs,QJo,QTs,QTo,JTs,J9s,T9s,98s,87s,76s,65s,54s',
   rangeOop: 'AA,KK,QQ,JJ,TT,99,88,77,AKs,AKo,AQs,AQo,AJs,AJo,ATs,ATo,A9s,A8s,A7s,A6s,A5s,A4s,A3s,A2s,KQs,KQo,KJs,KJo,KTs,KTo,QJs,QJo,QTs,QTo,JTs,J9s,T9s,98s,87s,76s,65s,54s',
-  playerPosition: 'ip',
+  playerPosition: PlayerPosition.IP,
 });
 ```
 
@@ -298,9 +301,11 @@ Main method to solve a scenario.
   pot: number;               // Pot size in big blinds
   rangeIp: string;           // IP player's range (comma-separated)
   rangeOop: string;         // OOP player's range (comma-separated)
-  playerPosition: 'ip' | 'oop'; // Which player's strategy to extract
+  playerPosition: PlayerPosition; // Which player's strategy to extract ('ip' | 'oop')
 }
 ```
+
+**Note:** Use `SolveScenarioDto` for type safety and validation. Import `PlayerPosition` enum for `playerPosition` field.
 
 **Returns:** `Promise<Range>`
 
@@ -344,7 +349,7 @@ TexasSolverService.formatRangeForSolver(['AA', 'KK', 'AKs'])
 - Config files: `tmp/texas-solver/config-{timestamp}.txt`
 - Output files: `tmp/texas-solver/output_result.json`
 
-**Note:** Temp files are kept for debugging. Uncomment cleanup code in production.
+**Note:** Temp files are automatically cleaned up after solver execution in production environments. In development, files are kept for debugging purposes.
 
 ---
 
@@ -366,6 +371,27 @@ this.tempDir = path.join(backendRoot, 'tmp/texas-solver');
 - TexasSolver is backend-specific, so it lives within the backend service directory
 - This ensures it's included in the Docker build context for production deployments
 - Simpler path resolution using `__dirname` relative paths (matches NestJS patterns)
+
+### System User for Reference Ranges
+
+**Current Implementation:**
+- Reference ranges created by `solveScenario()` use `userId: 'system'`
+- This is a string literal, not a UUID from the users table
+
+**Future Enhancement:**
+- Create a system user seeded in all environments (dev, test, production)
+- Use the system user's UUID instead of the string `'system'`
+- Benefits:
+  - Proper referential integrity with users table
+  - Ability to query/join system ranges correctly
+  - Consistent with user-owned ranges pattern
+
+**Migration Path:**
+- When implementing system user, create migration to update existing `userId: 'system'` entries
+- Seed system user in all environments with consistent UUID
+- Update `solveScenario()` to use system user UUID
+
+**Note:** This enhancement is planned for Phase 2+ when scenarios are fully modeled.
 
 ### Solver Settings
 
@@ -456,15 +482,29 @@ Default settings (can be customized in `generateConfigFile`):
 - ❌ Cash game format
 - ❌ Multi-way scenarios (3+ players)
 - ❌ Custom bet sizing per street
-- ❌ EV/equity extraction (available in JSON but not parsed)
+- ❌ EV/equity extraction (TexasSolver does not provide EV/equity in JSON output by default)
+
+**Note on EV/Equity:**
+After investigation, TexasSolver's JSON output only contains strategy frequencies, not Expected Value (EV) or equity calculations. The solver focuses on Nash Equilibrium strategy computation. 
+
+**MVP Decision:** EV/equity will be omitted from MVP. Strategy frequencies are sufficient for range comparison and learning features.
+
+**Future Enhancement (Post-MVP):** As noted in [GitHub Issue #202](https://github.com/bupticybee/TexasSolver/issues/202), since TexasSolver is open-source (AGPL v3), it's possible to modify the source code to include EV/equity data in the JSON output. CFR solvers typically calculate EV during the solving process as part of the algorithm, so this data may be available in memory but not currently exported.
+
+**Approach for future EV/equity implementation:**
+- Fork the TexasSolver repository
+- Modify the JSON dump functions to include EV data
+- Rebuild the binary
+- Maintain your own fork (or submit PR back to upstream)
+- See `docs/mvp-poker-calculator.md` for more context on this decision
 
 ### Future Enhancements
 
-- Extract EV data from `evs` field in JSON
 - Support post-flop scenarios
 - Support multi-way scenarios
 - Dynamic bet sizing configuration
 - Progress callbacks for long solves
+- **Modify TexasSolver source code to export EV/equity data** (post-MVP, see GitHub Issue #202)
 
 ---
 
