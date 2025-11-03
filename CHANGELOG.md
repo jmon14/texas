@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2025-11-03
+
+### Added
+
+#### Phase 1: Scenario System Foundation
+- **Scenario Data Models**: Complete MongoDB schema implementation for scenario-based poker learning
+  - Created `Scenario` schema with position, action type, stack depth, and context fields
+  - Created `ReferenceRange` schema for storing GTO-solved ranges linked to scenarios
+  - Created `UserRangeAttempt` schema for tracking user practice attempts and comparison results
+  - Created `Position` enum for type-safe 6-max poker positions (UTG, MP, CO, BTN, SB, BB)
+  - Created `PreviousAction` schema for structured action history representation
+- **Schema Enhancements**: Updated existing range schemas for scenario system compatibility
+  - Renamed `rangeFraction` → `carryoverFrequency` in `HandRange` schema for clarity
+  - Renamed `percentage` → `frequency` in `Action` schema for consistency
+  - Added optional `ev` and `equity` fields to `Action` schema for future GTO data integration
+- **Data Model Foundation**: Established complete data structure for MVP poker calculator
+  - All schemas properly typed with TypeScript interfaces
+  - MongoDB collections configured with proper indexing and transforms
+  - Comprehensive unit tests for all new schemas (9 new test suites)
+  - Ready for Phase 2 GTO import and Phase 3 comparison engine
+
+#### Phase 0: TexasSolver Integration
+- **TexasSolver Service**: Complete integration with TexasSolver C++ GTO poker solver
+  - Created `TexasSolverService` for programmatic scenario solving
+  - Config file generation from scenario parameters (stack depth, pot size, ranges)
+  - Solver binary execution with proper resource path management
+  - JSON output parsing and transformation to `Range` schema format
+  - Support for preflop tournament scenarios (Phase 0 scope)
+- **Solver Workflow**: End-to-end integration workflow established
+  - Automatic config file generation in `tmp/texas-solver/` directory
+  - Solver execution with configurable timeout and error handling
+  - JSON parsing with recursive tree traversal to find root strategy nodes
+  - Action type mapping (FOLD, CALL, RAISE, CHECK) to internal `ActionType` enum
+  - Frequency conversion from 0-1 floats to 0-100 percentages
+- **Comprehensive Testing**: Full test suite for TexasSolver integration
+  - 39 passing unit tests covering all service methods
+  - Pure logic function tests (combo conversion, frequency averaging, action mapping)
+  - Strategy extraction tests (root node finding, nested structure handling)
+  - Config generation tests with various scenario parameters
+  - Full workflow integration tests with mock solver outputs
+  - Test fixtures for different solver output structures
+- **Documentation**: Complete integration guide created
+  - Comprehensive guide at `docs/texas-solver-integration.md`
+  - Architecture diagrams and workflow explanations
+  - Config file format documentation
+  - JSON output structure reference
+  - Troubleshooting guide for common issues
+  - Performance considerations and optimization tips
+- **TexasSolver Binary**: Added solver executable and resources
+  - macOS binary at `apps/backend/tools/TexasSolver/console_solver`
+  - Resource directory with dictionaries, game trees, and config templates
+  - Proper path resolution for development and production environments
+  - Ready for Docker containerization (included in backend build context)
+
+### Changed
+
+#### Phase 1: Schema Field Renames
+- **HandRange Schema**: `rangeFraction` field renamed to `carryoverFrequency`
+  - Better reflects purpose: combo frequency from previous street based on mixed strategies
+  - Updated all DTOs, services, and tests
+  - Breaking change handled with comprehensive migration
+- **Action Schema**: `percentage` field renamed to `frequency`
+  - More accurate terminology (frequency vs percentage)
+  - Updated all references throughout codebase
+  - Consistent naming across all action-related code
+
 ## [2.1.0] - 2025-10-25
 
 ### Added
