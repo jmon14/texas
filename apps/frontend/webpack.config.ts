@@ -14,26 +14,30 @@ import fs from 'fs';
 
 // Environment types
 type WebpackEnv = {
-  ENVIRONMENT: Environment;
+  ENVIRONMENT?: Environment;
 };
 type EnvIndex = dotenv.DotenvParseOutput;
 type Environment = 'none' | 'development' | 'production';
 
-const config = (env: WebpackEnv): Configuration => {
+const config = (env: WebpackEnv = {}): Configuration => {
+  const environment: Environment | undefined = env.ENVIRONMENT;
+
   // Create the fallback path (the production .env)
-  const basePath = __dirname + '/.env';
+  const basePath = path.resolve(__dirname, '.env');
   let envKeys: EnvIndex;
-  if (env.ENVIRONMENT !== 'production') {
+  if (environment !== 'production') {
     // Specify the correct env file
-    const envPath = basePath + '.' + env.ENVIRONMENT;
+    const envPath = environment ? path.resolve(__dirname, `.env.${environment}`) : basePath;
     // Check if the file exists, otherwise fall back to the production .env
     const finalPath = fs.existsSync(envPath) ? envPath : basePath;
     // Set the path parameter in the dotenv config
     const fileEnv = dotenv.config({ path: finalPath }).parsed as EnvIndex;
 
-    // Merge file env with process.env (process.env takes precedence)
-    // This allows environment variables set by test runners (like Playwright) to work
-    const mergedEnv = { ...fileEnv, ...process.env };
+    // Merge file env with process.env (process.env takes precedence, but only if values are not empty)
+    const processEnvFiltered = Object.fromEntries(
+      Object.entries(process.env).filter(([, value]) => value !== undefined && value !== ''),
+    );
+    const mergedEnv = { ...fileEnv, ...processEnvFiltered };
 
     // Reduce it to a process env object
     envKeys = Object.keys(mergedEnv || {}).reduce<EnvIndex>((prev, next) => {
@@ -50,14 +54,14 @@ const config = (env: WebpackEnv): Configuration => {
 
   return {
     // Remove DevTools warnings regarding node_modules source maps
-    ...(env.ENVIRONMENT === 'development' && { devtool: 'eval-source-map' }),
+    ...(environment === 'development' && { devtool: 'eval-source-map' }),
     entry: path.resolve(__dirname, 'src', 'index.tsx'),
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'main.js',
       publicPath: '/',
     },
-    mode: env.ENVIRONMENT,
+    mode: environment || 'development',
     module: {
       rules: [
         {
