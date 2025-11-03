@@ -1,6 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PlayerPosition } from '../schemas/player-position.enum';
+import { PlayerPosition } from '../enums/player-position.enum';
 
 export class SolveScenarioDto {
   @ApiProperty({

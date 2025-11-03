@@ -5,14 +5,14 @@ import { ActionDto } from './action.dto';
 
 export class HandRangeDto {
   @ApiProperty({
-    description: 'The range fraction',
-    example: 0.13,
+    description: 'The carryover frequency from previous street (0-100)',
+    example: 100,
     minimum: 0,
-    maximum: 1,
+    maximum: 100,
   })
   @IsNumber()
   @IsNotEmpty()
-  rangeFraction: number;
+  carryoverFrequency: number;
 
   @ApiProperty({
     description: 'The label for this hand range',

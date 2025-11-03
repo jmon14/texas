@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ActionType } from './action-type.enum';
+import { ActionType } from '../enums/action-type.enum';
 
 @Schema({
   _id: false,
@@ -16,7 +16,21 @@ export class Action {
     type: Number,
     required: true,
   })
-  percentage: number;
+  frequency: number; // Frequency (0-100) - renamed from percentage
+
+  // GTO Solver Data (from TexasSolver export)
+  // Optional - NOT part of MVP
+  @Prop({
+    type: Number,
+    required: false,
+  })
+  ev?: number; // Expected value (in big blinds)
+
+  @Prop({
+    type: Number,
+    required: false,
+  })
+  equity?: number; // Equity vs opponent's range (0-100)
 }
 
 export const ActionSchema = SchemaFactory.createForClass(Action);

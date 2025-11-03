@@ -4,8 +4,8 @@ import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Range, HandRange } from './schemas';
-import { ActionType } from './schemas/action-type.enum';
-import { PlayerPosition } from './schemas/player-position.enum';
+import { ActionType } from './enums/action-type.enum';
+import { PlayerPosition } from './enums/player-position.enum';
 import { SolveScenarioDto } from './dtos/solve-scenario.dto';
 import { ConfigurationService } from '../config/configuration.service';
 import { NODE_ENV } from '../utils/constants';
@@ -263,15 +263,15 @@ export class TexasSolverService {
       const actionArray = averagedFrequencies
         .map((freq, index) => {
           const actionType = this.mapActionType(actions[index] || `action_${index}`);
-          // Convert 0-1 frequency to 0-100 percentage
-          const percentage = Math.round(freq * POKER_CONSTANTS.PERCENTAGE_MULTIPLIER);
+          // Convert 0-1 frequency to 0-100 frequency
+          const frequency = Math.round(freq * POKER_CONSTANTS.FREQUENCY_MULTIPLIER);
 
           return {
             type: actionType,
-            percentage: percentage,
+            frequency: frequency,
           };
         })
-        .filter((action) => action.percentage > 0); // Only include actions with frequency > 0
+        .filter((action) => action.frequency > 0); // Only include actions with frequency > 0
 
       if (actionArray.length === 0) {
         continue; // Skip hands with no actions
@@ -279,7 +279,7 @@ export class TexasSolverService {
 
       handRanges.push({
         label: pokerNotation,
-        rangeFraction: POKER_CONSTANTS.PREFLOP_RANGE_FRACTION, // Preflop: all combos available
+        carryoverFrequency: POKER_CONSTANTS.PREFLOP_CARRYOVER_FREQUENCY,
         actions: actionArray,
       });
     }

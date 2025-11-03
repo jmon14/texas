@@ -12,7 +12,8 @@ import { RangesService } from 'src/ranges/ranges.service';
 import { CreateRangeDto, UpdateRangeDto, RangeResponseDto } from 'src/ranges/dtos';
 
 // Schemas
-import { ActionType } from 'src/ranges/schemas';
+// Enums
+import { ActionType } from 'src/ranges/enums';
 
 describe('RangesController', () => {
   let rangesController: RangesController;
@@ -23,9 +24,9 @@ describe('RangesController', () => {
     name: 'UTG Opening Range',
     handsRange: [
       {
-        rangeFraction: 0.13,
+        carryoverFrequency: 100,
         label: 'AA, KK, QQ',
-        actions: [{ type: ActionType.RAISE, percentage: 100 }],
+        actions: [{ type: ActionType.RAISE, frequency: 100 }],
       },
     ],
     userId: 'user-uuid',
@@ -35,9 +36,9 @@ describe('RangesController', () => {
     name: 'UTG Opening Range',
     handsRange: [
       {
-        rangeFraction: 0.13,
+        carryoverFrequency: 100,
         label: 'AA, KK, QQ',
-        actions: [{ type: ActionType.RAISE, percentage: 100 }],
+        actions: [{ type: ActionType.RAISE, frequency: 100 }],
       },
     ],
     userId: 'user-uuid',

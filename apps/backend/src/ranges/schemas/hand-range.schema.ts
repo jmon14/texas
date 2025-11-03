@@ -9,7 +9,7 @@ export class HandRange {
     type: Number,
     required: true,
   })
-  rangeFraction: number;
+  carryoverFrequency: number;
 
   @Prop({
     type: String,

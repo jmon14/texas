@@ -7,7 +7,9 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { RangesService } from 'src/ranges/ranges.service';
 
 // Schemas
-import { Range, ActionType } from 'src/ranges/schemas';
+import { Range } from 'src/ranges/schemas';
+// Enums
+import { ActionType } from 'src/ranges/enums';
 
 // DTOs
 import { CreateRangeDto, UpdateRangeDto } from 'src/ranges/dtos';
@@ -21,9 +23,9 @@ describe('RangesService', () => {
     name: 'UTG Opening Range',
     handsRange: [
       {
-        rangeFraction: 0.13,
+        carryoverFrequency: 100,
         label: 'AA, KK, QQ',
-        actions: [{ type: ActionType.RAISE, percentage: 100 }],
+        actions: [{ type: ActionType.RAISE, frequency: 100 }],
       },
     ],
     userId: 'user-uuid',
@@ -34,9 +36,9 @@ describe('RangesService', () => {
     name: 'UTG Opening Range',
     handsRange: [
       {
-        rangeFraction: 0.13,
+        carryoverFrequency: 100,
         label: 'AA, KK, QQ',
-        actions: [{ type: ActionType.RAISE, percentage: 100 }],
+        actions: [{ type: ActionType.RAISE, frequency: 100 }],
       },
     ],
     userId: 'user-uuid',

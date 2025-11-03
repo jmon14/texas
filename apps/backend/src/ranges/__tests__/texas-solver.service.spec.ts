@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { TexasSolverService } from '../texas-solver.service';
-import { ActionType } from '../schemas/action-type.enum';
-import { PlayerPosition } from '../schemas/player-position.enum';
+import { ActionType } from '../enums/action-type.enum';
+import { PlayerPosition } from '../enums/player-position.enum';
 import { ConfigurationService } from '../../config/configuration.service';
 import * as fs from 'fs/promises';
 
@@ -450,7 +450,7 @@ describe('TexasSolverService', () => {
       expect(akHand).toBeDefined();
       expect(akHand?.actions).toHaveLength(1);
       expect(akHand?.actions[0].type).toBe(ActionType.RAISE);
-      expect(akHand?.actions[0].percentage).toBe(100);
+      expect(akHand?.actions[0].frequency).toBe(100);
     });
 
     it('should handle mixed strategies correctly', async () => {
@@ -478,8 +478,8 @@ describe('TexasSolverService', () => {
       const callAction = akHand?.actions.find((a) => a.type === ActionType.CALL);
       const raiseAction = akHand?.actions.find((a) => a.type === ActionType.RAISE);
 
-      expect(callAction?.percentage).toBeCloseTo(50); // Averaged
-      expect(raiseAction?.percentage).toBeCloseTo(50); // Averaged
+      expect(callAction?.frequency).toBeCloseTo(50); // Averaged
+      expect(raiseAction?.frequency).toBeCloseTo(50); // Averaged
     });
 
     it('should filter out zero-frequency actions', async () => {

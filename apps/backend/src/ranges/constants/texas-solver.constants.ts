@@ -48,10 +48,10 @@ export const PLAYER_IDS = {
  * Poker Calculation Constants
  */
 export const POKER_CONSTANTS = {
-  /** Multiplier to convert frequency (0-1) to percentage (0-100) */
-  PERCENTAGE_MULTIPLIER: 100,
-  /** Range fraction for preflop scenarios (all combos available) */
-  PREFLOP_RANGE_FRACTION: 100,
+  /** Multiplier to convert frequency (0-1) to frequency (0-100) */
+  FREQUENCY_MULTIPLIER: 100,
+  /** Carryover frequency for preflop scenarios (all combos available) */
+  PREFLOP_CARRYOVER_FREQUENCY: 100,
   /** Expected length of combo label (e.g., "AcKc" = 4 characters) */
   COMBO_LABEL_LENGTH: 4,
   /** Card rank order (highest to lowest) */
