@@ -14,6 +14,7 @@ import { UsersModule } from 'src/users/users.module';
 import { FilesModule } from 'src/files/files.module';
 import { DatabaseModule } from 'src/database/database.module';
 import { RangesModule } from 'src/ranges/ranges.module';
+import { ScenariosModule } from 'src/scenarios/scenarios.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RangesModule } from 'src/ranges/ranges.module';
     AuthModule,
     FilesModule,
     RangesModule,
+    ScenariosModule,
   ],
   controllers: [AppController],
   providers: [],

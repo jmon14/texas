@@ -1,0 +1,182 @@
+// NestJS
+import { Test } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
+import { NotFoundException } from '@nestjs/common';
+
+// Services
+import { ScenariosService } from '../scenarios.service';
+
+// Schemas
+import { Scenario } from '../schemas';
+// Enums
+import { Position, GameType, Difficulty, ScenarioActionType, Category } from '../enums';
+
+describe('ScenariosService', () => {
+  let scenariosService: ScenariosService;
+  let mockScenarioModel: any;
+
+  const mockScenario = {
+    _id: '507f1f77bcf86cd799439011',
+    name: 'UTG Open - 100bb Tournament',
+    description: 'You are UTG in a 100bb tournament. What should your opening range be?',
+    street: 'preflop',
+    gameType: 'tournament',
+    position: Position.UTG,
+    vsPosition: Position.BB,
+    actionType: ScenarioActionType.OPEN,
+    effectiveStack: 100,
+    betSize: 2.0,
+    difficulty: 'beginner',
+    category: Category.OPENING_RANGES,
+    tags: ['tournament', '6max', 'preflop'],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    toObject: jest.fn().mockReturnThis(),
+  };
+
+  beforeEach(async () => {
+    // Create mock Mongoose model
+    mockScenarioModel = jest.fn().mockImplementation(() => ({}));
+
+    // Add static methods to the mock model
+    mockScenarioModel.find = jest.fn();
+    mockScenarioModel.findById = jest.fn();
+
+    const module = await Test.createTestingModule({
+      providers: [
+        ScenariosService,
+        {
+          provide: getModelToken(Scenario.name),
+          useValue: mockScenarioModel,
+        },
+      ],
+    }).compile();
+
+    scenariosService = module.get<ScenariosService>(ScenariosService);
+  });
+
+  describe('findAll', () => {
+    it('should return all scenarios when no filters provided', async () => {
+      const mockScenarios = [mockScenario, { ...mockScenario, _id: 'another-id' }];
+      const mockExec = jest.fn().mockResolvedValue(mockScenarios);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findAll();
+
+      expect(mockScenarioModel.find).toHaveBeenCalledWith({});
+      expect(result).toHaveLength(2);
+      expect(mockScenario.toObject).toHaveBeenCalled();
+    });
+
+    it('should filter by gameType', async () => {
+      const mockScenarios = [mockScenario];
+      const mockExec = jest.fn().mockResolvedValue(mockScenarios);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findAll(GameType.TOURNAMENT);
+
+      expect(mockScenarioModel.find).toHaveBeenCalledWith({ gameType: GameType.TOURNAMENT });
+      expect(result).toHaveLength(1);
+    });
+
+    it('should filter by difficulty', async () => {
+      const mockScenarios = [mockScenario];
+      const mockExec = jest.fn().mockResolvedValue(mockScenarios);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findAll(undefined, Difficulty.BEGINNER);
+
+      expect(mockScenarioModel.find).toHaveBeenCalledWith({ difficulty: Difficulty.BEGINNER });
+      expect(result).toHaveLength(1);
+    });
+
+    it('should filter by category', async () => {
+      const mockScenarios = [mockScenario];
+      const mockExec = jest.fn().mockResolvedValue(mockScenarios);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findAll(undefined, undefined, Category.OPENING_RANGES);
+
+      expect(mockScenarioModel.find).toHaveBeenCalledWith({ category: Category.OPENING_RANGES });
+      expect(result).toHaveLength(1);
+    });
+
+    it('should combine multiple filters', async () => {
+      const mockScenarios = [mockScenario];
+      const mockExec = jest.fn().mockResolvedValue(mockScenarios);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findAll(
+        GameType.TOURNAMENT,
+        Difficulty.BEGINNER,
+        Category.OPENING_RANGES,
+      );
+
+      expect(mockScenarioModel.find).toHaveBeenCalledWith({
+        gameType: GameType.TOURNAMENT,
+        difficulty: Difficulty.BEGINNER,
+        category: Category.OPENING_RANGES,
+      });
+      expect(result).toHaveLength(1);
+    });
+
+    it('should return empty array when no scenarios match filters', async () => {
+      const mockExec = jest.fn().mockResolvedValue([]);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findAll(GameType.CASH);
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('findById', () => {
+    it('should return a scenario by id', async () => {
+      const mockDoc = {
+        ...mockScenario,
+        toObject: jest.fn().mockReturnValue(mockScenario),
+      };
+      const mockExec = jest.fn().mockResolvedValue(mockDoc);
+      mockScenarioModel.findById.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findById('507f1f77bcf86cd799439011');
+
+      expect(mockScenarioModel.findById).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+      expect(result).toEqual(mockScenario);
+    });
+
+    it('should throw NotFoundException when scenario not found', async () => {
+      const mockExec = jest.fn().mockResolvedValue(null);
+      mockScenarioModel.findById.mockReturnValue({ exec: mockExec });
+
+      await expect(scenariosService.findById('non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(scenariosService.findById('non-existent-id')).rejects.toThrow(
+        'Scenario with ID non-existent-id not found',
+      );
+    });
+  });
+
+  describe('findByCategory', () => {
+    it('should return scenarios for specific category', async () => {
+      const mockScenarios = [mockScenario];
+      const mockExec = jest.fn().mockResolvedValue(mockScenarios);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      const result = await scenariosService.findByCategory(Category.OPENING_RANGES);
+
+      expect(mockScenarioModel.find).toHaveBeenCalledWith({ category: Category.OPENING_RANGES });
+      expect(result).toHaveLength(1);
+    });
+
+    it('should return empty array when no scenarios match category', async () => {
+      const mockExec = jest.fn().mockResolvedValue([]);
+      mockScenarioModel.find.mockReturnValue({ exec: mockExec });
+
+      // Test with a valid enum value that doesn't exist in mock data
+      const result = await scenariosService.findByCategory(Category.DEFENDING_BB);
+
+      expect(mockScenarioModel.find).toHaveBeenCalledWith({ category: Category.DEFENDING_BB });
+      expect(result).toEqual([]);
+    });
+  });
+});

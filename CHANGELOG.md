@@ -63,6 +63,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+#### Phase 1: Module Architecture Refactoring
+- **Scenarios Module Separation**: Created dedicated `ScenariosModule` for better separation of concerns
+  - Extracted scenario-related functionality from `RangesModule` into standalone `ScenariosModule`
+  - Moved scenario schemas (`Scenario`, `ReferenceRange`, `UserRangeAttempt`, `PreviousAction`) to `scenarios/schemas/`
+  - Moved scenario DTOs (`ScenarioResponseDto`, `PreviousActionDto`) to `scenarios/dtos/`
+  - Moved scenario enums (`Position`, `GameType`, `Difficulty`, `Street`, `ScenarioActionType`, `BoardTexture`, `Category`) to `scenarios/enums/`
+  - Moved `ScenariosService` and `ScenariosController` to `scenarios/` module
+  - Improved module organization following NestJS feature-based architecture patterns
+  - Maintained cross-module dependencies properly (`PreviousAction` imports `ActionType` from ranges, `ReferenceRange` imports `Range` from ranges)
+  - All 131 tests passing after refactoring
+- **Ranges Module Cleanup**: Streamlined `RangesModule` to focus on range management
+  - Removed scenario-related schemas, DTOs, enums, and controllers
+  - Module now focuses exclusively on user range management and TexasSolver integration
+  - `TexasSolverService` remains in ranges module (produces `Range` objects, all dependencies are ranges-related)
+  - Maintained backward compatibility with exported services
+
 #### Phase 1: Schema Field Renames
 - **HandRange Schema**: `rangeFraction` field renamed to `carryoverFrequency`
   - Better reflects purpose: combo frequency from previous street based on mixed strategies

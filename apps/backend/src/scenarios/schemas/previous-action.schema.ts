@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Position } from '../enums/position.enum';
-import { ActionType } from '../enums/action-type.enum';
+import { ActionType } from '../../ranges/enums/action-type.enum';
 
 /**
  * PreviousAction Schema

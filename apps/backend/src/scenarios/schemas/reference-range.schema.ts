@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Range, RangeSchema } from './range.schema';
+import { Range, RangeSchema } from '../../ranges/schemas/range.schema';
 
 export type ReferenceRangeDocument = ReferenceRange & Document;
 
