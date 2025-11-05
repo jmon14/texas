@@ -1,7 +1,7 @@
 // NestJS
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 
 // Services
 import { ScenariosService } from '../scenarios.service';
@@ -9,7 +9,8 @@ import { ScenariosService } from '../scenarios.service';
 // Schemas
 import { Scenario } from '../schemas';
 // Enums
-import { Position, GameType, Difficulty, ScenarioActionType, Category } from '../enums';
+import { Position, GameType, Difficulty, ScenarioActionType, Category, Street } from '../enums';
+import { CreateScenarioDto } from '../dtos';
 
 describe('ScenariosService', () => {
   let scenariosService: ScenariosService;
@@ -41,6 +42,7 @@ describe('ScenariosService', () => {
     // Add static methods to the mock model
     mockScenarioModel.find = jest.fn();
     mockScenarioModel.findById = jest.fn();
+    mockScenarioModel.findOne = jest.fn();
 
     const module = await Test.createTestingModule({
       providers: [
@@ -177,6 +179,97 @@ describe('ScenariosService', () => {
 
       expect(mockScenarioModel.find).toHaveBeenCalledWith({ category: Category.DEFENDING_BB });
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('create', () => {
+    const createScenarioDto: CreateScenarioDto = {
+      name: 'UTG Open - 100bb Tournament',
+      description: 'You are UTG in a 100bb tournament. What should your opening range be?',
+      street: Street.PREFLOP,
+      gameType: GameType.TOURNAMENT,
+      position: Position.UTG,
+      vsPosition: Position.BB,
+      actionType: ScenarioActionType.OPEN,
+      effectiveStack: 100,
+      betSize: 2.0,
+      difficulty: Difficulty.BEGINNER,
+      category: Category.OPENING_RANGES,
+      tags: ['tournament', '6max', 'preflop'],
+    };
+
+    it('should create a new scenario', async () => {
+      const mockExec = jest.fn().mockResolvedValue(null); // No existing scenario
+      mockScenarioModel.findOne.mockReturnValue({ exec: mockExec });
+
+      const mockSave = jest.fn().mockResolvedValue({
+        ...mockScenario,
+        toObject: jest.fn().mockReturnValue(mockScenario),
+      });
+
+      const mockInstance = {
+        save: mockSave,
+      };
+      mockScenarioModel.mockReturnValue(mockInstance);
+
+      const result = await scenariosService.create(createScenarioDto);
+
+      expect(mockScenarioModel.findOne).toHaveBeenCalledWith({ name: createScenarioDto.name });
+      expect(mockScenarioModel).toHaveBeenCalledWith(createScenarioDto);
+      expect(mockSave).toHaveBeenCalled();
+      expect(result).toEqual(mockScenario);
+    });
+
+    it('should throw ConflictException when scenario with same name exists', async () => {
+      const existingScenario = {
+        ...mockScenario,
+        name: createScenarioDto.name,
+      };
+      const mockExec = jest.fn().mockResolvedValue(existingScenario);
+      mockScenarioModel.findOne.mockReturnValue({ exec: mockExec });
+
+      await expect(scenariosService.create(createScenarioDto)).rejects.toThrow(ConflictException);
+      await expect(scenariosService.create(createScenarioDto)).rejects.toThrow(
+        `Scenario with name "${createScenarioDto.name}" already exists`,
+      );
+
+      expect(mockScenarioModel.findOne).toHaveBeenCalledWith({ name: createScenarioDto.name });
+      expect(mockScenarioModel).not.toHaveBeenCalled();
+    });
+
+    it('should create scenario with previousActions when provided', async () => {
+      const dtoWithPreviousActions: CreateScenarioDto = {
+        ...createScenarioDto,
+        previousActions: [
+          {
+            position: Position.CO,
+            actionType: 'raise' as any,
+            sizing: 2.0,
+          },
+        ],
+      };
+
+      const mockExec = jest.fn().mockResolvedValue(null);
+      mockScenarioModel.findOne.mockReturnValue({ exec: mockExec });
+
+      const mockSave = jest.fn().mockResolvedValue({
+        ...mockScenario,
+        previousActions: dtoWithPreviousActions.previousActions,
+        toObject: jest.fn().mockReturnValue({
+          ...mockScenario,
+          previousActions: dtoWithPreviousActions.previousActions,
+        }),
+      });
+
+      const mockInstance = {
+        save: mockSave,
+      };
+      mockScenarioModel.mockReturnValue(mockInstance);
+
+      const result = await scenariosService.create(dtoWithPreviousActions);
+
+      expect(mockScenarioModel).toHaveBeenCalledWith(dtoWithPreviousActions);
+      expect(result.previousActions).toEqual(dtoWithPreviousActions.previousActions);
     });
   });
 });

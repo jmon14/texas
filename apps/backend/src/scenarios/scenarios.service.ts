@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Scenario, ScenarioDocument } from './schemas';
-import { ScenarioResponseDto } from './dtos';
+import { ScenarioResponseDto, CreateScenarioDto } from './dtos';
 import { GameType } from './enums/game-type.enum';
 import { Difficulty } from './enums/difficulty.enum';
 import { Category } from './enums/category.enum';
@@ -45,5 +45,19 @@ export class ScenariosService {
   async findByCategory(category: Category): Promise<ScenarioResponseDto[]> {
     const scenarios = await this.scenarioModel.find({ category }).exec();
     return scenarios.map((scenario) => scenario.toObject());
+  }
+
+  async create(createScenarioDto: CreateScenarioDto): Promise<ScenarioResponseDto> {
+    // Check if scenario with same name already exists (for idempotency)
+    const existingScenario = await this.scenarioModel
+      .findOne({ name: createScenarioDto.name })
+      .exec();
+    if (existingScenario) {
+      throw new ConflictException(`Scenario with name "${createScenarioDto.name}" already exists`);
+    }
+
+    const scenario = new this.scenarioModel(createScenarioDto);
+    const savedScenario = await scenario.save();
+    return savedScenario.toObject();
   }
 }

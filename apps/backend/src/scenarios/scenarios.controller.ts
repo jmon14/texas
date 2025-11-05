@@ -1,7 +1,17 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ScenariosService } from './scenarios.service';
-import { ScenarioResponseDto } from './dtos';
+import { ScenarioResponseDto, CreateScenarioDto } from './dtos';
 import { GameType } from './enums/game-type.enum';
 import { Difficulty } from './enums/difficulty.enum';
 import { Category } from './enums/category.enum';
@@ -70,5 +80,21 @@ export class ScenariosController {
     @Param('category') category: Category,
   ): Promise<ScenarioResponseDto[]> {
     return this.scenariosService.findByCategory(category);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new scenario' })
+  @ApiResponse({
+    status: 201,
+    description: 'Scenario created successfully.',
+    type: ScenarioResponseDto,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Scenario with this name already exists.',
+  })
+  async createScenario(@Body() createScenarioDto: CreateScenarioDto): Promise<ScenarioResponseDto> {
+    return this.scenariosService.create(createScenarioDto);
   }
 }

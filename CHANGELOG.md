@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.2] - 2025-11-05
+
+### Added
+
+#### Phase 1: Scenario Seeding System
+- **Scenario Seeding**: Complete seeding infrastructure for initial scenario data
+  - Created `src/seeders/` folder with seed script infrastructure
+  - Added `scenarios.json` data file with 15 tournament preflop scenarios
+  - Implemented `scenarios.seeder.ts` script following existing migration pattern
+  - Idempotent seeding (safe to run multiple times, skips existing scenarios)
+- **Scenario Creation API**: POST endpoint for programmatic scenario creation
+  - Added `POST /scenarios` endpoint with JWT authentication
+  - Created `CreateScenarioDto` with comprehensive validation
+  - Added `create()` method to `ScenariosService` (reusable for script + endpoint)
+  - Conflict detection for duplicate scenario names
+- **Testing**: Comprehensive test coverage for new functionality
+  - Unit tests for `ScenariosService.create()` method (3 test cases)
+  - Controller tests for `POST /scenarios` endpoint
+  - Tests cover idempotency, conflict handling, and optional fields
+- **Documentation**: Updated documentation with seeding instructions
+  - Added seeding commands to `apps/backend/README.md`
+  - Documented seed script usage and scenario data format
+  - Updated API documentation (OpenAPI/Swagger) for new endpoint
+
+### Changed
+- Updated `package.json` version: `2.2.1` → `2.2.2`
+- Added npm script: `seed:scenarios` for easy scenario seeding
+
 ## [2.2.0] - 2025-11-03
 
 ### Added

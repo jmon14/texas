@@ -1,0 +1,257 @@
+[
+  {
+    "name": "UTG Open - 100bb Tournament",
+    "description": "You're UTG in a 100bb tournament. What should your opening range be?",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "UTG",
+    "vsPosition": "BB",
+    "actionType": "open",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "difficulty": "beginner",
+    "category": "Opening Ranges",
+    "tags": ["tournament", "6max", "preflop", "opening"]
+  },
+  {
+    "name": "MP Open - 100bb Tournament",
+    "description": "You're MP in a 100bb tournament. What should your opening range be?",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "MP",
+    "vsPosition": "BB",
+    "actionType": "open",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "difficulty": "beginner",
+    "category": "Opening Ranges",
+    "tags": ["tournament", "6max", "preflop", "opening"]
+  },
+  {
+    "name": "CO Open - 100bb Tournament",
+    "description": "You're CO in a 100bb tournament. What should your opening range be?",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "CO",
+    "vsPosition": "BB",
+    "actionType": "open",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "difficulty": "beginner",
+    "category": "Opening Ranges",
+    "tags": ["tournament", "6max", "preflop", "opening"]
+  },
+  {
+    "name": "BTN Open - 100bb Tournament",
+    "description": "You're BTN in a 100bb tournament. What should your opening range be?",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "BTN",
+    "vsPosition": "BB",
+    "actionType": "open",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "difficulty": "beginner",
+    "category": "Opening Ranges",
+    "tags": ["tournament", "6max", "preflop", "opening"]
+  },
+  {
+    "name": "SB Open - 100bb Tournament",
+    "description": "You're SB in a 100bb tournament. What should your opening range be?",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "SB",
+    "vsPosition": "BB",
+    "actionType": "open",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "difficulty": "beginner",
+    "category": "Opening Ranges",
+    "tags": ["tournament", "6max", "preflop", "opening"]
+  },
+  {
+    "name": "BTN vs CO Open - Call Range",
+    "description": "CO opens 2bb at 100bb effective. You're on BTN. Build your calling range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "BTN",
+    "vsPosition": "CO",
+    "actionType": "vs_open_call",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "fold" },
+      { "position": "CO", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "intermediate",
+    "category": "Calling Ranges",
+    "tags": ["tournament", "6max", "preflop", "calling"]
+  },
+  {
+    "name": "BTN vs CO Open - 3-Bet Range",
+    "description": "CO opens 2bb at 100bb effective. You're on BTN. Build your 3-betting range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "BTN",
+    "vsPosition": "CO",
+    "actionType": "vs_open_3bet",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "fold" },
+      { "position": "CO", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "intermediate",
+    "category": "3-Betting",
+    "tags": ["tournament", "6max", "preflop", "3bet"]
+  },
+  {
+    "name": "BB vs BTN Open - Call Range",
+    "description": "BTN opens 2bb at 100bb effective. You're in BB. Build your calling range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "BB",
+    "vsPosition": "BTN",
+    "actionType": "vs_open_call",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "fold" },
+      { "position": "CO", "actionType": "fold" },
+      { "position": "BTN", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "intermediate",
+    "category": "Defending BB",
+    "tags": ["tournament", "6max", "preflop", "defending"]
+  },
+  {
+    "name": "BB vs BTN Open - 3-Bet Range",
+    "description": "BTN opens 2bb at 100bb effective. You're in BB. Build your 3-betting range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "BB",
+    "vsPosition": "BTN",
+    "actionType": "vs_open_3bet",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "fold" },
+      { "position": "CO", "actionType": "fold" },
+      { "position": "BTN", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "intermediate",
+    "category": "3-Betting",
+    "tags": ["tournament", "6max", "preflop", "3bet"]
+  },
+  {
+    "name": "SB vs CO Open - Cold Call Range",
+    "description": "CO opens 2bb at 100bb effective. You're in SB. Build your cold calling range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "SB",
+    "vsPosition": "CO",
+    "actionType": "vs_open_call",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "fold" },
+      { "position": "CO", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "intermediate",
+    "category": "Calling Ranges",
+    "tags": ["tournament", "6max", "preflop", "calling"]
+  },
+  {
+    "name": "UTG vs MP Open - 3-Bet Range",
+    "description": "MP opens 2bb at 100bb effective. You're UTG. Build your 3-betting range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "UTG",
+    "vsPosition": "MP",
+    "actionType": "vs_open_3bet",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "advanced",
+    "category": "3-Betting",
+    "tags": ["tournament", "6max", "preflop", "3bet"]
+  },
+  {
+    "name": "CO vs UTG Open - Call Range",
+    "description": "UTG opens 2bb at 100bb effective. You're CO. Build your calling range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "CO",
+    "vsPosition": "UTG",
+    "actionType": "vs_open_call",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "raise", "sizing": 2.0 },
+      { "position": "MP", "actionType": "fold" }
+    ],
+    "difficulty": "intermediate",
+    "category": "Calling Ranges",
+    "tags": ["tournament", "6max", "preflop", "calling"]
+  },
+  {
+    "name": "BB vs CO Open - 3-Bet Range",
+    "description": "CO opens 2bb at 100bb effective. You're in BB. Build your 3-betting range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "BB",
+    "vsPosition": "CO",
+    "actionType": "vs_open_3bet",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "fold" },
+      { "position": "CO", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "intermediate",
+    "category": "3-Betting",
+    "tags": ["tournament", "6max", "preflop", "3bet"]
+  },
+  {
+    "name": "MP vs UTG Open - Call Range",
+    "description": "UTG opens 2bb at 100bb effective. You're MP. Build your calling range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "MP",
+    "vsPosition": "UTG",
+    "actionType": "vs_open_call",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [{ "position": "UTG", "actionType": "raise", "sizing": 2.0 }],
+    "difficulty": "intermediate",
+    "category": "Calling Ranges",
+    "tags": ["tournament", "6max", "preflop", "calling"]
+  },
+  {
+    "name": "BTN vs MP Open - 3-Bet Range",
+    "description": "MP opens 2bb at 100bb effective. You're on BTN. Build your 3-betting range.",
+    "street": "preflop",
+    "gameType": "tournament",
+    "position": "BTN",
+    "vsPosition": "MP",
+    "actionType": "vs_open_3bet",
+    "effectiveStack": 100,
+    "betSize": 2.0,
+    "previousActions": [
+      { "position": "UTG", "actionType": "fold" },
+      { "position": "MP", "actionType": "raise", "sizing": 2.0 }
+    ],
+    "difficulty": "intermediate",
+    "category": "3-Betting",
+    "tags": ["tournament", "6max", "preflop", "3bet"]
+  }
+]

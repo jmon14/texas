@@ -70,6 +70,7 @@ cp .development.env.example .development.env
 # Database operations
 npm run migrate              # Run database migrations
 npm run migrate:revert       # Revert last migration
+npm run seed:scenarios       # Seed initial scenario data (15 tournament preflop scenarios)
 
 # Testing
 npm test                     # Unit tests
@@ -80,6 +81,32 @@ npm run test:cov            # Test coverage
 npm run start:dev           # Development server with hot reload
 npm run lint                # ESLint checking
 ```
+
+### Database Seeding
+
+The Backend includes a seeding system for populating initial scenario data:
+
+**Seed Scenarios:**
+```bash
+npm run seed:scenarios
+```
+
+This command:
+- Loads 15 tournament preflop scenarios from `src/seeders/data/scenarios.json`
+- Creates scenarios via the `ScenariosService` (ensures idempotency)
+- Skips scenarios that already exist (safe to run multiple times)
+- Outputs progress and summary statistics
+
+**Scenario Data:**
+- Location: `src/seeders/data/scenarios.json`
+- Format: JSON array matching `CreateScenarioDto` structure
+- Includes: Opening ranges, calling ranges, and 3-betting scenarios
+- All scenarios: Tournament, preflop, heads-up, 100bb effective stack
+
+**Manual Scenario Creation:**
+You can also create scenarios programmatically via the API:
+- `POST /scenarios` - Create a new scenario (requires JWT authentication)
+- See API documentation (Swagger UI) for full endpoint details
 
 ## 🔐 Authentication System
 

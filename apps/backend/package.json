@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Backend API for Texas Poker Application",
   "author": "Jorge Montero",
   "private": true,
@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:e2e": "NODE_ENV=test jest --config ./e2e/jest-e2e.json",
     "migrate": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts",
-    "migrate:revert": "ts-node -r tsconfig-paths/register src/scripts/migrate-revert.ts"
+    "migrate:revert": "ts-node -r tsconfig-paths/register src/scripts/migrate-revert.ts",
+    "seed:scenarios": "ts-node -r tsconfig-paths/register src/seeders/scenarios.seeder.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "3.828.0",
