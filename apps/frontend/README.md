@@ -7,6 +7,7 @@ A React-based frontend application for the Texas Poker platform, providing an in
 The Frontend is a **modern React application** that serves as the main user interface for:
 
 - **Poker Range Analysis** - Interactive range builder and visualizer
+- **Scenario Browser** - Browse and view poker training scenarios
 - **File Management** - Upload and manage poker-related files
 - **User Authentication** - Login, registration, and account management
 - **Theme Management** - Dark/light mode support
@@ -79,6 +80,16 @@ The heart of the application - an interactive poker range analysis tool:
 - **Range Management**: Create, save, and load custom ranges
 - **Real-time Updates**: Instant visual feedback on range changes
 
+### 📚 Scenario Browser
+
+Browse and explore poker training scenarios:
+
+- **Scenario List View**: Card-based display of all available scenarios
+- **Client-side Filtering**: Filter by Game Type, Difficulty, and Category
+- **Scenario Detail View**: Full scenario information including context and instructions
+- **Difficulty Indicators**: Color-coded badges (Beginner/Intermediate/Advanced)
+- **Category Organization**: Scenarios organized by category (Opening Ranges, 3-Betting, etc.)
+
 ### 📁 File Management
 
 Upload and manage poker-related files:
@@ -133,6 +144,18 @@ Centralized state management using Redux Toolkit:
 }
 ```
 
+#### **Scenario Slice**
+
+```typescript
+// Scenario data and operations
+{
+  scenarios: ScenarioResponseDto[];
+  currentScenario: ScenarioResponseDto | null;
+  status: FetchStatus;
+  error: unknown;
+}
+```
+
 #### **Theme Slice**
 
 ```typescript
@@ -166,6 +189,11 @@ filesApi.uploadFile(file);
 rangesApi.createRange(range);
 rangesApi.getRangesByUserId(userId);
 rangesApi.updateRange(id, range);
+
+// Scenario operations
+scenariosApi.getScenarios(gameType, difficulty, category);
+scenariosApi.getScenarioById(id);
+scenariosApi.getScenariosByCategory(category);
 ```
 
 ### Automatic Token Refresh

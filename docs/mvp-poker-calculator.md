@@ -472,17 +472,17 @@ interface UserRangeAttempt {
 ### Phase 1: Scenario Library 📚
 
 **Backend Requirements:**
-- [ ] Create Scenario schema/model
-- [ ] Create API endpoint: `GET /scenarios` (list all scenarios)
-- [ ] Create API endpoint: `GET /scenarios/:id` (get specific scenario)
-- [ ] Create API endpoint: `GET /scenarios/category/:category` (filter by category)
-- [ ] Seed database with 10-15 common preflop scenarios
+- [x] Create Scenario schema/model
+- [x] Create API endpoint: `GET /scenarios` (list all scenarios)
+- [x] Create API endpoint: `GET /scenarios/:id` (get specific scenario)
+- [x] Create API endpoint: `GET /scenarios/category/:category` (filter by category)
+- [x] Seed database with 10-15 common preflop scenarios
 
 **Frontend Requirements:**
-- [ ] Scenario browser component (list view)
-- [ ] Scenario detail view (shows context and instructions)
-- [ ] Category filtering
-- [ ] Difficulty indicators
+- [x] Scenario browser component (list view)
+- [x] Scenario detail view (shows context and instructions)
+- [x] Category filtering
+- [x] Difficulty indicators
 
 **Initial Scenario Set (MVP):**
 All scenarios are tournament preflop, heads-up decisions. Mix of different positions and actions for variety:
