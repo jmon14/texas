@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // Api
-import { AuthApi, FilesApi, UsersApi, RangesApi } from '../../backend-api/api';
+import { AuthApi, FilesApi, UsersApi, RangesApi, ScenariosApi } from '../../backend-api/api';
 
 // Create new axios instance
 export const backendInstance = axios.create({
@@ -56,6 +56,11 @@ export const filesApi = new FilesApi(
   backendInstance,
 );
 export const rangeApi = new RangesApi(
+  undefined,
+  process.env.REACT_APP_BACKEND_API_URL,
+  backendInstance,
+);
+export const scenariosApi = new ScenariosApi(
   undefined,
   process.env.REACT_APP_BACKEND_API_URL,
   backendInstance,
