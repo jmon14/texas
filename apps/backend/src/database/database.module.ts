@@ -6,24 +6,28 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigurationService } from 'src/config/configuration.service';
 import { MongooseModule } from '@nestjs/mongoose';
+import { NODE_ENV } from 'src/utils/constants';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigurationService],
-      useFactory: async (configurationService: ConfigurationService) => ({
-        type: 'postgres',
-        host: await configurationService.get('POSTGRES_HOST'),
-        port: +(await configurationService.get('POSTGRES_PORT')),
-        username: await configurationService.get('POSTGRES_USER'),
-        password: await configurationService.get('POSTGRES_PASSWORD'),
-        database: await configurationService.get('POSTGRES_DB'),
-        entities: [__dirname + '/../**/*.entity.{ts,js}'],
-        migrations: [__dirname + '/migrations/*{.ts,.js}'],
-        synchronize: false,
-        migrationsRun: false,
-      }),
+      useFactory: async (configurationService: ConfigurationService) => {
+        const isDevelopment = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
+        return {
+          type: 'postgres',
+          host: await configurationService.get('POSTGRES_HOST'),
+          port: +(await configurationService.get('POSTGRES_PORT')),
+          username: await configurationService.get('POSTGRES_USER'),
+          password: await configurationService.get('POSTGRES_PASSWORD'),
+          database: await configurationService.get('POSTGRES_DB'),
+          entities: [__dirname + '/../**/*.entity.{ts,js}'],
+          migrations: [__dirname + '/migrations/*{.ts,.js}'],
+          synchronize: false,
+          migrationsRun: isDevelopment,
+        };
+      },
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
