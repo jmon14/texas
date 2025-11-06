@@ -12,7 +12,9 @@ const Home = () => {
       renderHeader={(open, collapseAppbar) => (
         <Header open={open} collapseAppbar={collapseAppbar} />
       )}
-      renderSidebar={(collapseSidebar) => <Sidebar collapseSidebar={collapseSidebar} />}
+      renderSidebar={(open, collapseSidebar) => (
+        <Sidebar open={open} collapseSidebar={collapseSidebar} />
+      )}
     >
       <Outlet />
     </MainLayout>

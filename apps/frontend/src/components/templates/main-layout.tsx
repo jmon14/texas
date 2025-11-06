@@ -14,7 +14,7 @@ import { drawerWidth } from '../../constants';
 type MainLayoutProps = {
   children: ReactNode;
   renderHeader: (open: boolean, collapseAppbar: () => void) => ReactNode;
-  renderSidebar: (collapseSidebar: () => void) => ReactNode;
+  renderSidebar: (open: boolean, collapseSidebar: () => void) => ReactNode;
 };
 
 const MainLayout = ({ renderHeader, renderSidebar, children }: MainLayoutProps) => {
@@ -30,7 +30,7 @@ const MainLayout = ({ renderHeader, renderSidebar, children }: MainLayoutProps) 
         <Toolbar>{renderHeader(open, toggleSidebar)}</Toolbar>
       </CollapsibleAppbar>
       <CollapsibleDrawer variant="permanent" open={open} width={drawerWidth}>
-        {renderSidebar(toggleSidebar)}
+        {renderSidebar(open, toggleSidebar)}
       </CollapsibleDrawer>
       <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <Toolbar />
