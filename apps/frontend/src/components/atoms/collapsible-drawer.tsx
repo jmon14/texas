@@ -29,6 +29,7 @@ const CollapsibleDrawer = styled(MuiDrawer, {
     '& .MuiDrawer-paper': {
       transition,
       width: drawerWidth,
+      overflowX: 'hidden',
     },
   };
 });
