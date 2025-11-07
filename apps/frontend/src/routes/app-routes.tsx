@@ -14,6 +14,8 @@ import Auth from '../components/pages/auth';
 import Home from '../components/pages/home';
 import RangeBuilder from '../components/organisms/range-builder';
 import Account from '../components/organisms/account';
+import ScenarioList from '../components/organisms/scenario-list';
+import ScenarioDetail from '../components/organisms/scenario-detail';
 
 // Routes
 import { AuthProtected } from './auth-protected';
@@ -52,6 +54,8 @@ export const AppRoutes = () => {
           <Route path="dashboard" element={<Files />} />
           <Route path="range" element={<RangeBuilder />} />
           <Route path="account" element={<Account />} />
+          <Route path="scenarios" element={<ScenarioList />} />
+          <Route path="scenarios/:id" element={<ScenarioDetail />} />
         </Route>
       </Route>
     </Routes>

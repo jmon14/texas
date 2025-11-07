@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Phase 1: Scenario Browser UI
+- **Scenario Browser Frontend**: Complete UI for browsing and viewing poker scenarios
+  - Created `ScenarioList` component with card-based list view
+  - Implemented client-side filtering by Game Type, Difficulty, and Category
+  - Added `ScenarioDetail` component for full scenario information display
+  - Created reusable `ScenarioCard` molecule component
+  - Created `DifficultyBadge` atom component with color-coded difficulty levels
+- **Redux State Management**: Complete state management for scenarios
+  - Created `scenario-slice.ts` with async thunks for fetching scenarios
+  - Integrated scenario state into Redux store
+  - Implemented loading and error state handling
+- **API Integration**: Full integration with backend scenarios API
+  - Regenerated OpenAPI client to include `ScenariosApi` and `ScenarioResponseDto`
+  - Added `scenariosApi` to frontend API layer
+  - Created MSW handlers for development and testing
+- **Routing**: Added scenario routes and navigation
+  - Added `/scenarios` route for list view
+  - Added `/scenarios/:id` route for detail view
+  - Added "Scenarios" link to sidebar navigation
+- **Testing**: Comprehensive test coverage
+  - Unit tests for `scenario-slice.ts` (all async thunks and reducers)
+  - Component tests for `DifficultyBadge`, `ScenarioCard`, `ScenarioList`, and `ScenarioDetail`
+  - Tests cover loading states, error handling, filtering, and navigation
+
+### Changed
+- Updated frontend API client to include scenarios endpoints
+- Enhanced sidebar navigation with scenarios link
+
 ## [2.2.2] - 2025-11-05
 
 ### Added

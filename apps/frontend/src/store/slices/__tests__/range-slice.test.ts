@@ -153,9 +153,9 @@ describe('range-slice', () => {
           userId: 'user-123',
           handsRange: [
             {
-              rangeFraction: 0.4,
+              carryoverFrequency: 40,
               label: 'FOLD',
-              actions: [{ type: 'FOLD' as any, percentage: 40 }],
+              actions: [{ type: 'FOLD' as any, frequency: 40 }],
             },
           ],
         };
