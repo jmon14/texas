@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Min, IsOptional, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PlayerPosition } from '../enums/player-position.enum';
 
@@ -53,4 +53,18 @@ export class SolveScenarioDto {
   @IsEnum(PlayerPosition)
   @IsNotEmpty()
   playerPosition: PlayerPosition;
+
+  @ApiProperty({
+    description:
+      'Board cards in format "As Kh 7d" (3 cards for flop, 4 for turn, 5 for river). ' +
+      'Optional - omit for preflop scenarios.',
+    example: 'As Kh 7d',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Matches(/^([A2-9TJQK][hscd]\s?){3,5}$/, {
+    message: 'boardCards must be in format "As Kh 7d" with 3-5 cards',
+  })
+  boardCards?: string;
 }

@@ -372,6 +372,150 @@ describe('TexasSolverService', () => {
       expect(configContent).not.toMatch(/set_board\s*$/); // Should not be empty
     });
 
+    it('should set dump rounds for flop (3 cards)', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        board: 'As,Kh,Qd', // 3 cards = flop
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      expect(configContent).toContain('set_dump_rounds 2'); // Flop
+    });
+
+    it('should set dump rounds for turn (4 cards)', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        board: 'As,Kh,Qd,2c', // 4 cards = turn
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      expect(configContent).toContain('set_dump_rounds 3'); // Turn
+    });
+
+    it('should set dump rounds for river (5 cards)', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        board: 'As,Kh,Qd,2c,9h', // 5 cards = river
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      expect(configContent).toContain('set_dump_rounds 4'); // River
+    });
+
+    it('should not set dump rounds for preflop', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        // No board = preflop
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      expect(configContent).not.toContain('set_dump_rounds');
+    });
+
+    it('should set bet sizes for flop, turn, and river when board has 3 cards (flop)', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        board: 'As,Kh,Qd', // 3 cards = flop
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      // Flop bet sizes
+      expect(configContent).toContain('set_bet_sizes ip,flop,bet,50');
+      expect(configContent).toContain('set_bet_sizes ip,flop,raise,60');
+      expect(configContent).toContain('set_bet_sizes oop,flop,bet,50');
+      expect(configContent).toContain('set_bet_sizes oop,flop,raise,60');
+      // Turn bet sizes (future street)
+      expect(configContent).toContain('set_bet_sizes ip,turn,bet,50');
+      expect(configContent).toContain('set_bet_sizes ip,turn,raise,60');
+      expect(configContent).toContain('set_bet_sizes oop,turn,bet,50');
+      expect(configContent).toContain('set_bet_sizes oop,turn,raise,60');
+      // River bet sizes (future street)
+      expect(configContent).toContain('set_bet_sizes ip,river,bet,50');
+      expect(configContent).toContain('set_bet_sizes ip,river,raise,60');
+      expect(configContent).toContain('set_bet_sizes oop,river,bet,50');
+      expect(configContent).toContain('set_bet_sizes oop,river,raise,60');
+    });
+
+    it('should set bet sizes for turn and river when board has 4 cards (turn)', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        board: 'As,Kh,Qd,2c', // 4 cards = turn
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      // Should NOT include flop bet sizes (we're past flop)
+      expect(configContent).not.toContain('set_bet_sizes ip,flop');
+      expect(configContent).not.toContain('set_bet_sizes oop,flop');
+      // Should include turn bet sizes
+      expect(configContent).toContain('set_bet_sizes ip,turn,bet,50');
+      expect(configContent).toContain('set_bet_sizes ip,turn,raise,60');
+      expect(configContent).toContain('set_bet_sizes oop,turn,bet,50');
+      expect(configContent).toContain('set_bet_sizes oop,turn,raise,60');
+      // Should include river bet sizes (future street)
+      expect(configContent).toContain('set_bet_sizes ip,river,bet,50');
+      expect(configContent).toContain('set_bet_sizes ip,river,raise,60');
+      expect(configContent).toContain('set_bet_sizes oop,river,bet,50');
+      expect(configContent).toContain('set_bet_sizes oop,river,raise,60');
+    });
+
+    it('should set bet sizes for river only when board has 5 cards (river)', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        board: 'As,Kh,Qd,2c,9h', // 5 cards = river
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      // Should NOT include flop or turn bet sizes (we're past those streets)
+      expect(configContent).not.toContain('set_bet_sizes ip,flop');
+      expect(configContent).not.toContain('set_bet_sizes oop,flop');
+      expect(configContent).not.toContain('set_bet_sizes ip,turn');
+      expect(configContent).not.toContain('set_bet_sizes oop,turn');
+      // Should include river bet sizes only
+      expect(configContent).toContain('set_bet_sizes ip,river,bet,50');
+      expect(configContent).toContain('set_bet_sizes ip,river,raise,60');
+      expect(configContent).toContain('set_bet_sizes oop,river,bet,50');
+      expect(configContent).toContain('set_bet_sizes oop,river,raise,60');
+    });
+
+    it('should not set post-flop bet sizes for preflop', async () => {
+      const result = await service['generateConfigFile']({
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        // No board = preflop
+      });
+
+      const configContent = mockWriteFile.mock.calls[0][1];
+      expect(configContent).not.toContain('set_bet_sizes ip,flop');
+      expect(configContent).not.toContain('set_bet_sizes oop,flop');
+      expect(configContent).not.toContain('set_bet_sizes ip,turn');
+      expect(configContent).not.toContain('set_bet_sizes oop,turn');
+      expect(configContent).not.toContain('set_bet_sizes ip,river');
+      expect(configContent).not.toContain('set_bet_sizes oop,river');
+    });
+
     it('should use default solver settings for production', async () => {
       const result = await service['generateConfigFile']({
         effectiveStack: 100,
@@ -569,9 +713,38 @@ describe('TexasSolverService', () => {
       expect(result.userId).toBe('system');
       expect(result.handsRange).toBeDefined();
       expect(result.handsRange.length).toBeGreaterThan(0);
+    });
 
-      // Verify config was generated
+    it('should convert space-separated board cards to comma-separated format', async () => {
+      // Mock solver output
+      const mockSolverOutput = JSON.stringify({
+        node_type: 'action_node',
+        player: 1,
+        strategy: {
+          actions: ['CHECK', 'BET 1.000000'],
+          strategy: {
+            AcKc: [0.0, 1.0],
+          },
+        },
+      });
+
+      mockReadFile.mockResolvedValue(mockSolverOutput);
+
+      await service.solveScenario({
+        name: 'Flop Scenario',
+        effectiveStack: 100,
+        pot: 1.5,
+        rangeIp: 'AA,KK',
+        rangeOop: 'AA,KK,QQ',
+        playerPosition: PlayerPosition.OOP,
+        boardCards: 'As Kh 7d', // Space-separated format
+      });
+
+      // Verify that generateConfigFile was called with comma-separated format
       expect(mockWriteFile).toHaveBeenCalled();
+      const configContent = mockWriteFile.mock.calls[0][1];
+      expect(configContent).toContain('set_board As,Kh,7d'); // Comma-separated
+      expect(configContent).toContain('set_dump_rounds 2'); // Flop dump rounds
 
       // Verify solver was executed
       expect(mockExecFileAsyncFn).toHaveBeenCalled();

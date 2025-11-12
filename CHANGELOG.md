@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.4] - 2025-01-XX
+
+### Added
+
+#### Phase 2: TexasSolver Post-Flop Support (Task 2)
+- **Post-Flop TexasSolver Integration**: Extended TexasSolver service to support post-flop scenario solving
+  - Added optional `boardCards` field to `SolveScenarioDto` with format validation
+  - Updated `solveScenario()` method to accept and process board cards
+  - Implemented automatic format conversion from space-separated ("As Kh 7d") to comma-separated ("As,Kh,7d") for TexasSolver
+- **Street-Specific Configuration**: Added post-flop street handling in config generation
+  - Automatic dump rounds configuration based on street (flop=2, turn=3, river=4)
+  - Street-specific bet sizes configuration (50% bet, 60% raise) for all future streets
+  - When on flop: sets bet sizes for flop, turn, and river
+  - When on turn: sets bet sizes for turn and river
+  - When on river: sets bet sizes for river only
+- **Testing**: Comprehensive test coverage for post-flop TexasSolver functionality
+  - Added 9 new tests covering dump rounds, bet sizes, and board card format conversion
+  - Tests verify correct configuration for flop, turn, and river scenarios
+  - Tests verify preflop scenarios don't include post-flop configurations
+  - All 48 tests passing
+
+### Changed
+- Updated `package.json` version: `2.2.3` → `2.2.4`
+- Updated `generateConfigFile()` to handle post-flop streets with proper bet size and dump rounds configuration
+- Improved config generation logic to match TexasSolver sample config files exactly
+
 ## [2.2.3] - 2025-01-XX
 
 ### Added

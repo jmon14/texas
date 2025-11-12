@@ -43,7 +43,8 @@ export class TexasSolverService {
   /**
    * Generate TexasSolver config file from scenario parameters
    *
-   * For MVP Phase 0: Preflop tournament scenarios only
+   * Phase 0: Preflop tournament scenarios
+   * Phase 2: Post-flop scenarios (flop, turn, river)
    */
   private async generateConfigFile(params: {
     effectiveStack: number; // Big blinds
@@ -77,8 +78,11 @@ export class TexasSolverService {
 
     // Board - Set if provided, otherwise use empty board for preflop scenarios
     // For preflop scenarios, set_board can be empty (no cards)
+    let boardCardCount = 0;
     if (board) {
       configLines.push(`set_board ${board}`);
+      // Count board cards (comma-separated format from TexasSolver)
+      boardCardCount = board.split(',').length;
     } else {
       // Empty board for preflop scenarios
       configLines.push(`set_board`);
@@ -88,8 +92,9 @@ export class TexasSolverService {
     configLines.push(`set_range_ip ${rangeIp}`);
     configLines.push(`set_range_oop ${rangeOop}`);
 
-    // Bet sizes - Add if provided
+    // Bet sizes - Handle preflop and post-flop streets
     if (betSizes) {
+      // Preflop bet sizes (if provided)
       if (betSizes.ip) {
         for (const size of betSizes.ip) {
           configLines.push(`set_bet_sizes ip,preflop,bet,${size}`);
@@ -100,6 +105,48 @@ export class TexasSolverService {
           configLines.push(`set_bet_sizes oop,preflop,bet,${size}`);
         }
       }
+    }
+
+    // Post-flop bet sizes - Set for current and all future streets based on board card count
+    // When on flop (3 cards), need bet sizes for flop, turn, and river (all future streets)
+    // When on turn (4 cards), need bet sizes for turn and river (future streets)
+    // When on river (5 cards), need bet sizes for river only
+    // Default bet sizes: 50% pot for bet, 60% pot for raise
+    // These are standard sizes used in GTO solvers
+    const defaultBetSize = 50;
+    const defaultRaiseSize = 60;
+
+    if (boardCardCount === 3) {
+      // Flop (3 cards) - bet sizes for flop, turn, and river (all future streets)
+      configLines.push(`set_bet_sizes ip,flop,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes ip,flop,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes oop,flop,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes oop,flop,raise,${defaultRaiseSize}`);
+      // Also set turn and river bet sizes (future streets)
+      configLines.push(`set_bet_sizes ip,turn,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes ip,turn,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes oop,turn,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes oop,turn,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes ip,river,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes ip,river,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes oop,river,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes oop,river,raise,${defaultRaiseSize}`);
+    } else if (boardCardCount === 4) {
+      // Turn (4 cards) - bet sizes for turn and river (future streets)
+      configLines.push(`set_bet_sizes ip,turn,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes ip,turn,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes oop,turn,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes oop,turn,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes ip,river,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes ip,river,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes oop,river,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes oop,river,raise,${defaultRaiseSize}`);
+    } else if (boardCardCount === 5) {
+      // River (5 cards) - bet sizes for river only
+      configLines.push(`set_bet_sizes ip,river,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes ip,river,raise,${defaultRaiseSize}`);
+      configLines.push(`set_bet_sizes oop,river,bet,${defaultBetSize}`);
+      configLines.push(`set_bet_sizes oop,river,raise,${defaultRaiseSize}`);
     }
 
     // All-in threshold
@@ -127,8 +174,20 @@ export class TexasSolverService {
     const outputFilename = `output_result-${timestamp}.json`;
 
     // Dump results (after solving)
-    // Note: set_dump_rounds might not be needed for preflop-only scenarios
-    // Both sample configs use set_dump_rounds 2 (flop), so we'll omit it for preflop
+    // Set dump rounds based on street:
+    // - Flop (3 cards) → dump_rounds 2
+    // - Turn (4 cards) → dump_rounds 3
+    // - River (5 cards) → dump_rounds 4
+    // - Preflop (no board) → omit dump_rounds (not needed)
+    if (boardCardCount === 3) {
+      configLines.push(`set_dump_rounds 2`); // Flop
+    } else if (boardCardCount === 4) {
+      configLines.push(`set_dump_rounds 3`); // Turn
+    } else if (boardCardCount === 5) {
+      configLines.push(`set_dump_rounds 4`); // River
+    }
+    // Preflop: omit set_dump_rounds (not needed for preflop-only scenarios)
+
     configLines.push(`dump_result ${outputFilename}`);
 
     // Ensure temp directory exists before writing
@@ -420,7 +479,8 @@ export class TexasSolverService {
   /**
    * Main method: Solve a scenario and return Range
    *
-   * For Phase 0: Simple preflop scenarios
+   * Phase 0: Preflop scenarios
+   * Phase 2: Post-flop scenarios (flop, turn, river)
    */
   async solveScenario(params: SolveScenarioDto): Promise<Range> {
     this.logger.log(`Solving scenario: ${params.name}`);
@@ -428,15 +488,19 @@ export class TexasSolverService {
     let configPath: string;
     let outputPath: string;
 
-    const { effectiveStack, pot, rangeIp, rangeOop, playerPosition, name } = params;
+    const { effectiveStack, pot, rangeIp, rangeOop, playerPosition, name, boardCards } = params;
     try {
       // 1. Generate config file
+      // Convert space-separated board cards to comma-separated format for TexasSolver
+      const boardForSolver = boardCards ? boardCards.trim().split(/\s+/).join(',') : undefined;
+
       const { configPath: generatedConfigPath, outputPath: generatedOutputPath } =
         await this.generateConfigFile({
           effectiveStack,
           pot,
           rangeIp,
           rangeOop,
+          board: boardForSolver,
         });
       configPath = generatedConfigPath;
       outputPath = generatedOutputPath;
