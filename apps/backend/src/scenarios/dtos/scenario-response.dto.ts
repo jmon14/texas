@@ -82,8 +82,17 @@ export class ScenarioResponseDto {
   previousActions?: PreviousActionDto[];
 
   @ApiProperty({
+    description:
+      'Board cards in format "As Kh 7d" (3 cards for flop, 4 for turn, 5 for river). ' +
+      'Present for post-flop scenarios.',
+    example: 'As Kh 7d',
+    required: false,
+  })
+  boardCards?: string;
+
+  @ApiProperty({
     enum: BoardTexture,
-    description: 'Board texture description (for post-flop scenarios, post-MVP)',
+    description: 'Board texture description. Required for post-flop scenarios.',
     required: false,
     example: BoardTexture.DRY,
   })

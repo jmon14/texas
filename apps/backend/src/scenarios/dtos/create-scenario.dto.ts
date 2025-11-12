@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsNotEmpty,
   ValidateNested,
+  Matches,
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -16,7 +17,9 @@ import { Difficulty } from '../enums/difficulty.enum';
 import { Street } from '../enums/street.enum';
 import { ScenarioActionType } from '../enums/scenario-action-type.enum';
 import { Category } from '../enums/category.enum';
+import { BoardTexture } from '../enums/board-texture.enum';
 import { PreviousActionDto } from './previous-action.dto';
+import { IsRequiredIfPostFlop } from './validators/required-if-postflop.validator';
 
 export class CreateScenarioDto {
   @ApiProperty({
@@ -110,6 +113,33 @@ export class CreateScenarioDto {
   @Type(() => PreviousActionDto)
   @IsOptional()
   previousActions?: PreviousActionDto[];
+
+  @ApiProperty({
+    description:
+      'Board cards in format "As Kh 7d" (3 cards for flop, 4 for turn, 5 for river). ' +
+      'Required for post-flop scenarios.',
+    example: 'As Kh 7d',
+    required: false,
+  })
+  @IsRequiredIfPostFlop()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^([A2-9TJQK][hscd]\s?){3,5}$/, {
+    message: 'boardCards must be in format "As Kh 7d" with 3-5 cards',
+  })
+  boardCards?: string;
+
+  @ApiProperty({
+    enum: BoardTexture,
+    description: 'Board texture description. Required for post-flop scenarios.',
+    example: BoardTexture.DRY,
+    required: false,
+  })
+  @IsRequiredIfPostFlop()
+  @IsOptional()
+  @IsEnum(BoardTexture)
+  boardTexture?: BoardTexture;
 
   @ApiProperty({
     enum: Difficulty,

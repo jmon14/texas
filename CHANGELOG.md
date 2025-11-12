@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.3] - 2025-01-XX
+
+### Added
+
+#### Phase 2: Post-Flop Scenario Schema Support (Task 1)
+- **Post-Flop Scenario Schema**: Extended scenario schema to support post-flop scenarios
+  - Added `boardCards` field to `Scenario` schema (format: "As Kh 7d" for flop, turn, river)
+  - Made `boardTexture` conditionally required for post-flop scenarios
+  - Created `IsRequiredIfPostFlop` custom validator for conditional field requirements
+  - Created `scenario-validation.utils.ts` with arrow-function-based validation helpers
+- **DTO Updates**: Enhanced DTOs for post-flop scenario support
+  - Added `boardCards` field to `CreateScenarioDto` with format validation
+  - Added `boardCards` field to `ScenarioResponseDto`
+  - Implemented conditional validation using custom decorators
+- **Service Layer Validation**: Added comprehensive post-flop validation in `ScenariosService`
+  - Validates `boardCards` format (3-5 cards matching poker notation)
+  - Ensures `boardTexture` is provided for post-flop scenarios
+  - Throws `BadRequestException` with clear error messages for invalid scenarios
+- **Testing**: Comprehensive test coverage for post-flop scenario validation
+  - Unit tests for DTO validation (6 tests covering format validation)
+  - Service layer tests for post-flop validation (5 tests covering error cases)
+  - Tests verify preflop scenarios can omit board fields
+  - Tests verify post-flop scenarios require board fields with proper format
+
+### Changed
+- Updated `package.json` version: `2.2.2` → `2.2.3`
+- Moved conditional validation logic from Mongoose schema to service layer for better TypeScript compatibility
+- Simplified DTO validation by removing redundant `@ValidateIf` decorators (handled by `@IsOptional()`)
+
 ### Added
 
 #### Phase 1: Scenario Browser UI

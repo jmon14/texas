@@ -471,14 +471,14 @@ Default settings (can be customized in `generateConfigFile`):
 
 ### Current Scope
 
-- ✅ Preflop scenarios only
+- ✅ Post-flop scenarios (flop, turn, river) - **TexasSolver is designed for post-flop solving**
 - ✅ Tournament format
 - ✅ Fixed bet sizes
 - ✅ Heads-up (2 players)
 
 ### Not Supported Yet
 
-- ❌ Post-flop scenarios (flop, turn, river)
+- ❌ Preflop scenarios - **TexasSolver does NOT solve preflop, only post-flop**
 - ❌ Cash game format
 - ❌ Multi-way scenarios (3+ players)
 - ❌ Custom bet sizing per street

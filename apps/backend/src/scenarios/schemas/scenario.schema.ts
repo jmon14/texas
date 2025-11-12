@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Position } from '../enums/position.enum';
+import { BoardTexture } from '../enums/board-texture.enum';
 import { PreviousAction, PreviousActionSchema } from './previous-action.schema';
 
 export type ScenarioDocument = Scenario & Document;
@@ -87,7 +88,14 @@ export class Scenario {
     type: String,
     required: false,
   })
-  boardTexture?: string; // Text description for post-flop scenarios (post-MVP)
+  boardCards?: string; // "As Kh 7d" for flop, "As Kh 7d 2c" for turn, etc.
+
+  @Prop({
+    type: String,
+    enum: Object.values(BoardTexture),
+    required: false,
+  })
+  boardTexture?: BoardTexture; // Required for post-flop scenarios
 
   // Metadata
   @Prop({

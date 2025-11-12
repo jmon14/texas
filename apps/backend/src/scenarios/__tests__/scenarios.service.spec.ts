@@ -9,7 +9,15 @@ import { ScenariosService } from '../scenarios.service';
 // Schemas
 import { Scenario } from '../schemas';
 // Enums
-import { Position, GameType, Difficulty, ScenarioActionType, Category, Street } from '../enums';
+import {
+  Position,
+  GameType,
+  Difficulty,
+  ScenarioActionType,
+  Category,
+  Street,
+  BoardTexture,
+} from '../enums';
 import { CreateScenarioDto } from '../dtos';
 
 describe('ScenariosService', () => {
@@ -270,6 +278,127 @@ describe('ScenariosService', () => {
 
       expect(mockScenarioModel).toHaveBeenCalledWith(dtoWithPreviousActions);
       expect(result.previousActions).toEqual(dtoWithPreviousActions.previousActions);
+    });
+
+    it('should create post-flop scenario with boardCards and boardTexture', async () => {
+      const flopDto: CreateScenarioDto = {
+        ...createScenarioDto,
+        street: Street.FLOP,
+        boardCards: 'As Kh 7d',
+        boardTexture: BoardTexture.DRY,
+      };
+
+      const mockFlopScenario = {
+        ...mockScenario,
+        street: 'flop',
+        boardCards: 'As Kh 7d',
+        boardTexture: BoardTexture.DRY,
+      };
+
+      const mockExec = jest.fn().mockResolvedValue(null);
+      mockScenarioModel.findOne.mockReturnValue({ exec: mockExec });
+
+      const mockSave = jest.fn().mockResolvedValue({
+        ...mockFlopScenario,
+        toObject: jest.fn().mockReturnValue(mockFlopScenario),
+      });
+
+      const mockInstance = {
+        save: mockSave,
+      };
+      mockScenarioModel.mockReturnValue(mockInstance);
+
+      const result = await scenariosService.create(flopDto);
+
+      expect(mockScenarioModel).toHaveBeenCalledWith(flopDto);
+      expect(result.boardCards).toBe('As Kh 7d');
+      expect(result.boardTexture).toBe(BoardTexture.DRY);
+    });
+
+    it('should create preflop scenario without boardCards and boardTexture', async () => {
+      const mockExec = jest.fn().mockResolvedValue(null);
+      mockScenarioModel.findOne.mockReturnValue({ exec: mockExec });
+
+      const mockSave = jest.fn().mockResolvedValue({
+        ...mockScenario,
+        toObject: jest.fn().mockReturnValue(mockScenario),
+      });
+
+      const mockInstance = {
+        save: mockSave,
+      };
+      mockScenarioModel.mockReturnValue(mockInstance);
+
+      const result = await scenariosService.create(createScenarioDto);
+
+      expect(mockScenarioModel).toHaveBeenCalledWith(createScenarioDto);
+      expect(result.boardCards).toBeUndefined();
+      expect(result.boardTexture).toBeUndefined();
+    });
+
+    it('should throw BadRequestException when post-flop scenario missing boardCards', async () => {
+      const flopDtoWithoutBoardCards: CreateScenarioDto = {
+        ...createScenarioDto,
+        street: Street.FLOP,
+        boardTexture: BoardTexture.DRY,
+        // boardCards is missing
+      };
+
+      await expect(scenariosService.create(flopDtoWithoutBoardCards)).rejects.toThrow(
+        'boardCards is required for post-flop scenarios',
+      );
+    });
+
+    it('should throw BadRequestException when post-flop missing boardTexture', async () => {
+      const flopDtoWithoutBoardTexture: CreateScenarioDto = {
+        ...createScenarioDto,
+        street: Street.FLOP,
+        boardCards: 'As Kh 7d',
+        // boardTexture is missing
+      };
+
+      await expect(scenariosService.create(flopDtoWithoutBoardTexture)).rejects.toThrow(
+        'boardTexture is required for post-flop scenarios',
+      );
+    });
+
+    it('should throw BadRequestException when boardCards has invalid format', async () => {
+      const flopDtoWithInvalidFormat: CreateScenarioDto = {
+        ...createScenarioDto,
+        street: Street.FLOP,
+        boardCards: 'As Kh 7', // Invalid format - missing suit
+        boardTexture: BoardTexture.DRY,
+      };
+
+      await expect(scenariosService.create(flopDtoWithInvalidFormat)).rejects.toThrow(
+        'boardCards must be in format "As Kh 7d" with 3-5 cards for post-flop scenarios',
+      );
+    });
+
+    it('should throw BadRequestException when boardCards has too few cards', async () => {
+      const flopDtoWithTooFewCards: CreateScenarioDto = {
+        ...createScenarioDto,
+        street: Street.FLOP,
+        boardCards: 'As Kh', // Only 2 cards, need 3 for flop
+        boardTexture: BoardTexture.DRY,
+      };
+
+      await expect(scenariosService.create(flopDtoWithTooFewCards)).rejects.toThrow(
+        'boardCards must be in format "As Kh 7d" with 3-5 cards for post-flop scenarios',
+      );
+    });
+
+    it('should throw BadRequestException when boardCards has invalid rank', async () => {
+      const flopDtoWithInvalidRank: CreateScenarioDto = {
+        ...createScenarioDto,
+        street: Street.FLOP,
+        boardCards: 'Bs Kh 7d', // Invalid rank 'B'
+        boardTexture: BoardTexture.DRY,
+      };
+
+      await expect(scenariosService.create(flopDtoWithInvalidRank)).rejects.toThrow(
+        'boardCards must be in format "As Kh 7d" with 3-5 cards for post-flop scenarios',
+      );
     });
   });
 });

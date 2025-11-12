@@ -6,6 +6,7 @@ import { ScenarioResponseDto, CreateScenarioDto } from './dtos';
 import { GameType } from './enums/game-type.enum';
 import { Difficulty } from './enums/difficulty.enum';
 import { Category } from './enums/category.enum';
+import { validatePostFlopScenario } from './utils/scenario-validation.utils';
 
 @Injectable()
 export class ScenariosService {
@@ -48,6 +49,9 @@ export class ScenariosService {
   }
 
   async create(createScenarioDto: CreateScenarioDto): Promise<ScenarioResponseDto> {
+    // Validate post-flop scenario requirements (using arrow functions)
+    validatePostFlopScenario(createScenarioDto);
+
     // Check if scenario with same name already exists (for idempotency)
     const existingScenario = await this.scenarioModel
       .findOne({ name: createScenarioDto.name })
