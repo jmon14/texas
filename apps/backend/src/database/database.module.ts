@@ -3,10 +3,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Constants
-import { ConfigModule } from 'src/config/config.module';
-import { ConfigurationService } from 'src/config/configuration.service';
+import { ConfigModule } from '../config/config.module';
+import { ConfigurationService } from '../config/configuration.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { NODE_ENV } from 'src/utils/constants';
+import { NODE_ENV } from '../utils/constants';
 
 @Module({
   imports: [

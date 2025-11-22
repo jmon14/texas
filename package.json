@@ -1,6 +1,6 @@
 {
   "name": "texas-poker-monorepo",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "description": "Texas Poker Application - Monorepo",
   "scripts": {

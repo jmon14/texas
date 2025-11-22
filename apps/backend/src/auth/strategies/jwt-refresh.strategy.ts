@@ -6,10 +6,10 @@ import { Request } from 'express';
 
 // Services
 import { ConfigurationService } from '../../config/configuration.service';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../../users/users.service';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 
 // Interfaces
 import { TokenPayload } from '../interfaces/token.interface';

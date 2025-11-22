@@ -14,13 +14,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 
 // Guards
-import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
+import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 
 // Interfaces
-import { PayloadRequest } from 'src/auth/interfaces/request.interface';
+import { PayloadRequest } from '../auth/interfaces/request.interface';
 
 // Services
-import { FilesService } from 'src/files/files.service';
+import { FilesService } from './files.service';
 
 @Controller('files')
 @ApiTags('files')

@@ -2,11 +2,11 @@
 import { Test } from '@nestjs/testing';
 
 // Service
-import { AuthService } from 'src/auth/auth.service';
-import { UsersService } from 'src/users/users.service';
+import { AuthService } from '../../auth/auth.service';
+import { UsersService } from '../users.service';
 
 // Controller
-import { UsersController } from 'src/users/users.controller';
+import { UsersController } from '../users.controller';
 
 // Mocks
 import {
@@ -17,10 +17,10 @@ import {
   mockRequest,
   mockMailDto,
   mockTokenData,
-} from 'src/utils/mocks';
+} from '../../utils/mocks';
 
 // Entity
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 import { HttpException } from '@nestjs/common';
 
 describe('the user controller', () => {

@@ -11,17 +11,17 @@ import LocalAuthGuard from './guards/local-auth.guard';
 import JwtRefreshGuard from './guards/jwt-refresh-auth.guard';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../database/entities/user.entity';
 
 // Interfaces
 import { UserRequest, PayloadRequest } from './interfaces/request.interface';
 
 // DTOs
-import { LoginDto } from 'src/users/dtos/user.dto';
-import EmailDto from 'src/users/dtos/email.dto';
+import { LoginDto } from '../users/dtos/user.dto';
+import EmailDto from '../users/dtos/email.dto';
 
 // Constants
-import { LinkMail } from 'src/auth/auth.constants';
+import { LinkMail } from './auth.constants';
 
 /**
  * Controller to handle authentication

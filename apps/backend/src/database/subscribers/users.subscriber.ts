@@ -8,10 +8,10 @@ import {
 } from 'typeorm';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 
 // Utils
-import { Utils } from 'src/utils/utils';
+import { Utils } from '../../utils/utils';
 
 /**
  * Subscriber of events to update fields before insertion / update

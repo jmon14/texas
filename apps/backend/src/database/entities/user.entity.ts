@@ -7,7 +7,7 @@ import { Exclude } from 'class-transformer';
 
 // Entities
 import { AbstractEntity } from './abstract.entity';
-import FileEntity from 'src/database/entities/file.entity';
+import FileEntity from './file.entity';
 
 /**
  * User entity to be persisted in DB

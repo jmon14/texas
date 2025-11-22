@@ -4,8 +4,8 @@ import { Exclude } from 'class-transformer';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 // Entities
-import { AbstractEntity } from 'src/database/entities/abstract.entity';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { AbstractEntity } from './abstract.entity';
+import { UserEntity } from './user.entity';
 
 @Entity({ name: 'files' })
 class FileEntity extends AbstractEntity {

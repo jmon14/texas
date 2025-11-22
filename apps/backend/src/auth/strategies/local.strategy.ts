@@ -9,7 +9,7 @@ import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 
 /**
  * Local strategy that allows to authenticate using a username and password

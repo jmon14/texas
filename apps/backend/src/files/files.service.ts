@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { S3 } from 'aws-sdk';
 
 // Entities
-import FileEntity from 'src/database/entities/file.entity';
+import FileEntity from '../database/entities/file.entity';
 
 // Services
 import { ConfigurationService } from '../config/configuration.service';

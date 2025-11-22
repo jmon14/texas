@@ -2,16 +2,16 @@
 import { Test } from '@nestjs/testing';
 
 // Service
-import { EmailService } from 'src/email/email.service';
-import { ConfigurationService } from 'src/config/configuration.service';
-import { SesStrategy } from 'src/email/strategies/ses.strategy';
-import { EtherealStrategy } from 'src/email/strategies/ethereal.strategy';
+import { EmailService } from '../email.service';
+import { ConfigurationService } from '../../config/configuration.service';
+import { SesStrategy } from '../strategies/ses.strategy';
+import { EtherealStrategy } from '../strategies/ethereal.strategy';
 
 // External libraries
 import * as nodemailer from 'nodemailer';
 
 // Mocks
-import { mockedConfigurationService, testEmail } from 'src/utils/mocks';
+import { mockedConfigurationService, testEmail } from '../../utils/mocks';
 import Mail from 'nodemailer/lib/mailer';
 
 describe('the email service', () => {

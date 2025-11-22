@@ -22,7 +22,7 @@ import { TokenPayload } from './interfaces/token.interface';
 import { Utils } from '../utils/utils';
 
 // DTOs
-import EmailDto from 'src/users/dtos/email.dto';
+import EmailDto from '../users/dtos/email.dto';
 
 // Constants
 import { confirmationLink, LinkMail, resetLink } from './auth.constants';

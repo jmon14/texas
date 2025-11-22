@@ -4,15 +4,15 @@ import { getModelToken } from '@nestjs/mongoose';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 // Services
-import { RangesService } from 'src/ranges/ranges.service';
+import { RangesService } from '../ranges.service';
 
 // Schemas
-import { Range } from 'src/ranges/schemas';
+import { Range } from '../schemas';
 // Enums
-import { ActionType } from 'src/ranges/enums';
+import { ActionType } from '../enums';
 
 // DTOs
-import { CreateRangeDto, UpdateRangeDto } from 'src/ranges/dtos';
+import { CreateRangeDto, UpdateRangeDto } from '../dtos';
 
 describe('RangesService', () => {
   let rangesService: RangesService;

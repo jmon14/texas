@@ -2,16 +2,16 @@
 import { Test } from '@nestjs/testing';
 
 // Controller
-import { FilesController } from 'src/files/files.controller';
+import { FilesController } from '../files.controller';
 
 // Services
-import { FilesService } from 'src/files/files.service';
+import { FilesService } from '../files.service';
 
 // Entities
-import FileEntity from 'src/database/entities/file.entity';
+import FileEntity from '../../database/entities/file.entity';
 
 // Mocks
-import { mockPayloadReq } from 'src/utils/mocks';
+import { mockPayloadReq } from '../../utils/mocks';
 
 describe('FilesController', () => {
   let filesController: FilesController;

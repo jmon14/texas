@@ -3,17 +3,17 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Services
-import { FilesService } from 'src/files/files.service';
+import { FilesService } from './files.service';
 
 // Controllers
-import { FilesController } from 'src/files/files.controller';
+import { FilesController } from './files.controller';
 
 // Entities
-import FileEntity from 'src/database/entities/file.entity';
-import { FilesSubscriber } from 'src/database/subscribers/files.subscriber';
+import FileEntity from '../database/entities/file.entity';
+import { FilesSubscriber } from '../database/subscribers/files.subscriber';
 
 // Config
-import { ConfigModule } from 'src/config/config.module';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([FileEntity]), ConfigModule],

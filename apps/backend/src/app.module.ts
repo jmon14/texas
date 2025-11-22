@@ -8,13 +8,13 @@ import { SentryModule } from '@sentry/nestjs/setup';
 import { AppController } from './app.controller';
 
 // Feature module
-import { AuthModule } from 'src/auth/auth.module';
-import { EmailModule } from 'src/email/email.module';
-import { UsersModule } from 'src/users/users.module';
-import { FilesModule } from 'src/files/files.module';
-import { DatabaseModule } from 'src/database/database.module';
-import { RangesModule } from 'src/ranges/ranges.module';
-import { ScenariosModule } from 'src/scenarios/scenarios.module';
+import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
+import { UsersModule } from './users/users.module';
+import { FilesModule } from './files/files.module';
+import { DatabaseModule } from './database/database.module';
+import { RangesModule } from './ranges/ranges.module';
+import { ScenariosModule } from './scenarios/scenarios.module';
 
 @Module({
   imports: [

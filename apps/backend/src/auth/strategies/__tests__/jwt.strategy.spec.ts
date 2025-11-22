@@ -2,13 +2,13 @@
 import { Test } from '@nestjs/testing';
 
 // Passport strategy
-import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
+import { JwtStrategy } from '../jwt.strategy';
 
 // Services
-import { ConfigurationService } from 'src/config/configuration.service';
+import { ConfigurationService } from '../../../config/configuration.service';
 
 // Mocks
-import { mockedConfigurationService, mockTokenPayload } from 'src/utils/mocks';
+import { mockedConfigurationService, mockTokenPayload } from '../../../utils/mocks';
 
 describe('JwtStrategy', () => {
   let jwtStrategy: JwtStrategy;

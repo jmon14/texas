@@ -7,16 +7,16 @@ import * as bcrypt from 'bcrypt';
 import Mail from 'nodemailer/lib/mailer';
 
 // Services
-import { AuthService } from 'src/auth/auth.service';
-import { UsersService } from 'src/users/users.service';
-import { EmailService } from 'src/email/email.service';
-import { ConfigurationService } from 'src/config/configuration.service';
+import { AuthService } from '../auth.service';
+import { UsersService } from '../../users/users.service';
+import { EmailService } from '../../email/email.service';
+import { ConfigurationService } from '../../config/configuration.service';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 
 // Utils
-import { Utils } from 'src/utils/utils';
+import { Utils } from '../../utils/utils';
 
 // Mocks
 import {
@@ -27,11 +27,11 @@ import {
   mockMailDto,
   mockPayloadReq,
   mockResponse,
-} from 'src/utils/mocks';
+} from '../../utils/mocks';
 
 // DTOs
-import EmailDto from 'src/users/dtos/email.dto';
-import { confirmationLink, LinkMail, resetLink } from 'src/auth/auth.constants';
+import EmailDto from '../../users/dtos/email.dto';
+import { confirmationLink, LinkMail, resetLink } from '../auth.constants';
 
 describe('AuthService', () => {
   let usersService: UsersService;

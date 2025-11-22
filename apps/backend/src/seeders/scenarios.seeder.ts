@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from 'src/app.module';
+import { AppModule } from '../app.module';
 import { Logger } from '@nestjs/common';
-import { ScenariosService } from 'src/scenarios/scenarios.service';
+import { ScenariosService } from '../scenarios/scenarios.service';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CreateScenarioDto } from 'src/scenarios/dtos/create-scenario.dto';
+import { CreateScenarioDto } from '../scenarios/dtos/create-scenario.dto';
 import { ConflictException } from '@nestjs/common';
 
 async function seed() {

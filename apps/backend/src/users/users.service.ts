@@ -6,14 +6,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../database/entities/user.entity';
 
 // DTOs
-import { RegisterDto } from 'src/users/dtos/user.dto';
+import { RegisterDto } from './dtos/user.dto';
 
 // Constants
-import { PostgresErrorCode } from 'src/utils/constants';
-import FileEntity from 'src/database/entities/file.entity';
+import { PostgresErrorCode } from '../utils/constants';
+import FileEntity from '../database/entities/file.entity';
 
 @Injectable()
 export class UsersService {

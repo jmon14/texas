@@ -5,13 +5,13 @@ import { JwtModule } from '@nestjs/jwt';
 
 // Modules
 import { UsersModule } from '../users/users.module';
-import { EmailModule } from 'src/email/email.module';
+import { EmailModule } from '../email/email.module';
 
 // Services
 import { AuthService } from './auth.service';
 
 // Config
-import { ConfigModule } from 'src/config/config.module';
+import { ConfigModule } from '../config/config.module';
 
 // Strategies
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';

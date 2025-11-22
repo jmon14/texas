@@ -3,17 +3,17 @@ import { Test } from '@nestjs/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 // Controller
-import { RangesController } from 'src/ranges/ranges.controller';
+import { RangesController } from '../ranges.controller';
 
 // Services
-import { RangesService } from 'src/ranges/ranges.service';
+import { RangesService } from '../ranges.service';
 
 // DTOs
-import { CreateRangeDto, UpdateRangeDto, RangeResponseDto } from 'src/ranges/dtos';
+import { CreateRangeDto, UpdateRangeDto, RangeResponseDto } from '../dtos';
 
 // Schemas
 // Enums
-import { ActionType } from 'src/ranges/enums';
+import { ActionType } from '../enums';
 
 describe('RangesController', () => {
   let rangesController: RangesController;

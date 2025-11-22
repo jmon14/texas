@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.5] - 2025-11-22
+
+### Fixed
+
+#### Backend Module Resolution
+- **Import Path Resolution**: Fixed module resolution errors in development environment
+  - Converted all absolute imports (`src/` prefix) to relative imports throughout the backend codebase
+  - Resolved 126+ instances across modules, entities, services, controllers, DTOs, test files, scripts, and seeders
+  - TypeScript now compiles to relative `require()` statements that Node.js can resolve at runtime
+  - Build verified successful with correct relative paths in compiled output
+  - No breaking changes - production builds continue to work correctly
+
+### Changed
+- Updated `package.json` version: `2.2.4` → `2.2.5`
+- Updated root `package.json` version: `2.2.1` → `2.2.2`
+
 ## [2.2.4] - 2025-01-XX
 
 ### Added

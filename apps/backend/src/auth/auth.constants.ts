@@ -1,5 +1,5 @@
 // Interfaces
-import { SignedMail } from 'src/auth/interfaces/signed-mail.interface';
+import { SignedMail } from './interfaces/signed-mail.interface';
 
 export enum LinkMail {
   reset = 'resetLink',

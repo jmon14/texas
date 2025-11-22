@@ -18,7 +18,7 @@ import { NODE_ENV } from './utils/constants';
 import { ConfigurationService } from './config/configuration.service';
 
 // Filters
-import { SentryExceptionFilter } from 'src/filters';
+import { SentryExceptionFilter } from './filters';
 
 /**
  * Bootstrap application

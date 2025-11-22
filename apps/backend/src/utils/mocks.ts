@@ -6,23 +6,23 @@ import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 
 // DTOs
-import EmailDto from 'src/users/dtos/email.dto';
-import { RegisterDto, UserDto } from 'src/users/dtos/user.dto';
-import TokenDto from 'src/users/dtos/confirm-email.dto';
-import { ResetPwdDto } from 'src/users/dtos/reset-password.dto';
+import EmailDto from '../users/dtos/email.dto';
+import { RegisterDto, UserDto } from '../users/dtos/user.dto';
+import TokenDto from '../users/dtos/confirm-email.dto';
+import { ResetPwdDto } from '../users/dtos/reset-password.dto';
 
 // Services
-import { AuthService } from 'src/auth/auth.service';
-import { EmailService } from 'src/email/email.service';
-import { UsersService } from 'src/users/users.service';
-import { ConfigurationService } from 'src/config/configuration.service';
+import { AuthService } from '../auth/auth.service';
+import { EmailService } from '../email/email.service';
+import { UsersService } from '../users/users.service';
+import { ConfigurationService } from '../config/configuration.service';
 
 // Interfaces
-import { TokenPayload } from 'src/auth/interfaces/token.interface';
-import { PayloadRequest, UserRequest } from 'src/auth/interfaces/request.interface';
+import { TokenPayload } from '../auth/interfaces/token.interface';
+import { PayloadRequest, UserRequest } from '../auth/interfaces/request.interface';
 
 // Entity
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../database/entities/user.entity';
 
 // Constants
 export const testEmail = 'test@test.com';

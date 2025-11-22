@@ -3,14 +3,14 @@ import { HttpException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 // Service
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../../auth.service';
 
 // Passport strategy
-import { LocalStrategy } from 'src/auth/strategies/local.strategy';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { LocalStrategy } from '../local.strategy';
+import { UserEntity } from '../../../database/entities/user.entity';
 
 // Mocks
-import { mockedAuthService } from 'src/utils/mocks';
+import { mockedAuthService } from '../../../utils/mocks';
 
 describe('LocalStrategy', () => {
   let localStrategy: LocalStrategy;

@@ -3,13 +3,13 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Services
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users.service';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 
 // Mocks
-import { mockUserDto, testEmail } from 'src/utils/mocks';
+import { mockUserDto, testEmail } from '../../utils/mocks';
 
 // External libraries
 

@@ -3,7 +3,7 @@ import { DataSource, EntitySubscriberInterface, EventSubscriber, RemoveEvent } f
 import { S3 } from 'aws-sdk';
 
 // Entities
-import FileEntity from 'src/database/entities/file.entity';
+import FileEntity from '../entities/file.entity';
 
 // Services
 import { ConfigurationService } from '../../config/configuration.service';

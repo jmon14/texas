@@ -3,14 +3,14 @@ import { HttpException, UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 // Passport strategy
-import { JwtRefreshStrategy } from 'src/auth/strategies/jwt-refresh.strategy';
+import { JwtRefreshStrategy } from '../jwt-refresh.strategy';
 
 // Entity
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../../../database/entities/user.entity';
 
 // Services
-import { UsersService } from 'src/users/users.service';
-import { ConfigurationService } from 'src/config/configuration.service';
+import { UsersService } from '../../../users/users.service';
+import { ConfigurationService } from '../../../config/configuration.service';
 
 // Mocks
 import {
@@ -18,7 +18,7 @@ import {
   mockedUsersService,
   mockTokenPayload,
   mockRequest,
-} from 'src/utils/mocks';
+} from '../../../utils/mocks';
 
 describe('JwtRefreshStrategy', () => {
   let jwtRefreshStrategy: JwtRefreshStrategy;

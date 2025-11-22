@@ -1,15 +1,15 @@
 // NestJS
 import { Test } from '@nestjs/testing';
-import { LinkMail } from 'src/auth/auth.constants';
+import { LinkMail } from '../auth.constants';
 
 // Controller
-import { AuthController } from 'src/auth/auth.controller';
+import { AuthController } from '../auth.controller';
 
 // Services
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth.service';
 
 // Mocks
-import { mockedAuthService, mockPayloadReq, mockMailDto, mockUserReq } from 'src/utils/mocks';
+import { mockedAuthService, mockPayloadReq, mockMailDto, mockUserReq } from '../../utils/mocks';
 
 describe('AuthController', () => {
   let authController: AuthController;

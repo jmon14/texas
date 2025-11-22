@@ -3,14 +3,14 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Services
-import { FilesService } from 'src/files/files.service';
-import { ConfigurationService } from 'src/config/configuration.service';
+import { FilesService } from '../files.service';
+import { ConfigurationService } from '../../config/configuration.service';
 
 // Entities
-import FileEntity from 'src/database/entities/file.entity';
+import FileEntity from '../../database/entities/file.entity';
 
 // Mocks
-import { mockedConfigurationService } from 'src/utils/mocks';
+import { mockedConfigurationService } from '../../utils/mocks';
 
 // Mock AWS S3
 const mockUpload = jest.fn();

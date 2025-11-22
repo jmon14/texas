@@ -16,27 +16,27 @@ import {
 import { ApiBody, ApiTags, ApiParam } from '@nestjs/swagger';
 
 // Services
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 
 // Entities
-import { UserEntity } from 'src/database/entities/user.entity';
-import FileEntity from 'src/database/entities/file.entity';
+import { UserEntity } from '../database/entities/user.entity';
+import FileEntity from '../database/entities/file.entity';
 
 // DTOs
-import EmailDto from 'src/users/dtos/email.dto';
-import TokenDto from 'src/users/dtos/confirm-email.dto';
-import { RegisterDto } from 'src/users/dtos/user.dto';
-import { ResetPwdDto } from 'src/users/dtos/reset-password.dto';
+import EmailDto from './dtos/email.dto';
+import TokenDto from './dtos/confirm-email.dto';
+import { RegisterDto } from './dtos/user.dto';
+import { ResetPwdDto } from './dtos/reset-password.dto';
 
 // Constants
-import { LinkMail } from 'src/auth/auth.constants';
+import { LinkMail } from '../auth/auth.constants';
 
 // Guards
-import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
+import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 
 // Interfaces
-import { PayloadRequest } from 'src/auth/interfaces/request.interface';
+import { PayloadRequest } from '../auth/interfaces/request.interface';
 
 /**
  * Controller for user related requests
