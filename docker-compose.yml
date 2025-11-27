@@ -1,6 +1,7 @@
 services:
   # Backend service (NestJS)
   backend:
+    platform: linux/amd64 # Force x86_64 emulation for x86_64 binary compatibility
     build:
       context: ./apps/backend
       dockerfile: Dockerfile

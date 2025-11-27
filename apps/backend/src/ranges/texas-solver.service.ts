@@ -17,11 +17,6 @@ const execFileAsync = promisify(execFile);
  * TexasSolver Integration Service
  *
  * Handles integration with TexasSolver console binary for GTO range calculations.
- *
- * Phase 0: Discovery and basic integration
- * - Generates config files from scenario data
- * - Executes console_solver binary
- * - Parses JSON output and transforms to Range schema
  */
 @Injectable()
 export class TexasSolverService {
@@ -42,22 +37,19 @@ export class TexasSolverService {
 
   /**
    * Generate TexasSolver config file from scenario parameters
-   *
-   * Phase 0: Preflop tournament scenarios
-   * Phase 2: Post-flop scenarios (flop, turn, river)
    */
   private async generateConfigFile(params: {
-    effectiveStack: number; // Big blinds
-    pot: number; // Big blinds (typically 1.5 for preflop: SB + BB)
-    rangeIp: string; // Hero's range (e.g., "AA,KK,AKs,AKo")
-    rangeOop: string; // Villain's range (e.g., "AA,KK,QQ,JJ,TT")
-    board?: string; // Board cards (optional - omit for preflop)
+    effectiveStack: number; // Effective stack depth in big blinds
+    pot: number; // Money in the pot
+    rangeIp: string; // In-position player's range (e.g., "AA,KK,AKs,AKo")
+    rangeOop: string; // Out-of-position player's range (e.g., "AA,KK,QQ,JJ,TT")
+    board?: string; // Board cards
     betSizes?: {
       ip?: number[]; // In-position bet sizes (% of pot)
       oop?: number[]; // Out-of-position bet sizes
     };
-    accuracy?: number; // Convergence accuracy (default 0.5 for production)
-    maxIterations?: number; // Max solver iterations (default 200 for production)
+    accuracy?: number; // Convergence accuracy
+    maxIterations?: number; // Max solver iterations
   }): Promise<{ configPath: string; outputPath: string }> {
     const {
       effectiveStack,
@@ -111,42 +103,44 @@ export class TexasSolverService {
     // When on flop (3 cards), need bet sizes for flop, turn, and river (all future streets)
     // When on turn (4 cards), need bet sizes for turn and river (future streets)
     // When on river (5 cards), need bet sizes for river only
-    // Default bet sizes: 50% pot for bet, 60% pot for raise
-    // These are standard sizes used in GTO solvers
-    const defaultBetSize = 50;
-    const defaultRaiseSize = 60;
+    const defaultBetSize = SOLVER_DEFAULTS.DEFAULT_BET_SIZE_PERCENT;
+    const defaultRaiseSize = SOLVER_DEFAULTS.DEFAULT_RAISE_SIZE_PERCENT;
 
-    if (boardCardCount === 3) {
-      // Flop (3 cards) - bet sizes for flop, turn, and river (all future streets)
-      configLines.push(`set_bet_sizes ip,flop,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes ip,flop,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes oop,flop,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes oop,flop,raise,${defaultRaiseSize}`);
-      // Also set turn and river bet sizes (future streets)
-      configLines.push(`set_bet_sizes ip,turn,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes ip,turn,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes oop,turn,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes oop,turn,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes ip,river,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes ip,river,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes oop,river,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes oop,river,raise,${defaultRaiseSize}`);
-    } else if (boardCardCount === 4) {
-      // Turn (4 cards) - bet sizes for turn and river (future streets)
-      configLines.push(`set_bet_sizes ip,turn,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes ip,turn,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes oop,turn,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes oop,turn,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes ip,river,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes ip,river,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes oop,river,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes oop,river,raise,${defaultRaiseSize}`);
-    } else if (boardCardCount === 5) {
-      // River (5 cards) - bet sizes for river only
-      configLines.push(`set_bet_sizes ip,river,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes ip,river,raise,${defaultRaiseSize}`);
-      configLines.push(`set_bet_sizes oop,river,bet,${defaultBetSize}`);
-      configLines.push(`set_bet_sizes oop,river,raise,${defaultRaiseSize}`);
+    // Define which streets need bet sizes based on board card count
+    const streetsToConfigure: Record<number, string[]> = {
+      3: ['flop', 'turn', 'river'], // Flop: configure all future streets
+      4: ['turn', 'river'], // Turn: configure turn and river
+      5: ['river'], // River: configure river only
+    };
+
+    // Define bet size actions per street (OOP first, then IP to match example order)
+    const betSizeActions: Record<string, Record<string, string[]>> = {
+      flop: {
+        oop: ['bet', 'raise'],
+        ip: ['bet', 'raise'],
+      },
+      turn: {
+        oop: ['bet', 'raise'],
+        ip: ['bet', 'raise'],
+      },
+      river: {
+        oop: ['bet', 'donk', 'raise'],
+        ip: ['bet', 'raise'],
+      },
+    };
+
+    // Generate bet size config lines
+    const streets = streetsToConfigure[boardCardCount] || [];
+    for (const street of streets) {
+      const actions = betSizeActions[street];
+      // Process OOP first, then IP (to match example order)
+      for (const position of ['oop', 'ip'] as const) {
+        const actionTypes = actions[position] || [];
+        for (const actionType of actionTypes) {
+          const size = actionType === 'raise' ? defaultRaiseSize : defaultBetSize;
+          configLines.push(`set_bet_sizes ${position},${street},${actionType},${size}`);
+        }
+      }
     }
 
     // All-in threshold
@@ -166,14 +160,14 @@ export class TexasSolverService {
     configLines.push(`set_print_interval ${SOLVER_DEFAULTS.PRINT_INTERVAL}`);
     configLines.push(`set_use_isomorphism ${SOLVER_DEFAULTS.USE_ISOMORPHISM}`);
 
-    // Solve
-    configLines.push(`start_solve`);
-
     // Generate unique output filename to prevent collisions in concurrent executions
     const timestamp = Date.now();
     const outputFilename = `output_result-${timestamp}.json`;
 
-    // Dump results (after solving)
+    // Solve
+    configLines.push(`start_solve`);
+
+    // Set dump rounds AFTER solving starts (matches TexasSolver example configs)
     // Set dump rounds based on street:
     // - Flop (3 cards) → dump_rounds 2
     // - Turn (4 cards) → dump_rounds 3
@@ -188,16 +182,17 @@ export class TexasSolverService {
     }
     // Preflop: omit set_dump_rounds (not needed for preflop-only scenarios)
 
+    // Dump results (after solving completes)
     configLines.push(`dump_result ${outputFilename}`);
 
     // Ensure temp directory exists before writing
     // Note: recursive: true makes this idempotent - won't throw if directory exists
     await fs.mkdir(this.tempDir, { recursive: true });
 
-    // Write config file
+    // Write config file (add trailing newline to match example format)
     const configPath = path.join(this.tempDir, `config-${timestamp}.txt`);
     const outputPath = path.join(this.tempDir, outputFilename);
-    await fs.writeFile(configPath, configLines.join('\n'), 'utf-8');
+    await fs.writeFile(configPath, configLines.join('\n') + '\n', 'utf-8');
 
     this.logger.debug(`Generated config file: ${configPath}`);
     this.logger.debug(`Output will be written to: ${outputPath}`);
@@ -209,6 +204,7 @@ export class TexasSolverService {
    */
   private async executeSolver(configPath: string, expectedOutputPath: string): Promise<string> {
     const outputDir = path.dirname(configPath);
+    const startTime = Date.now();
 
     try {
       this.logger.log(`Executing TexasSolver with config: ${configPath}`);
@@ -226,14 +222,20 @@ export class TexasSolverService {
         },
       );
 
+      const duration = Date.now() - startTime;
+      this.logger.log(`Solver completed in ${(duration / 1000).toFixed(2)}s`);
+
       // Log solver output for debugging
       if (stdout) {
-        this.logger.debug(
-          `Solver stdout: ${stdout.substring(0, SOLVER_EXECUTION.STDOUT_LOG_MAX_LENGTH)}`,
-        );
+        const truncatedMsg = `... (truncated, total ${stdout.length} chars)`;
+        const stdoutPreview =
+          stdout.length > SOLVER_EXECUTION.STDOUT_LOG_MAX_LENGTH
+            ? `${stdout.substring(0, SOLVER_EXECUTION.STDOUT_LOG_MAX_LENGTH)}${truncatedMsg}`
+            : stdout;
+        this.logger.debug(`Solver stdout (${stdout.length} chars): ${stdoutPreview}`);
       }
       if (stderr) {
-        this.logger.warn(`Solver stderr: ${stderr}`);
+        this.logger.warn(`Solver stderr (${stderr.length} chars): ${stderr}`);
       }
 
       // Check if output file exists
@@ -244,9 +246,64 @@ export class TexasSolverService {
       } catch (error) {
         throw new Error(`Output file not found at ${expectedOutputPath}. Solver may have failed.`);
       }
-    } catch (error) {
-      this.logger.error(`Solver execution failed: ${error.message}`);
-      throw error;
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      const durationSeconds = (duration / 1000).toFixed(2);
+
+      // Extract exit code if available
+      const exitCode = error.code || error.signal || 'unknown';
+      const isTimeout =
+        error.code === 'ETIMEDOUT' || duration >= SOLVER_EXECUTION.TIMEOUT_MS - 1000;
+
+      // Log detailed error information
+      this.logger.error(`Solver execution failed after ${durationSeconds}s`);
+      this.logger.error(`Exit code/signal: ${exitCode}`);
+
+      if (isTimeout) {
+        this.logger.error(
+          `TIMEOUT DETECTED: Solver exceeded ${SOLVER_EXECUTION.TIMEOUT_MS / 1000}s timeout`,
+        );
+      }
+
+      // Log stderr if available (often contains useful error messages)
+      if (error.stderr) {
+        this.logger.error(`Solver stderr: ${error.stderr}`);
+      } else if (error.stdout) {
+        // Sometimes errors are in stdout
+        const stdoutPreview =
+          error.stdout.length > 1000
+            ? `${error.stdout.substring(0, 1000)}... (truncated)`
+            : error.stdout;
+        this.logger.error(`Solver stdout (last output): ${stdoutPreview}`);
+      }
+
+      // Check for common exit codes
+      if (exitCode === 137) {
+        this.logger.error('Exit code 137 = OOM (Out of Memory) kill');
+      } else if (exitCode === 139) {
+        this.logger.error('Exit code 139 = Segmentation fault (memory access violation)');
+      } else if (exitCode === 'SIGTERM' || exitCode === 'SIGKILL') {
+        this.logger.error(`Process was killed by signal: ${exitCode}`);
+      }
+
+      // Check if output file exists (might be partial)
+      try {
+        const stats = await fs.stat(expectedOutputPath);
+        this.logger.warn(`Output file exists but is ${stats.size} bytes (may be incomplete)`);
+      } catch {
+        this.logger.error('No output file was created');
+      }
+
+      // Create more descriptive error message
+      const timeoutLimit = SOLVER_EXECUTION.TIMEOUT_MS / 1000;
+      const timeoutMsg =
+        `Solver timeout after ${durationSeconds}s (limit: ${timeoutLimit}s). ` +
+        `Exit code: ${exitCode}`;
+      const failedMsg = `Solver execution failed after ${durationSeconds}s. Exit code: ${exitCode}`;
+      const errorMessage = isTimeout ? timeoutMsg : failedMsg;
+
+      this.logger.error(`Solver execution failed: ${errorMessage}`);
+      throw new Error(errorMessage);
     }
   }
 
@@ -283,7 +340,7 @@ export class TexasSolverService {
     // For preflop, we want the root action node strategy
     const rootStrategy = TexasSolverService.findRootStrategy(
       data,
-      this.getPlayerId(playerPosition),
+      playerPosition === PlayerPosition.IP ? PLAYER_IDS.IP : PLAYER_IDS.OOP,
     );
 
     if (!rootStrategy) {
@@ -345,13 +402,6 @@ export class TexasSolverService {
 
     this.logger.debug(`Transformed ${handRanges.length} hands from solver output`);
     return handRanges;
-  }
-
-  /**
-   * Map PlayerPosition enum to TexasSolver numeric player ID
-   */
-  private getPlayerId(position: PlayerPosition): number {
-    return position === PlayerPosition.IP ? PLAYER_IDS.IP : PLAYER_IDS.OOP;
   }
 
   /**
@@ -478,9 +528,6 @@ export class TexasSolverService {
 
   /**
    * Main method: Solve a scenario and return Range
-   *
-   * Phase 0: Preflop scenarios
-   * Phase 2: Post-flop scenarios (flop, turn, river)
    */
   async solveScenario(params: SolveScenarioDto): Promise<Range> {
     this.logger.log(`Solving scenario: ${params.name}`);

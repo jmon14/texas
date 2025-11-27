@@ -12,7 +12,7 @@ export const SOLVER_DEFAULTS = {
   /** Convergence accuracy (lower = more accurate) */
   ACCURACY: 0.5,
   /** Maximum solver iterations (more = better convergence) */
-  MAX_ITERATIONS: 200,
+  MAX_ITERATIONS: 100,
   /** All-in threshold as fraction of pot */
   ALL_IN_THRESHOLD: 0.67,
   /** Number of CPU threads to use */
@@ -21,14 +21,18 @@ export const SOLVER_DEFAULTS = {
   PRINT_INTERVAL: 10,
   /** Use card isomorphism optimization (1 = enabled, 0 = disabled) */
   USE_ISOMORPHISM: 1,
+  /** Default bet size as percentage of pot (50 = 50% pot) */
+  DEFAULT_BET_SIZE_PERCENT: 50,
+  /** Default raise size as percentage of pot (60 = 60% pot) */
+  DEFAULT_RAISE_SIZE_PERCENT: 60,
 } as const;
 
 /**
  * Solver Execution Settings
  */
 export const SOLVER_EXECUTION = {
-  /** Timeout in milliseconds (5 minutes) */
-  TIMEOUT_MS: 300000,
+  /** Timeout in milliseconds (20 minutes) */
+  TIMEOUT_MS: 1800000,
   /** Maximum buffer size for solver output (10MB) */
   MAX_BUFFER_BYTES: 1024 * 1024 * 10,
   /** Maximum characters to log from stdout for debugging */
@@ -56,4 +60,15 @@ export const POKER_CONSTANTS = {
   COMBO_LABEL_LENGTH: 4,
   /** Card rank order (highest to lowest) */
   RANK_ORDER: 'AKQJT98765432',
+} as const;
+
+/**
+ * Reference Range Solver Metadata
+ * Metadata for reference range imports and storage
+ */
+export const REFERENCE_RANGE_SOLVER = {
+  /** Solver name */
+  NAME: 'TexasSolver',
+  /** Solver version (TODO: Make configurable or detect from binary) */
+  VERSION: 'v1.0.1',
 } as const;

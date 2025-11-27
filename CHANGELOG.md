@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.6] - 2025-01-XX
+
+### Added
+
+#### Phase 2: Reference Range Import Pipeline and API (Tasks 3 & 4)
+- **Reference Range Import Service**: Complete service for importing GTO-solved reference ranges
+  - Created `ReferenceRangesImportService` for importing reference ranges from TexasSolver
+  - Supports both preflop and post-flop scenarios with automatic board card handling
+  - Implements IP/OOP range determination based on scenario context
+  - Calculates pot sizes dynamically based on street and action history
+  - Handles effective stack capping for solver stability (max stack-to-pot ratio)
+  - Batch import capability for all scenarios
+- **Reference Range Service**: Core service for managing reference ranges
+  - Created `ReferenceRangesService` for CRUD operations on reference ranges
+  - Links reference ranges to scenarios via `scenarioId`
+  - Stores solver metadata (solver name, version, solve date, parameters)
+  - Supports create-or-update pattern for idempotent imports
+- **Standard Ranges Service**: Service for providing standard poker ranges
+  - Created `StandardRangesService` with standard opening and calling ranges
+  - Provides position-based ranges (UTG, MP, CO, BTN, SB, BB)
+  - Supports range determination for post-flop scenarios based on preflop actions
+  - Includes constants for standard ranges and pot calculation
+- **Reference Range API**: RESTful API endpoints for reference ranges
+  - `GET /reference-ranges/scenario/:scenarioId` - Public endpoint to fetch reference range for a scenario
+  - `POST /reference-ranges/scenario/:scenarioId/import` - Authenticated endpoint to import reference range
+  - `POST /reference-ranges/import-all` - Authenticated batch import endpoint
+  - Complete OpenAPI/Swagger documentation with proper response types
+  - Error handling for missing scenarios and reference ranges
+- **Reference Range DTOs**: Complete data transfer objects
+  - Created `ReferenceRangeResponseDto` with full solver metadata
+  - Includes range data, solver information, solve parameters, and timestamps
+  - Properly typed with Swagger decorators for API documentation
+
+### Changed
+- Updated `package.json` version: `2.2.5` → `2.2.6`
+- Updated `ScenariosModule` to include reference range services and controller
+- Enhanced `TexasSolverService` constants with reference range solver metadata
+- Updated scenario action type enum with additional action types
+
+### Fixed
+- Updated TexasSolver binary executable (console_solver)
+- Updated docker-compose.yml configuration
+
 ## [2.2.5] - 2025-11-22
 
 ### Fixed
