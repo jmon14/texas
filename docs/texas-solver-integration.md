@@ -204,7 +204,7 @@ This means:
 
 | TexasSolver | Our Schema |
 |-------------|------------|
-| `"AsAh": [0.3, 0.7]` | `{ label: "AsAh", rangeFraction: 100, actions: [{ type: "call", percentage: 30 }, { type: "raise", percentage: 70 }] }` |
+| `"AsAh": [0.3, 0.7]` | `{ label: "AsAh", carryoverFrequency: 100, actions: [{ type: "call", frequency: 30 }, { type: "raise", frequency: 70 }] }` |
 | `"FOLD"` action | `ActionType.FOLD` |
 | `"CALL"` action | `ActionType.CALL` |
 | `"RAISE"` or `"BET"` | `ActionType.RAISE` |
@@ -245,8 +245,8 @@ const result = await this.texasSolverService.solveScenario({
 // {
 //   name: 'UTG Open - 100bb Tournament',
 //   handsRange: [
-//     { label: 'AA', rangeFraction: 100, actions: [{ type: 'raise', percentage: 100 }] },
-//     { label: 'KK', rangeFraction: 100, actions: [{ type: 'raise', percentage: 100 }] },
+//     { label: 'AA', carryoverFrequency: 100, actions: [{ type: 'raise', frequency: 100 }] },
+//     { label: 'KK', carryoverFrequency: 100, actions: [{ type: 'raise', frequency: 100 }] },
 //     ...
 //   ],
 //   userId: 'system' // Note: System user enhancement planned for Phase 2+

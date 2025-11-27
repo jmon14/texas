@@ -13,16 +13,16 @@ const ActionList = ({ actions, onActionChange }: ActionListProps) => {
     // Create a new array with new instances of the objects
     const newActions = actions.map((action, i) => (i === index ? updatedAction : { ...action }));
 
-    // Calculate the total percentage
-    const totalPercentage = newActions.reduce((sum, action) => sum + action.percentage, 0);
+    // Calculate the total frequency
+    const totalFrequency = newActions.reduce((sum, action) => sum + action.frequency, 0);
 
-    if (totalPercentage !== 100) {
-      let remainingPercentage = 100 - totalPercentage;
+    if (totalFrequency !== 100) {
+      let remainingFrequency = 100 - totalFrequency;
 
-      if (remainingPercentage > 0) {
-        // Distribute the remaining percentage without exceeding 100%
+      if (remainingFrequency > 0) {
+        // Distribute the remaining frequency without exceeding 100%
         let currentIndex = index + 1;
-        while (remainingPercentage > 0) {
+        while (remainingFrequency > 0) {
           if (currentIndex >= newActions.length) {
             currentIndex = 0;
           }
@@ -30,17 +30,17 @@ const ActionList = ({ actions, onActionChange }: ActionListProps) => {
             break;
           }
           const action = newActions[currentIndex];
-          const maxAddable = 100 - action.percentage;
-          const addable = Math.min(maxAddable, remainingPercentage);
-          action.percentage += addable;
-          remainingPercentage -= addable;
+          const maxAddable = 100 - action.frequency;
+          const addable = Math.min(maxAddable, remainingFrequency);
+          action.frequency += addable;
+          remainingFrequency -= addable;
           currentIndex++;
         }
       } else {
-        // Distribute the excess percentage without going below 0%
-        remainingPercentage = Math.abs(remainingPercentage);
+        // Distribute the excess frequency without going below 0%
+        remainingFrequency = Math.abs(remainingFrequency);
         let currentIndex = index + 1;
-        while (remainingPercentage > 0) {
+        while (remainingFrequency > 0) {
           if (currentIndex >= newActions.length) {
             currentIndex = 0;
           }
@@ -48,18 +48,18 @@ const ActionList = ({ actions, onActionChange }: ActionListProps) => {
             break;
           }
           const action = newActions[currentIndex];
-          const maxReducible = action.percentage;
-          const reducible = Math.min(maxReducible, remainingPercentage);
-          action.percentage -= reducible;
-          remainingPercentage -= reducible;
+          const maxReducible = action.frequency;
+          const reducible = Math.min(maxReducible, remainingFrequency);
+          action.frequency -= reducible;
+          remainingFrequency -= reducible;
           currentIndex++;
         }
       }
     }
 
-    // Ensure no negative percentages
+    // Ensure no negative frequencies
     newActions.forEach((action) => {
-      if (action.percentage < 0) action.percentage = 0;
+      if (action.frequency < 0) action.frequency = 0;
     });
 
     onActionChange(newActions);

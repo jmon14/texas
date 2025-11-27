@@ -11,9 +11,9 @@ const mockRange: RangeResponseDto = {
   userId: 'user-123',
   handsRange: [
     {
-      rangeFraction: 0.5,
+      carryoverFrequency: 50,
       label: 'RAISE',
-      actions: [{ type: 'RAISE' as any, percentage: 50 }],
+      actions: [{ type: 'RAISE' as any, frequency: 50 }],
     },
   ],
 };
@@ -26,9 +26,9 @@ const mockRanges: RangeResponseDto[] = [
     userId: 'user-123',
     handsRange: [
       {
-        rangeFraction: 0.3,
+        carryoverFrequency: 30,
         label: 'CALL',
-        actions: [{ type: 'CALL' as any, percentage: 30 }],
+        actions: [{ type: 'CALL' as any, frequency: 30 }],
       },
     ],
   },

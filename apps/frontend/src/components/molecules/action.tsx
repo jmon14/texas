@@ -26,27 +26,27 @@ type ActionProps = {
 const ActionComponent = ({ initialAction, onChange }: ActionProps) => {
   const theme = useTheme();
   const [action, setAction] = useState(initialAction);
-  const [percentage, setPercentage] = useState(action.percentage.toString());
+  const [frequency, setFrequency] = useState(action.frequency.toString());
 
   useEffect(() => {
     setAction(initialAction);
-    setPercentage(initialAction.percentage.toString());
+    setFrequency(initialAction.frequency.toString());
   }, [initialAction]);
 
-  const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let newPercentage = parseFloat(event.target.value);
-    if (isNaN(newPercentage)) {
-      setPercentage(event.target.value);
-      debouncedOnChange({ ...action, percentage: 0 });
+  const handleFrequencyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let newFrequency = parseFloat(event.target.value);
+    if (isNaN(newFrequency)) {
+      setFrequency(event.target.value);
+      debouncedOnChange({ ...action, frequency: 0 });
       return;
     }
-    if (newPercentage > 100) {
-      newPercentage = 100;
-    } else if (newPercentage < 0) {
-      newPercentage = 0;
+    if (newFrequency > 100) {
+      newFrequency = 100;
+    } else if (newFrequency < 0) {
+      newFrequency = 0;
     }
-    setPercentage(newPercentage.toString());
-    debouncedOnChange({ ...action, percentage: newPercentage });
+    setFrequency(newFrequency.toString());
+    debouncedOnChange({ ...action, frequency: newFrequency });
   };
 
   const debouncedOnChange = useMemo(() => debounce(onChange, 300), [onChange]);
@@ -69,8 +69,8 @@ const ActionComponent = ({ initialAction, onChange }: ActionProps) => {
       </Typography>
       <ActionTextField
         size="small"
-        value={percentage}
-        onChange={handlePercentageChange}
+        value={frequency}
+        onChange={handleFrequencyChange}
         sx={{
           width: '40px',
           backgroundColor: theme.palette.mode === 'light' ? grey[100] : blueGrey[800],

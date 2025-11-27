@@ -170,6 +170,18 @@ export interface CreateScenarioDto {
    */
   previousActions?: Array<PreviousActionDto>;
   /**
+   * Board cards in format \"As Kh 7d\" (3 cards for flop, 4 for turn, 5 for river). Required for post-flop scenarios.
+   * @type {string}
+   * @memberof CreateScenarioDto
+   */
+  boardCards?: string;
+  /**
+   * Board texture description. Required for post-flop scenarios.
+   * @type {string}
+   * @memberof CreateScenarioDto
+   */
+  boardTexture?: CreateScenarioDtoBoardTextureEnum;
+  /**
    * Difficulty level
    * @type {string}
    * @memberof CreateScenarioDto
@@ -228,6 +240,9 @@ export const CreateScenarioDtoVsPositionEnum = {
 export type CreateScenarioDtoVsPositionEnum =
   typeof CreateScenarioDtoVsPositionEnum[keyof typeof CreateScenarioDtoVsPositionEnum];
 export const CreateScenarioDtoActionTypeEnum = {
+  Cbet: 'cbet',
+  VsCbetCall: 'vs_cbet_call',
+  VsCbetRaise: 'vs_cbet_raise',
   Open: 'open',
   VsOpenCall: 'vs_open_call',
   VsOpen3bet: 'vs_open_3bet',
@@ -237,6 +252,18 @@ export const CreateScenarioDtoActionTypeEnum = {
 
 export type CreateScenarioDtoActionTypeEnum =
   typeof CreateScenarioDtoActionTypeEnum[keyof typeof CreateScenarioDtoActionTypeEnum];
+export const CreateScenarioDtoBoardTextureEnum = {
+  Dry: 'dry',
+  Wet: 'wet',
+  Paired: 'paired',
+  Monotone: 'monotone',
+  Rainbow: 'rainbow',
+  High: 'high',
+  Low: 'low',
+} as const;
+
+export type CreateScenarioDtoBoardTextureEnum =
+  typeof CreateScenarioDtoBoardTextureEnum[keyof typeof CreateScenarioDtoBoardTextureEnum];
 export const CreateScenarioDtoDifficultyEnum = {
   Beginner: 'beginner',
   Intermediate: 'intermediate',
@@ -255,19 +282,6 @@ export const CreateScenarioDtoCategoryEnum = {
 export type CreateScenarioDtoCategoryEnum =
   typeof CreateScenarioDtoCategoryEnum[keyof typeof CreateScenarioDtoCategoryEnum];
 
-/**
- *
- * @export
- * @interface EmailDto
- */
-export interface EmailDto {
-  /**
-   *
-   * @type {string}
-   * @memberof EmailDto
-   */
-  email: string;
-}
 /**
  *
  * @export
@@ -298,12 +312,6 @@ export interface FileEntity {
    * @memberof FileEntity
    */
   user: string;
-  /**
-   *
-   * @type {string}
-   * @memberof FileEntity
-   */
-  uuid: string;
 }
 /**
  *
@@ -329,25 +337,6 @@ export interface HandRangeDto {
    * @memberof HandRangeDto
    */
   actions: Array<ActionDto>;
-}
-/**
- *
- * @export
- * @interface LoginDto
- */
-export interface LoginDto {
-  /**
-   *
-   * @type {string}
-   * @memberof LoginDto
-   */
-  username: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginDto
-   */
-  password: string;
 }
 /**
  *
@@ -430,27 +419,75 @@ export interface RangeResponseDto {
 /**
  *
  * @export
- * @interface RegisterDto
+ * @interface ReferenceRangeResponseDto
  */
-export interface RegisterDto {
+export interface ReferenceRangeResponseDto {
   /**
-   *
+   * The unique MongoDB identifier of the reference range
    * @type {string}
-   * @memberof RegisterDto
+   * @memberof ReferenceRangeResponseDto
    */
-  email: string;
+  _id: string;
   /**
-   *
+   * The scenario ID this reference range belongs to
    * @type {string}
-   * @memberof RegisterDto
+   * @memberof ReferenceRangeResponseDto
    */
-  username: string;
+  scenarioId: string;
   /**
-   *
-   * @type {string}
-   * @memberof RegisterDto
+   * The GTO solution range data
+   * @type {RangeResponseDto}
+   * @memberof ReferenceRangeResponseDto
    */
-  password: string;
+  rangeData: RangeResponseDto;
+  /**
+   * The solver used to generate this range
+   * @type {string}
+   * @memberof ReferenceRangeResponseDto
+   */
+  solver: string;
+  /**
+   * The version of the solver
+   * @type {string}
+   * @memberof ReferenceRangeResponseDto
+   */
+  solverVersion: string;
+  /**
+   * When this range was solved
+   * @type {string}
+   * @memberof ReferenceRangeResponseDto
+   */
+  solveDate: string;
+  /**
+   * Solver parameters used
+   * @type {SolveParametersDto}
+   * @memberof ReferenceRangeResponseDto
+   */
+  solveParameters?: SolveParametersDto;
+  /**
+   * Exploitability score (Nash distance)
+   * @type {number}
+   * @memberof ReferenceRangeResponseDto
+   */
+  exploitability?: number;
+  /**
+   * Whether this range has been manually verified
+   * @type {boolean}
+   * @memberof ReferenceRangeResponseDto
+   */
+  verified: boolean;
+  /**
+   * When this reference range was created
+   * @type {string}
+   * @memberof ReferenceRangeResponseDto
+   */
+  createdAt: string;
+  /**
+   * When this reference range was last updated
+   * @type {string}
+   * @memberof ReferenceRangeResponseDto
+   */
+  updatedAt: string;
 }
 /**
  *
@@ -464,12 +501,6 @@ export interface ResetPwdDto {
    * @memberof ResetPwdDto
    */
   password: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ResetPwdDto
-   */
-  token: string;
 }
 /**
  *
@@ -544,7 +575,13 @@ export interface ScenarioResponseDto {
    */
   previousActions?: Array<PreviousActionDto>;
   /**
-   * Board texture description (for post-flop scenarios, post-MVP)
+   * Board cards in format \"As Kh 7d\" (3 cards for flop, 4 for turn, 5 for river). Present for post-flop scenarios.
+   * @type {string}
+   * @memberof ScenarioResponseDto
+   */
+  boardCards?: string;
+  /**
+   * Board texture description. Required for post-flop scenarios.
    * @type {string}
    * @memberof ScenarioResponseDto
    */
@@ -620,6 +657,9 @@ export const ScenarioResponseDtoVsPositionEnum = {
 export type ScenarioResponseDtoVsPositionEnum =
   typeof ScenarioResponseDtoVsPositionEnum[keyof typeof ScenarioResponseDtoVsPositionEnum];
 export const ScenarioResponseDtoActionTypeEnum = {
+  Cbet: 'cbet',
+  VsCbetCall: 'vs_cbet_call',
+  VsCbetRaise: 'vs_cbet_raise',
   Open: 'open',
   VsOpenCall: 'vs_open_call',
   VsOpen3bet: 'vs_open_3bet',
@@ -662,15 +702,27 @@ export type ScenarioResponseDtoCategoryEnum =
 /**
  *
  * @export
- * @interface TokenDto
+ * @interface SolveParametersDto
  */
-export interface TokenDto {
+export interface SolveParametersDto {
   /**
-   *
-   * @type {string}
-   * @memberof TokenDto
+   * Number of solver iterations
+   * @type {number}
+   * @memberof SolveParametersDto
    */
-  token: string;
+  iterations: number;
+  /**
+   * Solver accuracy threshold
+   * @type {string}
+   * @memberof SolveParametersDto
+   */
+  accuracy: string;
+  /**
+   * Rake structure (optional)
+   * @type {string}
+   * @memberof SolveParametersDto
+   */
+  rakeStructure?: string;
 }
 /**
  *
@@ -727,12 +779,6 @@ export interface UserEntity {
    * @memberof UserEntity
    */
   files: Array<FileEntity>;
-  /**
-   *
-   * @type {string}
-   * @memberof UserEntity
-   */
-  uuid: string;
 }
 
 /**
@@ -743,16 +789,13 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
   return {
     /**
      *
-     * @param {LoginDto} loginDto Use username and password for authentication and return user
+     * @param {object} body Use username and password for authentication and return user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    login: async (
-      loginDto: LoginDto,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'loginDto' is not null or undefined
-      assertParamExists('login', 'loginDto', loginDto);
+    login: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'body' is not null or undefined
+      assertParamExists('login', 'body', body);
       const localVarPath = `/auth/login`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -775,7 +818,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        loginDto,
+        body,
         localVarRequestOptions,
         configuration,
       );
@@ -849,16 +892,16 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
     },
     /**
      *
-     * @param {EmailDto} emailDto Resend email verification link
+     * @param {object} body Resend email verification link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     resendVerificationEmail: async (
-      emailDto: EmailDto,
+      body: object,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'emailDto' is not null or undefined
-      assertParamExists('resendVerificationEmail', 'emailDto', emailDto);
+      // verify required parameter 'body' is not null or undefined
+      assertParamExists('resendVerificationEmail', 'body', body);
       const localVarPath = `/auth/resend-verification`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -881,7 +924,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        emailDto,
+        body,
         localVarRequestOptions,
         configuration,
       );
@@ -893,16 +936,16 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
     },
     /**
      *
-     * @param {EmailDto} emailDto Send email with reset password link
+     * @param {object} body Send email with reset password link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     sendResetEmail: async (
-      emailDto: EmailDto,
+      body: object,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'emailDto' is not null or undefined
-      assertParamExists('sendResetEmail', 'emailDto', emailDto);
+      // verify required parameter 'body' is not null or undefined
+      assertParamExists('sendResetEmail', 'body', body);
       const localVarPath = `/auth/reset`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -925,7 +968,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        emailDto,
+        body,
         localVarRequestOptions,
         configuration,
       );
@@ -947,15 +990,15 @@ export const AuthApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {LoginDto} loginDto Use username and password for authentication and return user
+     * @param {object} body Use username and password for authentication and return user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async login(
-      loginDto: LoginDto,
+      body: object,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserEntity>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.login(loginDto, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.login(body, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['AuthApi.login']?.[localVarOperationServerIndex]?.url;
@@ -1009,16 +1052,16 @@ export const AuthApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {EmailDto} emailDto Resend email verification link
+     * @param {object} body Resend email verification link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async resendVerificationEmail(
-      emailDto: EmailDto,
+      body: object,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.resendVerificationEmail(
-        emailDto,
+        body,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -1034,15 +1077,15 @@ export const AuthApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {EmailDto} emailDto Send email with reset password link
+     * @param {object} body Send email with reset password link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async sendResetEmail(
-      emailDto: EmailDto,
+      body: object,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.sendResetEmail(emailDto, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.sendResetEmail(body, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['AuthApi.sendResetEmail']?.[localVarOperationServerIndex]?.url;
@@ -1070,12 +1113,12 @@ export const AuthApiFactory = function (
   return {
     /**
      *
-     * @param {LoginDto} loginDto Use username and password for authentication and return user
+     * @param {object} body Use username and password for authentication and return user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    login(loginDto: LoginDto, options?: RawAxiosRequestConfig): AxiosPromise<UserEntity> {
-      return localVarFp.login(loginDto, options).then((request) => request(axios, basePath));
+    login(body: object, options?: RawAxiosRequestConfig): AxiosPromise<UserEntity> {
+      return localVarFp.login(body, options).then((request) => request(axios, basePath));
     },
     /**
      *
@@ -1095,28 +1138,23 @@ export const AuthApiFactory = function (
     },
     /**
      *
-     * @param {EmailDto} emailDto Resend email verification link
+     * @param {object} body Resend email verification link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    resendVerificationEmail(
-      emailDto: EmailDto,
-      options?: RawAxiosRequestConfig,
-    ): AxiosPromise<void> {
+    resendVerificationEmail(body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
       return localVarFp
-        .resendVerificationEmail(emailDto, options)
+        .resendVerificationEmail(body, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {EmailDto} emailDto Send email with reset password link
+     * @param {object} body Send email with reset password link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    sendResetEmail(emailDto: EmailDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-      return localVarFp
-        .sendResetEmail(emailDto, options)
-        .then((request) => request(axios, basePath));
+    sendResetEmail(body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+      return localVarFp.sendResetEmail(body, options).then((request) => request(axios, basePath));
     },
   };
 };
@@ -1130,14 +1168,14 @@ export const AuthApiFactory = function (
 export class AuthApi extends BaseAPI {
   /**
    *
-   * @param {LoginDto} loginDto Use username and password for authentication and return user
+   * @param {object} body Use username and password for authentication and return user
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AuthApi
    */
-  public login(loginDto: LoginDto, options?: RawAxiosRequestConfig) {
+  public login(body: object, options?: RawAxiosRequestConfig) {
     return AuthApiFp(this.configuration)
-      .login(loginDto, options)
+      .login(body, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -1167,27 +1205,27 @@ export class AuthApi extends BaseAPI {
 
   /**
    *
-   * @param {EmailDto} emailDto Resend email verification link
+   * @param {object} body Resend email verification link
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AuthApi
    */
-  public resendVerificationEmail(emailDto: EmailDto, options?: RawAxiosRequestConfig) {
+  public resendVerificationEmail(body: object, options?: RawAxiosRequestConfig) {
     return AuthApiFp(this.configuration)
-      .resendVerificationEmail(emailDto, options)
+      .resendVerificationEmail(body, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @param {EmailDto} emailDto Send email with reset password link
+   * @param {object} body Send email with reset password link
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AuthApi
    */
-  public sendResetEmail(emailDto: EmailDto, options?: RawAxiosRequestConfig) {
+  public sendResetEmail(body: object, options?: RawAxiosRequestConfig) {
     return AuthApiFp(this.configuration)
-      .sendResetEmail(emailDto, options)
+      .sendResetEmail(body, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -2302,6 +2340,325 @@ export class RangesApi extends BaseAPI {
 }
 
 /**
+ * ReferenceRangesApi - axios parameter creator
+ * @export
+ */
+export const ReferenceRangesApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     * Returns the GTO-solved reference range for a specific scenario. This is a public endpoint (no authentication required) as reference ranges are read-only GTO solutions. Supports both preflop and post-flop scenarios.
+     * @summary Get reference range for a scenario
+     * @param {string} scenarioId The ID of the scenario
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getByScenarioId: async (
+      scenarioId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'scenarioId' is not null or undefined
+      assertParamExists('getByScenarioId', 'scenarioId', scenarioId);
+      const localVarPath = `/reference-ranges/scenario/{scenarioId}`.replace(
+        `{${'scenarioId'}}`,
+        encodeURIComponent(String(scenarioId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Batch import: solves and imports reference ranges for all scenarios in the database. Uses TexasSolver to compute GTO solutions. Supports both preflop and post-flop scenarios. Requires authentication.
+     * @summary Import reference ranges for all scenarios
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    importAllScenarios: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/reference-ranges/import-all`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Solves and imports a reference range for a specific scenario. Uses TexasSolver to compute GTO solution. Supports both preflop and post-flop scenarios. Requires authentication.
+     * @summary Import reference range for a scenario
+     * @param {string} scenarioId The ID of the scenario to import
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    importForScenario: async (
+      scenarioId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'scenarioId' is not null or undefined
+      assertParamExists('importForScenario', 'scenarioId', scenarioId);
+      const localVarPath = `/reference-ranges/scenario/{scenarioId}/import`.replace(
+        `{${'scenarioId'}}`,
+        encodeURIComponent(String(scenarioId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * ReferenceRangesApi - functional programming interface
+ * @export
+ */
+export const ReferenceRangesApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ReferenceRangesApiAxiosParamCreator(configuration);
+  return {
+    /**
+     * Returns the GTO-solved reference range for a specific scenario. This is a public endpoint (no authentication required) as reference ranges are read-only GTO solutions. Supports both preflop and post-flop scenarios.
+     * @summary Get reference range for a scenario
+     * @param {string} scenarioId The ID of the scenario
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getByScenarioId(
+      scenarioId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ReferenceRangeResponseDto>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getByScenarioId(
+        scenarioId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ReferenceRangesApi.getByScenarioId']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Batch import: solves and imports reference ranges for all scenarios in the database. Uses TexasSolver to compute GTO solutions. Supports both preflop and post-flop scenarios. Requires authentication.
+     * @summary Import reference ranges for all scenarios
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async importAllScenarios(
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ReferenceRangeResponseDto>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.importAllScenarios(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ReferenceRangesApi.importAllScenarios']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Solves and imports a reference range for a specific scenario. Uses TexasSolver to compute GTO solution. Supports both preflop and post-flop scenarios. Requires authentication.
+     * @summary Import reference range for a scenario
+     * @param {string} scenarioId The ID of the scenario to import
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async importForScenario(
+      scenarioId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ReferenceRangeResponseDto>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.importForScenario(
+        scenarioId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ReferenceRangesApi.importForScenario']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * ReferenceRangesApi - factory interface
+ * @export
+ */
+export const ReferenceRangesApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance,
+) {
+  const localVarFp = ReferenceRangesApiFp(configuration);
+  return {
+    /**
+     * Returns the GTO-solved reference range for a specific scenario. This is a public endpoint (no authentication required) as reference ranges are read-only GTO solutions. Supports both preflop and post-flop scenarios.
+     * @summary Get reference range for a scenario
+     * @param {string} scenarioId The ID of the scenario
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getByScenarioId(
+      scenarioId: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ReferenceRangeResponseDto> {
+      return localVarFp
+        .getByScenarioId(scenarioId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Batch import: solves and imports reference ranges for all scenarios in the database. Uses TexasSolver to compute GTO solutions. Supports both preflop and post-flop scenarios. Requires authentication.
+     * @summary Import reference ranges for all scenarios
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    importAllScenarios(
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<Array<ReferenceRangeResponseDto>> {
+      return localVarFp.importAllScenarios(options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Solves and imports a reference range for a specific scenario. Uses TexasSolver to compute GTO solution. Supports both preflop and post-flop scenarios. Requires authentication.
+     * @summary Import reference range for a scenario
+     * @param {string} scenarioId The ID of the scenario to import
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    importForScenario(
+      scenarioId: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ReferenceRangeResponseDto> {
+      return localVarFp
+        .importForScenario(scenarioId, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * ReferenceRangesApi - object-oriented interface
+ * @export
+ * @class ReferenceRangesApi
+ * @extends {BaseAPI}
+ */
+export class ReferenceRangesApi extends BaseAPI {
+  /**
+   * Returns the GTO-solved reference range for a specific scenario. This is a public endpoint (no authentication required) as reference ranges are read-only GTO solutions. Supports both preflop and post-flop scenarios.
+   * @summary Get reference range for a scenario
+   * @param {string} scenarioId The ID of the scenario
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ReferenceRangesApi
+   */
+  public getByScenarioId(scenarioId: string, options?: RawAxiosRequestConfig) {
+    return ReferenceRangesApiFp(this.configuration)
+      .getByScenarioId(scenarioId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Batch import: solves and imports reference ranges for all scenarios in the database. Uses TexasSolver to compute GTO solutions. Supports both preflop and post-flop scenarios. Requires authentication.
+   * @summary Import reference ranges for all scenarios
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ReferenceRangesApi
+   */
+  public importAllScenarios(options?: RawAxiosRequestConfig) {
+    return ReferenceRangesApiFp(this.configuration)
+      .importAllScenarios(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Solves and imports a reference range for a specific scenario. Uses TexasSolver to compute GTO solution. Supports both preflop and post-flop scenarios. Requires authentication.
+   * @summary Import reference range for a scenario
+   * @param {string} scenarioId The ID of the scenario to import
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ReferenceRangesApi
+   */
+  public importForScenario(scenarioId: string, options?: RawAxiosRequestConfig) {
+    return ReferenceRangesApiFp(this.configuration)
+      .importForScenario(scenarioId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
  * ScenariosApi - axios parameter creator
  * @export
  */
@@ -2794,16 +3151,13 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
   return {
     /**
      *
-     * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
+     * @param {object} body Confirm email by decoding token and updating user in DB
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    confirm: async (
-      tokenDto: TokenDto,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'tokenDto' is not null or undefined
-      assertParamExists('confirm', 'tokenDto', tokenDto);
+    confirm: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'body' is not null or undefined
+      assertParamExists('confirm', 'body', body);
       const localVarPath = `/users/confirm`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2826,7 +3180,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        tokenDto,
+        body,
         localVarRequestOptions,
         configuration,
       );
@@ -2838,16 +3192,13 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
-     * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
+     * @param {object} body Create user from payload, send verification email and return created user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUser: async (
-      registerDto: RegisterDto,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'registerDto' is not null or undefined
-      assertParamExists('createUser', 'registerDto', registerDto);
+    createUser: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'body' is not null or undefined
+      assertParamExists('createUser', 'body', body);
       const localVarPath = `/users/create`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2870,7 +3221,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        registerDto,
+        body,
         localVarRequestOptions,
         configuration,
       );
@@ -3066,15 +3417,15 @@ export const UsersApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
+     * @param {object} body Confirm email by decoding token and updating user in DB
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async confirm(
-      tokenDto: TokenDto,
+      body: object,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.confirm(tokenDto, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.confirm(body, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['UsersApi.confirm']?.[localVarOperationServerIndex]?.url;
@@ -3088,15 +3439,15 @@ export const UsersApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
+     * @param {object} body Create user from payload, send verification email and return created user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createUser(
-      registerDto: RegisterDto,
+      body: object,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserEntity>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(registerDto, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(body, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['UsersApi.createUser']?.[localVarOperationServerIndex]?.url;
@@ -3228,26 +3579,21 @@ export const UsersApiFactory = function (
   return {
     /**
      *
-     * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
+     * @param {object} body Confirm email by decoding token and updating user in DB
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    confirm(tokenDto: TokenDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-      return localVarFp.confirm(tokenDto, options).then((request) => request(axios, basePath));
+    confirm(body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+      return localVarFp.confirm(body, options).then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
+     * @param {object} body Create user from payload, send verification email and return created user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUser(
-      registerDto: RegisterDto,
-      options?: RawAxiosRequestConfig,
-    ): AxiosPromise<UserEntity> {
-      return localVarFp
-        .createUser(registerDto, options)
-        .then((request) => request(axios, basePath));
+    createUser(body: object, options?: RawAxiosRequestConfig): AxiosPromise<UserEntity> {
+      return localVarFp.createUser(body, options).then((request) => request(axios, basePath));
     },
     /**
      *
@@ -3303,27 +3649,27 @@ export const UsersApiFactory = function (
 export class UsersApi extends BaseAPI {
   /**
    *
-   * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
+   * @param {object} body Confirm email by decoding token and updating user in DB
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UsersApi
    */
-  public confirm(tokenDto: TokenDto, options?: RawAxiosRequestConfig) {
+  public confirm(body: object, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
-      .confirm(tokenDto, options)
+      .confirm(body, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
+   * @param {object} body Create user from payload, send verification email and return created user
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UsersApi
    */
-  public createUser(registerDto: RegisterDto, options?: RawAxiosRequestConfig) {
+  public createUser(body: object, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
-      .createUser(registerDto, options)
+      .createUser(body, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -10,15 +10,15 @@ const meta: Meta<typeof Action> = {
   argTypes: {
     initialAction: {
       control: 'object',
-      description: 'The action object containing type and percentage.',
+      description: 'The action object containing type and frequency.',
     },
     onChange: {
       action: 'changed',
-      description: 'Callback function when the percentage is changed.',
+      description: 'Callback function when the frequency is changed.',
     },
   },
   args: {
-    initialAction: { type: ActionDtoTypeEnum.Call, percentage: 0.5 },
+    initialAction: { type: ActionDtoTypeEnum.Call, frequency: 50 },
     onChange: action('changed'),
   },
   decorators: [
@@ -36,21 +36,21 @@ type Story = StoryObj<typeof Action>;
 
 export const Default: Story = {
   args: {
-    initialAction: { type: ActionDtoTypeEnum.Call, percentage: 50 },
+    initialAction: { type: ActionDtoTypeEnum.Call, frequency: 50 },
     onChange: action('changed'),
   },
 };
 
 export const FoldAction: Story = {
   args: {
-    initialAction: { type: ActionDtoTypeEnum.Fold, percentage: 30 },
+    initialAction: { type: ActionDtoTypeEnum.Fold, frequency: 30 },
     onChange: action('changed'),
   },
 };
 
 export const RaiseAction: Story = {
   args: {
-    initialAction: { type: ActionDtoTypeEnum.Raise, percentage: 70 },
+    initialAction: { type: ActionDtoTypeEnum.Raise, frequency: 70 },
     onChange: action('changed'),
   },
 };

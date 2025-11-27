@@ -11,24 +11,24 @@ const mockRange: Partial<RangeResponseDto> = {
   userId: 'user-123',
   handsRange: [
     {
-      rangeFraction: 0.5,
+      carryoverFrequency: 50,
       label: 'RAISE',
-      actions: [{ type: 'RAISE' as any, percentage: 50 }],
+      actions: [{ type: 'RAISE' as any, frequency: 50 }],
     },
     {
-      rangeFraction: 0.3,
+      carryoverFrequency: 30,
       label: 'CALL',
-      actions: [{ type: 'CALL' as any, percentage: 30 }],
+      actions: [{ type: 'CALL' as any, frequency: 30 }],
     },
     {
-      rangeFraction: 0.2,
+      carryoverFrequency: 20,
       label: 'FOLD',
-      actions: [{ type: 'FOLD' as any, percentage: 20 }],
+      actions: [{ type: 'FOLD' as any, frequency: 20 }],
     },
     {
-      rangeFraction: 0.1,
+      carryoverFrequency: 10,
       label: 'CHECK',
-      actions: [{ type: 'CHECK' as any, percentage: 10 }],
+      actions: [{ type: 'CHECK' as any, frequency: 10 }],
     },
   ],
 };

@@ -23,11 +23,11 @@ type Story = StoryObj<typeof DummyCell>;
 export const Cell: Story = {
   args: {
     label: 'AA',
-    rangeFraction: 0.4,
+    carryoverFrequency: 40,
     actions: [
-      { type: ActionDtoTypeEnum.Fold, percentage: 0.5 },
-      { type: ActionDtoTypeEnum.Call, percentage: 0.3 },
-      { type: ActionDtoTypeEnum.Raise, percentage: 0.2 },
+      { type: ActionDtoTypeEnum.Fold, frequency: 50 },
+      { type: ActionDtoTypeEnum.Call, frequency: 30 },
+      { type: ActionDtoTypeEnum.Raise, frequency: 20 },
     ],
   },
 };

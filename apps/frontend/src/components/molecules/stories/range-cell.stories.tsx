@@ -7,8 +7,8 @@ const meta: Meta<typeof RangeCellComp> = {
   title: 'Molecules/RangeCell',
   component: RangeCellComp,
   argTypes: {
-    rangeFraction: {
-      description: 'Effective range of the cell',
+    carryoverFrequency: {
+      description: 'Carryover frequency from previous street (0-100)',
     },
     label: {
       description: 'Hand for which the range is being displayed',
@@ -25,20 +25,20 @@ type Story = StoryObj<typeof RangeCellComp>;
 
 export const Default: Story = {
   args: {
-    rangeFraction: 0.4,
+    carryoverFrequency: 40,
     label: 'AA',
     actions: [
       {
         type: ActionDtoTypeEnum.Fold,
-        percentage: 0.5,
+        frequency: 50,
       },
       {
         type: ActionDtoTypeEnum.Call,
-        percentage: 0.3,
+        frequency: 30,
       },
       {
         type: ActionDtoTypeEnum.Raise,
-        percentage: 0.2,
+        frequency: 20,
       },
     ],
   },

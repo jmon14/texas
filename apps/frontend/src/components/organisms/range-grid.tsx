@@ -58,10 +58,10 @@ const RangeGrid = ({ range, onCellClick, onCellsSelect }: RangeGridProps) => {
         userSelect: 'none', // Prevent text selection during drag
       }}
     >
-      {range.handsRange?.map(({ rangeFraction, actions, label }, index) => (
+      {range.handsRange?.map(({ carryoverFrequency, actions, label }, index) => (
         <RangeCell
           key={index}
-          rangeFraction={rangeFraction}
+          carryoverFrequency={carryoverFrequency}
           actions={actions}
           label={label}
           onClick={() => onCellClick?.(index)}

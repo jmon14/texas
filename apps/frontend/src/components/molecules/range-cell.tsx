@@ -61,7 +61,7 @@ const RangeCell = ({
                     sx={{ backgroundColor: ActionColor[action.type], width: '5px', height: '5px' }}
                   />
                   <Box component="span">
-                    {action.type} {action.percentage}%
+                    {action.type} {action.frequency}%
                   </Box>
                 </Box>
               ))}

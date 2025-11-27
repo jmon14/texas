@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.7] - 2025-01-XX
+
+### Fixed
+
+#### Frontend-Backend API Field Name Alignment
+- **Range Hand Frequency Field**: Fixed mismatch between frontend and backend API
+  - Renamed `rangeFraction` (0-1) to `carryoverFrequency` (0-100) across all frontend components
+  - Updated `RangeGrid`, `RangeCell`, and `Cell` components to use `carryoverFrequency`
+  - Fixed conversion logic in `Cell` component to properly display frequency percentages
+  - Updated all mock data, tests, and Storybook stories to use `carryoverFrequency`
+- **Action Frequency Field**: Fixed mismatch between frontend and backend API
+  - Renamed `percentage` to `frequency` (0-100) for action values across all frontend components
+  - Updated `Action`, `ActionList`, `RangeCell`, and `Cell` components to use `frequency`
+  - Updated all mock data, tests, and Storybook stories to use `frequency`
+  - Updated Postman collection examples to use `frequency` instead of `percentage`
+- **Documentation Updates**: Updated technical documentation to reflect field name changes
+  - Updated `texas-solver-integration.md` to use `frequency` instead of `percentage`
+  - Ensured all API examples and documentation are consistent with backend schema
+
+### Changed
+- Updated backend `package.json` version: `2.2.6` → `2.2.7`
+- Updated frontend `package.json` version: `2.2.2` → `2.2.3`
+- Updated root `package.json` version: `2.2.2` → `2.2.3`
+- Regenerated frontend API client to include latest reference range endpoints
+
 ## [2.2.6] - 2025-01-XX
 
 ### Added

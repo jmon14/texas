@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Quickly review data and obtain insights from it.",
   "scripts": {
     "build": "webpack --env ENVIRONMENT=production",

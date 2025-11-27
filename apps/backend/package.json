@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "Backend API for Texas Poker Application",
   "author": "Jorge Montero",
   "private": true,

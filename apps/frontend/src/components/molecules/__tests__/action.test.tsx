@@ -13,7 +13,7 @@ const renderWithTheme = (component: React.ReactElement) => {
 describe('ActionComponent', () => {
   const mockAction: ActionDto = {
     type: 'RAISE' as any,
-    percentage: 50,
+    frequency: 50,
   };
 
   it('should render action type', () => {
@@ -23,7 +23,7 @@ describe('ActionComponent', () => {
     expect(screen.getByText('RAISE')).toBeInTheDocument();
   });
 
-  it('should render initial percentage', () => {
+  it('should render initial frequency', () => {
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
 
@@ -31,7 +31,7 @@ describe('ActionComponent', () => {
     expect(input).toHaveValue('50');
   });
 
-  it('should update percentage value when user types', async () => {
+  it('should update frequency value when user types', async () => {
     const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
@@ -43,7 +43,7 @@ describe('ActionComponent', () => {
     expect(input).toHaveValue('75');
   });
 
-  it('should call onChange with updated percentage (debounced)', async () => {
+  it('should call onChange with updated frequency (debounced)', async () => {
     const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
@@ -57,14 +57,14 @@ describe('ActionComponent', () => {
       () => {
         expect(onChange).toHaveBeenCalledWith({
           type: 'RAISE',
-          percentage: 80,
+          frequency: 80,
         });
       },
       { timeout: 500 },
     );
   });
 
-  it('should clamp percentage to maximum 100', async () => {
+  it('should clamp frequency to maximum 100', async () => {
     const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
@@ -82,7 +82,7 @@ describe('ActionComponent', () => {
     );
   });
 
-  it('should clamp percentage to minimum 0', async () => {
+  it('should clamp frequency to minimum 0', async () => {
     const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
@@ -101,7 +101,7 @@ describe('ActionComponent', () => {
   });
 
   it('should handle different action types', () => {
-    const callAction: ActionDto = { type: 'CALL' as any, percentage: 30 };
+    const callAction: ActionDto = { type: 'CALL' as any, frequency: 30 };
     const onChange = jest.fn();
 
     renderWithTheme(<ActionComponent initialAction={callAction} onChange={onChange} />);
@@ -120,7 +120,7 @@ describe('ActionComponent', () => {
     expect(screen.getByRole('textbox')).toHaveValue('50');
 
     // Update with new action
-    const newAction: ActionDto = { type: 'FOLD' as any, percentage: 25 };
+    const newAction: ActionDto = { type: 'FOLD' as any, frequency: 25 };
     rerender(
       <ThemeProvider theme={theme}>
         <ActionComponent initialAction={newAction} onChange={onChange} />
@@ -131,7 +131,7 @@ describe('ActionComponent', () => {
     expect(screen.getByRole('textbox')).toHaveValue('25');
   });
 
-  it('should handle invalid percentage input', async () => {
+  it('should handle invalid frequency input', async () => {
     const userInteraction = user.setup();
     const onChange = jest.fn();
     renderWithTheme(<ActionComponent initialAction={mockAction} onChange={onChange} />);
@@ -143,12 +143,12 @@ describe('ActionComponent', () => {
     // Should still allow typing
     expect(input).toHaveValue('abc');
 
-    // Should call onChange with 0 percentage
+    // Should call onChange with 0 frequency
     await waitFor(
       () => {
         expect(onChange).toHaveBeenCalledWith({
           type: 'RAISE',
-          percentage: 0,
+          frequency: 0,
         });
       },
       { timeout: 500 },

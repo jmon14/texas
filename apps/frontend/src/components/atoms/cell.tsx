@@ -21,11 +21,10 @@ export type CellProps = React.DOMAttributes<Element> &
   };
 
 const DummyCell = forwardRef(
-  (
-    { rangeFraction: range, actions, label, onMouseOver, onMouseLeave, onClick }: CellProps,
-    ref,
-  ) => {
+  ({ carryoverFrequency, actions, label, onMouseOver, onMouseLeave, onClick }: CellProps, ref) => {
     const theme = useTheme();
+    // Convert carryoverFrequency (0-100) to height percentage (0-1)
+    const heightPercentage = carryoverFrequency / 100;
 
     return (
       <Cell onMouseOver={onMouseOver} onMouseLeave={onMouseLeave} onClick={onClick} ref={ref}>
@@ -33,7 +32,7 @@ const DummyCell = forwardRef(
         <Box
           sx={{
             display: 'flex',
-            height: range,
+            height: heightPercentage,
             width: '100%',
             bottom: '0px',
             position: 'absolute',
@@ -45,7 +44,7 @@ const DummyCell = forwardRef(
               key={index}
               sx={{
                 height: '100%',
-                width: `${action.percentage * 100}%`,
+                width: `${action.frequency}%`,
                 backgroundColor: ActionColor[action.type],
               }}
             />
