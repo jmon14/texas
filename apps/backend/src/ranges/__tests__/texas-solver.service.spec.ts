@@ -528,9 +528,9 @@ describe('TexasSolverService', () => {
       expect(result).toHaveProperty('outputPath');
       const configContent = mockWriteFile.mock.calls[0][1];
       expect(configContent).toContain('set_thread_num 8');
-      // Production defaults: accuracy 0.5, iterations 200
+      // Production defaults: accuracy 0.5, iterations 100
       expect(configContent).toContain('set_accuracy 0.5');
-      expect(configContent).toContain('set_max_iteration 200');
+      expect(configContent).toContain('set_max_iteration 100');
       expect(configContent).toContain('set_print_interval 10');
       expect(configContent).toContain('set_use_isomorphism 1');
     });
