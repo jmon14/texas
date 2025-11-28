@@ -778,7 +778,7 @@ describe('TexasSolverService', () => {
           rangeOop: 'AA,KK',
           playerPosition: PlayerPosition.IP,
         }),
-      ).rejects.toThrow('Output file not found');
+      ).rejects.toThrow('Solver execution failed');
     });
 
     it('should execute solver with correct parameters', async () => {
