@@ -373,7 +373,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should set dump rounds for flop (3 cards)', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
@@ -386,7 +386,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should set dump rounds for turn (4 cards)', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
@@ -399,7 +399,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should set dump rounds for river (5 cards)', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
@@ -412,7 +412,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should not set dump rounds for preflop', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
@@ -425,7 +425,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should set bet sizes for flop, turn, and river when board has 3 cards (flop)', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
@@ -452,7 +452,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should set bet sizes for turn and river when board has 4 cards (turn)', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
@@ -477,7 +477,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should set bet sizes for river only when board has 5 cards (river)', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
@@ -499,7 +499,7 @@ describe('TexasSolverService', () => {
     });
 
     it('should not set post-flop bet sizes for preflop', async () => {
-      const result = await service['generateConfigFile']({
+      await service['generateConfigFile']({
         effectiveStack: 100,
         pot: 1.5,
         rangeIp: 'AA,KK',
