@@ -13,7 +13,7 @@ describe('ReferenceRangesController', () => {
 
   const mockScenarioId = '507f1f77bcf86cd799439011';
 
-  const mockReferenceRange = {
+  const getMockReferenceRangeObject = () => ({
     _id: '507f1f77bcf86cd799439012',
     scenarioId: mockScenarioId,
     rangeData: {
@@ -37,31 +37,14 @@ describe('ReferenceRangesController', () => {
     verified: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-    toObject: jest.fn().mockReturnValue({
-      _id: '507f1f77bcf86cd799439012',
-      scenarioId: mockScenarioId,
-      rangeData: {
-        name: 'Test Range',
-        userId: 'system',
-        handsRange: [
-          {
-            label: 'AA',
-            carryoverFrequency: 100,
-            actions: [{ type: ActionType.RAISE, frequency: 100 }],
-          },
-        ],
-      },
-      solver: 'TexasSolver',
-      solverVersion: 'v1.0.1',
-      solveDate: expect.any(Date),
-      solveParameters: {
-        iterations: 100,
-        accuracy: '0.5',
-      },
-      verified: false,
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-    }),
+  });
+
+  const getMockReferenceRange = () => {
+    const mockObject = getMockReferenceRangeObject();
+    return {
+      ...mockObject,
+      toObject: jest.fn().mockReturnValue(mockObject),
+    };
   };
 
   beforeEach(async () => {
@@ -93,7 +76,8 @@ describe('ReferenceRangesController', () => {
 
   describe('getByScenarioId', () => {
     it('should return reference range when found', async () => {
-      mockReferenceRangesService.findByScenarioId.mockResolvedValue(mockReferenceRange as any);
+      const mockRange = getMockReferenceRange();
+      mockReferenceRangesService.findByScenarioId.mockResolvedValue(mockRange as any);
 
       const result = await controller.getByScenarioId(mockScenarioId);
 
@@ -113,9 +97,8 @@ describe('ReferenceRangesController', () => {
 
   describe('importForScenario', () => {
     it('should successfully import reference range', async () => {
-      mockReferenceRangesImportService.importForScenario.mockResolvedValue(
-        mockReferenceRange as any,
-      );
+      const mockRange = getMockReferenceRange();
+      mockReferenceRangesImportService.importForScenario.mockResolvedValue(mockRange as any);
 
       const result = await controller.importForScenario(mockScenarioId);
 
@@ -137,8 +120,19 @@ describe('ReferenceRangesController', () => {
 
   describe('importAllScenarios', () => {
     it('should successfully import all scenarios', async () => {
-      const mockRanges = [mockReferenceRange, { ...mockReferenceRange, _id: 'another-id' }];
-      mockReferenceRangesImportService.importAllScenarios.mockResolvedValue(mockRanges as any);
+      const mockRange1 = getMockReferenceRange();
+      const mockRange2Object = {
+        ...getMockReferenceRangeObject(),
+        _id: 'another-id',
+      };
+      const mockRange2 = {
+        ...mockRange2Object,
+        toObject: jest.fn().mockReturnValue(mockRange2Object),
+      };
+      mockReferenceRangesImportService.importAllScenarios.mockResolvedValue([
+        mockRange1,
+        mockRange2,
+      ] as any);
 
       const results = await controller.importAllScenarios();
 

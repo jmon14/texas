@@ -115,7 +115,7 @@ describe('ReferenceRangesImportService', () => {
         expect.objectContaining({
           name: mockFlopScenario.name,
           boardCards: mockFlopScenario.boardCards,
-          playerPosition: expect.any(Number),
+          playerPosition: expect.stringMatching(/^(ip|oop)$/),
         }),
       );
       expect(mockReferenceRangesService.createOrUpdate).toHaveBeenCalled();
@@ -147,8 +147,12 @@ describe('ReferenceRangesImportService', () => {
       await service.importForScenario(mockScenarioId);
 
       const solveCall = mockTexasSolverService.solveScenario.mock.calls[0][0];
-      // Effective stack should be capped (pot is ~6.5, max ratio is 10, so max stack is ~65)
-      expect(solveCall.effectiveStack).toBeLessThanOrEqual(65);
+      // Effective stack should be capped
+      // Preflop pot = 1.5 (blinds) + 2.5 (open) + 2.5 (call) = 6.5
+      // Flop pot = 6.5 + 2.0 (betSize) = 8.5, rounded to 9
+      // Max stack = 9 * 10 (MAX_STACK_TO_POT_RATIO) = 90
+      expect(solveCall.effectiveStack).toBeLessThanOrEqual(90);
+      expect(solveCall.effectiveStack).toBe(90);
     });
   });
 
