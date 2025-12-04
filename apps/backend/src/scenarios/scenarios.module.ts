@@ -6,6 +6,7 @@ import { ReferenceRangesService } from './reference-ranges.service';
 import { ReferenceRangesImportService } from './reference-ranges-import.service';
 import { StandardRangesService } from './standard-ranges.service';
 import { ReferenceRangesController } from './reference-ranges.controller';
+import { RangeComparisonService } from './range-comparison.service';
 import {
   Scenario,
   ScenarioSchema,
@@ -33,7 +34,13 @@ import { RangesModule } from '../ranges/ranges.module';
     ReferenceRangesService,
     ReferenceRangesImportService,
     StandardRangesService,
+    RangeComparisonService,
   ],
-  exports: [ScenariosService, ReferenceRangesService, ReferenceRangesImportService],
+  exports: [
+    ScenariosService,
+    ReferenceRangesService,
+    ReferenceRangesImportService,
+    RangeComparisonService,
+  ],
 })
 export class ScenariosModule {}

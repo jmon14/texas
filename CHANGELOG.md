@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Phase 3: Range Comparison Engine (Task 1)
+- **Range Comparison Service**: Core comparison algorithm for analyzing user ranges against GTO reference ranges
+  - Created `RangeComparisonService` with comprehensive comparison logic
+  - Compares user ranges to GTO reference ranges and categorizes hands into:
+    - **Correct**: Hands with matching actions and frequencies within threshold (≤5% difference)
+    - **Missing**: Hands in GTO range but not in user range
+    - **Extra**: Hands in user range but not in GTO range
+    - **Frequency Error**: Hands with action frequency differences exceeding threshold (>5%)
+  - Calculates accuracy score: `(correctHands / totalGtoHands) * 100`
+  - Handles mixed strategies (multiple actions with frequencies per hand)
+  - Generates detailed feedback with reasons for missing/extra hands
+  - Supports action type comparison (FOLD, CALL, RAISE, CHECK)
+- **Comparison Result Interfaces**: Type-safe interfaces for comparison results
+  - Created `ComparisonResult` interface with accuracy score and categorized hands
+  - Created `CorrectHand`, `MissingHand`, `ExtraHand`, `FrequencyErrorHand` interfaces
+  - Properly typed with Action arrays for user and GTO actions
+- **Range Comparison Constants**: Centralized constants for comparison logic
+  - Created `range-comparison.constants.ts` with `FREQUENCY_THRESHOLD` (5%)
+  - Follows project pattern of separate constants files
+- **Comprehensive Test Suite**: Full test coverage for comparison service
+  - 25 passing unit tests covering all comparison scenarios
+  - Tests for correct/missing/extra/frequency error detection
+  - Tests for accuracy score calculation and feedback generation
+  - Edge case tests (empty ranges, perfect match, action mismatches)
+- **Module Integration**: Integrated into ScenariosModule
+  - Added `RangeComparisonService` to ScenariosModule providers and exports
+  - Service ready for use by controllers and other services
+
 ## [2.2.7] - 2025-01-XX
 
 ### Fixed
