@@ -76,26 +76,49 @@ Instance size: variables.tf defaults to t3.micro; prod example uses t3.small. Us
 
 ### 2) Build and push images to ECR
 
-Images must exist in ECR before you deploy. CI (GitHub Actions) is set up for OIDC to push to ECR. Push your images tagged latest (or update tags in the server's .env later):
+**Automated (Recommended):** GitHub Actions automatically builds and pushes images to ECR when you push to the `production` branch. The workflow:
+- Detects changes in `apps/backend/` or `apps/frontend/`
+- Runs quality checks and tests
+- Builds Docker images tagged with both `github.sha` and `latest`
+- Pushes to ECR repositories (`texas-backend` and `texas-frontend`)
+- Automatically runs `deploy.sh` to deploy to EC2
+- Performs health checks after deployment
 
-- texas-backend:latest
-- texas-frontend:latest
+**Manual:** If you need to build and push manually:
+```bash
+# Build and push backend
+docker build -t <ecr-registry>/texas-backend:latest ./apps/backend
+docker push <ecr-registry>/texas-backend:latest
+
+# Build and push frontend
+docker build --build-arg REACT_APP_BACKEND_API_URL=https://www.allinrange.com/api \
+  -t <ecr-registry>/texas-frontend:latest ./apps/frontend
+docker push <ecr-registry>/texas-frontend:latest
+```
 
 ### 3) Run remote deployment
 
-The script uploads only infra config (compose + nginx) to S3, then uses AWS SSM to apply on the EC2 host, set .env (from SSM and provided values), obtain TLS certs, login to ECR, pull latest images, and start containers.
+**Automated:** GitHub Actions runs `deploy.sh` automatically after building images (when pushing to `production` branch).
 
-Before running, set the ECR registry URL (used by Compose images):
+**Manual:** To deploy manually, run the deployment script:
 
 ```bash
 export ECR_REGISTRY="<aws-account-id>.dkr.ecr.eu-central-1.amazonaws.com"
 ./infrastructure/deploy.sh
 ```
 
-Notes
-- The script expects the S3 bucket files.allinrange.com to exist (Terraform creates it).
-- It writes /home/ssm-user/texas/infrastructure/.env on the server with: ECR_REGISTRY and image tags.
-- If ECR_REGISTRY isn't set, image pulls will fail. Make sure it's exported when running the script.
+The script uploads infra config (compose + nginx) to S3, then uses AWS SSM to:
+- Apply config on the EC2 host
+- Set `.env` (from SSM and provided values)
+- Obtain TLS certs
+- Login to ECR
+- Pull latest images
+- Start containers
+
+Notes:
+- The script expects the S3 bucket `files.allinrange.com` to exist (Terraform creates it)
+- It writes `/home/ssm-user/texas/infrastructure/.env` on the server with `ECR_REGISTRY` and image tags
+- If `ECR_REGISTRY` isn't set, image pulls will fail. Make sure it's exported when running manually
 
 ### 4) TLS/SSL
 
@@ -134,16 +157,23 @@ mongodb+srv://username:password@cluster0.x9mmmer.mongodb.net/texas?retryWrites=t
 
 ## 🧰 Maintenance
 
-Infra updates
+### Infrastructure Updates
 ```bash
 cd infrastructure/aws
 terraform plan -var-file="environments/prod.tfvars"
 terraform apply -var-file="environments/prod.tfvars"
 ```
 
-App updates
-- Push new images to ECR (CI)
-- Re-run `./infrastructure/deploy.sh` to pull and restart containers
+### Application Updates
+
+**Automated (Recommended):** Push to `production` branch. GitHub Actions will:
+- Build and push new images to ECR
+- Automatically run `deploy.sh` to deploy to EC2
+- Perform health checks
+
+**Manual:** If you need to deploy manually:
+- Build and push images to ECR (see step 2 above)
+- Run `./infrastructure/deploy.sh` to pull and restart containers
 
 Troubleshooting
 - `docker ps`, `docker-compose -f infrastructure/docker-compose.prod.yml ps` on the server via SSM session

@@ -27,7 +27,7 @@ export async function getUserPreferences() {
       agentCoordination:
         'Use agent coordination for non-trivial tasks after Overmind approves starting work',
       agentProcess:
-        '1. plan_task_with_agents → 2. get_agent_context → 3. Adopt persona → 4. Execute → 5. track_agent_work',
+        '1. plan_task_with_agents → 2. get_agent_context → 3. Adopt persona → 4. Execute',
     },
     troubleshooting: {
       generalPattern:

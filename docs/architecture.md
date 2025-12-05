@@ -78,12 +78,19 @@ graph TB
   - File upload to AWS S3
   - Email notifications via AWS SES
   - Poker range CRUD operations and analysis
+  - Scenario-based poker learning system
+  - GTO range solving via TexasSolver integration
+  - Range comparison engine (user ranges vs GTO solutions)
   - User-specific range isolation
   - Complex range data structures with validation
 - **Databases**:
   - PostgreSQL (Supabase) with TypeORM for user/auth data
   - MongoDB Atlas with Mongoose for range data
 - **Authentication**: Passport.js with JWT strategy
+- **GTO Solver Integration**: TexasSolver (C++ poker solver) for computing optimal ranges
+  - Config file generation from scenario parameters
+  - Solver execution and JSON output parsing
+  - Support for preflop and postflop scenarios
 
 ### Data Layer
 
@@ -99,10 +106,14 @@ graph TB
 #### MongoDB (Range Database)
 
 - **Provider**: MongoDB Atlas (free tier)
-- **Purpose**: Poker range data storage
+- **Purpose**: Poker range data storage and scenario-based learning system
 - **Collections**:
-  - Ranges (poker hand ranges with actions)
-  - User-specific range isolation
+  - **Ranges**: User-created poker hand ranges with actions (fold, call, raise with frequencies)
+    - Structure: Array of `HandRange` objects, each containing a label, carryover frequency, and actions
+  - **Scenarios**: Poker learning scenarios (preflop/postflop, position, action type, stack depth)
+  - **ReferenceRanges**: GTO-solved ranges linked to scenarios (computed via TexasSolver)
+  - **UserRangeAttempts**: User practice attempts and comparison results against GTO solutions
+  - User-specific range isolation across all collections
 - **Integration**: Mongoose ODM in Backend service
 
 #### AWS S3 (File Storage)
@@ -150,6 +161,57 @@ sequenceDiagram
     Mongo-->>BE: Confirmation
     BE-->>FE: Range created
     FE-->>User: Updated UI
+```
+
+### Scenario-Based Learning Flow
+
+```mermaid
+sequenceDiagram
+    participant User as User
+    participant FE as Frontend
+    participant BE as Backend API
+    participant Mongo as MongoDB
+
+    Note over User,Mongo: Step 1: User selects a scenario
+    User->>FE: Select scenario
+    FE->>BE: GET /scenarios/:id
+    BE->>Mongo: Fetch scenario
+    Mongo-->>BE: Scenario data
+    BE-->>FE: Scenario details
+    FE-->>User: Display scenario
+    
+    Note over User,Mongo: Step 2: User creates their range
+    User->>FE: Create range for scenario
+    FE->>BE: POST /ranges (with scenario context)
+    BE->>Mongo: Store user range
+    Mongo-->>BE: Confirmation
+    BE-->>FE: Range created
+    FE-->>User: Range saved
+    
+    Note over User,Mongo: Step 3: Request GTO solution
+    User->>FE: Request GTO solution
+    FE->>BE: POST /reference-ranges/scenario/:id/import
+    BE->>Mongo: Check if reference range exists
+    alt Reference range not found
+        Note over BE: Uses TexasSolver<br/>to compute GTO
+        BE->>Mongo: Store reference range
+    else Reference range exists
+        BE->>Mongo: Fetch existing reference range
+        Mongo-->>BE: Reference range data
+    end
+    BE-->>FE: GTO solution
+    FE-->>User: Display GTO range
+    
+    Note over User,Mongo: Step 4: Compare user range vs GTO
+    User->>FE: Compare ranges
+    FE->>BE: POST /ranges/:id/compare
+    BE->>Mongo: Fetch user range
+    Mongo-->>BE: User range data
+    BE->>Mongo: Fetch reference range
+    Mongo-->>BE: Reference range data
+    BE->>BE: Calculate comparison metrics
+    BE-->>FE: Comparison results
+    FE-->>User: Display analysis
 ```
 
 ## 🏭 Deployment Architecture
@@ -205,6 +267,15 @@ For detailed deployment instructions, see [infrastructure/README.md](../infrastr
 - **URL versioning**: `/api/v1/` prefix where applicable
 - **Backward compatibility**: Maintain compatibility when possible
 - **Documentation**: OpenAPI/Swagger specifications
+
+### Main API Resources
+
+- **Authentication**: `/auth/*` - Login, refresh, logout, password reset
+- **Users**: `/users/*` - Registration, email confirmation, user files
+- **Files**: `/files/*` - File upload, retrieval, deletion
+- **Ranges**: `/ranges/*` - User-created poker ranges (CRUD + comparison)
+- **Scenarios**: `/scenarios/*` - Poker learning scenarios (preflop/postflop contexts)
+- **Reference Ranges**: `/reference-ranges/*` - GTO solutions computed via TexasSolver
 
 ## 🔄 State Management Patterns
 

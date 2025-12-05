@@ -4,15 +4,11 @@
   "mcpServers": {
     "texas-project": {
       "command": "node",
-      "args": ["./tools/texas-mcp-server/build/index.js"],
-      "env": {},
-      "disabled": false
+      "args": ["./tools/texas-mcp-server/build/index.js"]
     },
     "clickup": {
       "command": "node",
-      "args": ["./tools/clickup-mcp-server/build/index.js"],
-      "env": {},
-      "disabled": false
+      "args": ["./tools/clickup-mcp-server/build/index.js"]
     }
   }
 }

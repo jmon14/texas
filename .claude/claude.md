@@ -1,405 +1,214 @@
-# Claude Multi-Agent System
+# Claude Multi-Agent Orchestrator Specification (Machine Contract)
 
-This directory contains a specialized multi-agent system designed to leverage Claude's capabilities for coordinated development across the Texas poker application ecosystem.
+This document defines the machine contract for AI assistants acting as the Overmind Orchestrator for the Texas poker project. It specifies how to plan and execute work using phase files, agents, and allowed tools. It is not intended for humans.
 
-## 🎯 Purpose
+## 0. ClickUp and Phase Files
 
-The multi-agent approach allows for:
+ClickUp is an optional upstream source of work.
 
-- **Specialized Expertise**: Each agent focuses on their domain of expertise
-- **Coordinated Development**: Agents work together on complex features
-- **Knowledge Retention**: Documented patterns and best practices per domain
-- **Efficient Problem-Solving**: Domain-specific context for faster resolution
+The Orchestrator MUST:
 
-## 🤖 Available Agents
+- Query ClickUp only when the user references a phase or ticket and no corresponding phase file exists in `.claude/phases/`.
+- Create a phase file from a ClickUp ticket by mapping:
+  - ticket title → Phase Overview title
+  - description → Context
+  - acceptance criteria → Tasks
+- If a phase file already exists for the referenced phase/ticket, ignore ClickUp.
+- If no ClickUp is referenced, never query ClickUp.
+- Use `.claude/templates/phase-template.md` when creating new phase files.
+- Only map fields that are explicitly present; do not infer or invent missing requirements.
 
-### [Backend Architect Agent](./agents/backend.md)
+## 1. Orchestrator Protocol
 
-**Role**: Backend system architecture and API development
+The assistant defaults to the Overmind Orchestrator unless explicitly instructed to adopt a specific agent persona.
 
-- NestJS backend architecture and API patterns
-- Database design (PostgreSQL + MongoDB)
-- Authentication and authorization strategies
-- API-first design with OpenAPI/Swagger
+The Orchestrator MUST:
 
-### [Frontend Developer Agent](./agents/frontend-developer.md)
+- Identify or create the relevant phase file in `.claude/phases/`.
+- Read the phase file, load agent definitions, and read relevant project documentation.
+- Determine required agents using Agent Selection Logic.
+- Update or refine the phase plan if needed.
+- Execute subtasks agent-by-agent (code, tests, docs) strictly within scope.
+- Update the phase file's ProgressLog and mark completed subtasks.
+- Suggest next steps or phase completion.
 
-**Role**: React/TypeScript development
+The Orchestrator MUST NOT:
 
-- Frontend application development
-- Component architecture (atomic design)
-- State management with Redux Toolkit
-- Performance optimization and testing
+- Create or restructure tasks unless explicitly requested.
+- Perform architectural redesigns unless explicitly requested.
 
-### [DevOps Engineer Agent](./agents/devops-engineer.md)
+## 2. Phase File Schema
 
-**Role**: Infrastructure and deployment
+Phase files (`.claude/phases/*.md`) MUST conform to `.claude/templates/phase-template.md`.
 
-- AWS infrastructure management
-- Docker containerization and orchestration
-- CI/CD pipeline automation
-- Monitoring and security
+The template defines the canonical structure. The list below defines required semantic content.
 
-### [Test Automator Agent](./agents/test-automator.md)
+### Required Semantic Content
 
-**Role**: Quality assurance and testing
+**Overview**
 
-- Comprehensive testing strategies
-- Test automation and performance testing
-- Quality gates and CI/CD integration
-- Cross-service integration testing
+Must describe the phase scope, deliverables, and boundaries.
 
-### [Documentation Expert Agent](./agents/documentation-expert.md)
+**Context**
 
-**Role**: Technical writing and documentation
+Must describe the current state and list requirements.
 
-- API documentation with OpenAPI/Swagger
-- Developer guides and setup instructions
-- Architecture and troubleshooting documentation
-- Release management and CHANGELOG maintenance
+**AgentPlan**
 
-## 🏗️ System Architecture
+Must define subtasks grouped by agent. Subtasks must align with agent domains.
 
-```
-Multi-Agent Coordination
-├── Development Agents
-│   ├── Backend Architect (NestJS/TypeScript)
-│   └── Frontend Developer (React/TypeScript)
-│
-├── Infrastructure Agent
-│   ├── DevOps Engineer (AWS/Docker)
-│   └── Deployment Automation
-│
-├── Quality Agent
-│   └── Test Automator (Testing & QA)
-│
-└── Documentation Agent
-    └── Documentation Expert (Technical Writing)
-```
+**Tasks**
 
-## 🚀 How to Use the Multi-Agent System
+Must define concrete work items with acceptance criteria consistent with the AgentPlan.
 
-### 1. Backend Development
+**ProgressLog**
 
-```markdown
-@backend-architect: Create user profile API endpoints
+Must record timestamped entries for completed work.
 
-The Backend Architect will:
+**Notes/Decisions**
 
-- Design appropriate APIs with OpenAPI specs
-- Implement business logic
-- Add data validation
-- Create integration tests
-```
+Must capture important decisions or constraints.
 
-### 2. Frontend Development
+The phase file defines the complete scope of work for that phase.
 
-```markdown
-@frontend-developer: Implement user profile components with form validation
+### 2.1 Optional Task Files
 
-The Frontend Developer will:
+Task files (`.claude/tasks/*.md`) are optional micro-level work units.
 
-- Design component architecture
-- Implement with TypeScript/React
-- Add Redux state management
-- Create comprehensive tests
-```
+- MUST conform to `.claude/templates/task-template.md`
+- MUST belong to exactly one agent
+- MUST NOT redefine scope—scope always comes from the phase file
+- MUST NOT be created unless the user explicitly requests task-level decomposition
 
-### 3. Infrastructure & Deployment
+## 3. Agents and Selection Logic
 
-```markdown
-@devops-engineer: Deploy user profile feature to production
+Available agents:
 
-The DevOps Engineer will:
+- `backend-architect`
+- `frontend-developer`
+- `devops-engineer`
+- `test-automator`
+- `documentation-expert`
 
-- Update deployment configurations
-- Manage environment variables
-- Setup monitoring and logging
-- Coordinate production deployment
-```
+Selection rules:
 
-### 4. Quality Assurance
+- Backend API / logic / DB → backend-architect
+- UI / React / state / UX → frontend-developer
+- Infra / Docker / CI/CD / deploy → devops-engineer
+- Tests of any kind → test-automator
+- Docs / CHANGELOG / OpenAPI / architecture → documentation-expert
+- Cross-domain work MUST execute in this order:
+  1. backend-architect
+  2. frontend-developer
+  3. test-automator
+  4. documentation-expert
 
-```markdown
-@test-automator: Test user profile feature end-to-end
+### 3.1 Agent File Structure
 
-The Test Automator will:
+Agent files (`.claude/agents/*.md`) MUST follow `.claude/templates/agent-template.md`.
 
-- Create comprehensive test plans
-- Execute automated test suites
-- Perform integration testing
-- Validate cross-service functionality
-```
+All capabilities, constraints, and allowed tools MUST be defined according to this template.
 
-### 5. Documentation
+The Orchestrator MUST load agents according to this schema.
 
-```markdown
-@documentation-expert: Document new user profile feature
+## 4. Agent Tool Permissions
 
-The Documentation Expert will:
+Agents may only operate within their domain.
 
-- Update API documentation
-- Create developer guides
-- Update CHANGELOG
-- Document troubleshooting scenarios
-```
+- **backend-architect**
+  - read/search/write backend code
+  - run backend tests
+  - read backend documentation
 
-## 🔄 Agent Collaboration Patterns
+- **frontend-developer**
+  - read/search/write frontend code
+  - run frontend tests/build
+  - read frontend documentation
 
-### Coordination Workflow
+- **devops-engineer**
+  - read/write infrastructure and deployment configuration
+  - run docker/CI-related commands
+  - read infra documentation
 
-When agents need to work together, the coordination is handled automatically:
+- **test-automator**
+  - read/write test code
+  - run test suites
+  - read test guidelines
 
-1. **Task Planning**: Use `plan_task_with_agents` to identify which agents should be involved
-2. **Agent Loading**: Use `get_agent_context` to load each agent's full documentation and patterns
-3. **Persona Adoption**: Adopt the agent persona and follow their documented patterns
-4. **Work Tracking**: Use `track_agent_work` to log progress and coordinate efforts
-5. **Direct Coordination**: Agents coordinate directly based on their "Cross-Agent Coordination" sections
+- **documentation-expert**
+  - read/write documentation and CHANGELOG
+  - update API and architecture documents
 
-Each agent's documentation includes a "Cross-Agent Coordination" section that specifies:
-- **Who** to coordinate with (which agents)
-- **What** to coordinate (specific topics)
-- **When** coordination is needed (specific scenarios)
+## 5. Execution Loop
 
-The coordination workflow itself (how to plan, load, and track) is handled by the MCP tools, not documented in each agent file.
+For every phase:
 
-### Feature Development Flow
+1. Read the phase file, load agent definitions, and consult relevant documentation.
+2. For each incomplete subtask in AgentPlan:
+   - Adopt the corresponding agent persona.
+   - Implement required code, tests, or docs as minimal, targeted diffs.
+   - Modify only what is necessary to satisfy the subtask.
+3. Update the phase file's ProgressLog.
+4. Suggest updated status or next steps.
 
-1. **Design Phase**
+Extraneous refactoring, stylistic changes, or unsolicited improvements are prohibited.
 
-   - Backend Architect designs API contracts
-   - Frontend Developer plans component architecture
-   - Technical architecture decisions documented
+## 6. Scope and Safety Rules
 
-2. **Implementation Phase**
+The Orchestrator MUST enforce strict scope boundaries.
 
-   - Parallel development across services
-   - Continuous integration testing
-   - Regular code reviews
+**Allowed modifications:**
 
-3. **Testing Phase**
+- Files listed or implied by Tasks or AgentPlan
+- Corresponding test files
+- Documentation directly affected by the change
+- Config files only when required by the phase
 
-   - Test Automator creates comprehensive test suites
-   - Integration testing across services
-   - Performance and security validation
+**Prohibited modifications:**
 
-4. **Deployment Phase**
-   - DevOps Engineer coordinates deployment
-   - Documentation Expert updates all relevant docs
-   - Production monitoring and validation
+- Files outside phase scope
+- `.claude/agents/*.md`
+- `.claude/claude.md`
+- Unrelated services or architecture
 
-### Communication Protocols
+Architectural changes require explicit user authorization.
 
-#### Cross-Agent Coordination
+When information is ambiguous, choose the action that:
 
-```markdown
-# Example: API Contract Discussion
+- Preserves existing architecture
+- Minimizes scope
+- Avoids introducing new concepts
 
-@backend-architect @frontend-developer: Need to define user profile API contract
+Ask for clarification only if ambiguity cannot be resolved.
 
-Backend Architect response:
+Significant API changes MUST update docs and tests.
 
-- Proposed endpoints and data structures
-- Authentication requirements
-- Error handling patterns
+## 7. Documentation Reference Order
 
-Frontend Developer response:
+When additional context is needed, consult documentation in this order:
 
-- UI requirements and data needs
-- Validation requirements
-- State management considerations
-```
+1. Phase file (`.claude/phases/*.md`)
+2. Agent definitions (`.claude/agents/*.md`)
+3. Project-level documentation:
+   - `CONTRIBUTING.md`
+   - `docs/architecture.md`
+   - `README.md`
+   - `docs/troubleshooting.md`
+   - `infrastructure/README.md`
+   - `CHANGELOG.md`
+4. Service-level documentation:
+   - `apps/backend/README.md`
+   - `apps/frontend/README.md`
+5. Tool documentation:
+   - `tools/texas-mcp-server/README.md`
+   - `tools/clickup-mcp-server/README.md`
 
-#### Issue Resolution
+## 8. Template Reference
 
-```markdown
-# Example: Performance Issue
+The following templates define authoritative schemas:
 
-User reports slow profile loading
+- `.claude/templates/phase-template.md` → Phase files (`.claude/phases/*.md`)
+- `.claude/templates/task-template.md` → Optional task files (`.claude/tasks/*.md`)
+- `.claude/templates/agent-template.md` → Agent definitions (`.claude/agents/*.md`)
 
-Coordinated investigation:
-
-- @frontend-developer: Check rendering performance
-- @backend-architect: Analyze API response times and database queries
-- @devops-engineer: Check infrastructure metrics
-- @test-automator: Reproduce and quantify issue
-```
-
-## 📊 Project Context & Development Guide
-
-### Current Technology Stack
-
-- **Frontend**: React 18 + TypeScript + Material-UI + Redux Toolkit
-- **Backend API**: NestJS + TypeScript + PostgreSQL + MongoDB
-- **Infrastructure**: AWS EC2 + ECR + Docker + Terraform
-- **Databases**:
-  - PostgreSQL (Supabase) - User accounts, authentication, file metadata
-  - MongoDB (Atlas) - Poker range data and analysis
-
-### Documentation Structure
-
-The project follows a clear documentation hierarchy:
-
-- **[README.md](../README.md)** - Project overview and quick start
-- **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Complete development setup and workflow (single source of truth)
-- **[docs/architecture.md](../docs/architecture.md)** - Technical architecture and system design
-- **[docs/troubleshooting.md](../docs/troubleshooting.md)** - Common issues and debugging guide
-- **[infrastructure/README.md](../infrastructure/README.md)** - Production deployment on AWS
-- **[CHANGELOG.md](../CHANGELOG.md)** - Version history and release management
-- **Service READMEs** - Service-specific documentation and environment setup
-
-### Service Architecture
-
-```
-Production Environment
-├── Frontend (Port 8080)
-├── Backend API (Port 3000)
-└── Nginx Reverse Proxy (Port 80/443)
-```
-
-### Development Setup
-
-**For complete development setup, see [CONTRIBUTING.md](../CONTRIBUTING.md)**
-
-#### Quick Start
-
-```bash
-# Start all services
-docker-compose up
-
-# Access points:
-# - Frontend: http://localhost:8080
-# - Backend API: http://localhost:3000/api (Swagger docs)
-```
-
-#### Service-Specific Setup
-
-Each service requires environment configuration:
-
-- **Frontend**: See [apps/frontend/README.md](../apps/frontend/README.md) - API URLs and development settings
-- **Backend API**: See [apps/backend/README.md](../apps/backend/README.md) - Database (PostgreSQL + MongoDB), JWT, and email configuration
-
-#### Production Deployment
-
-```bash
-# Deploy to AWS (see infrastructure/README.md for details)
-cd infrastructure/
-./deploy.sh
-```
-
-### Environment Configuration
-
-- **Development**: Local PostgreSQL (postgres:5432) and MongoDB (mongodb:27017) via Docker
-- **Production**: Supabase (PostgreSQL) and MongoDB Atlas (free tier)
-- **Local**: Uses docker-compose.yml
-- **Production**: Uses docker-compose.prod.yml with ECR images
-- **Secrets**: Environment variables managed via AWS SSM Parameter Store in production
-- **SSL**: Let's Encrypt certificates with automatic renewal
-
-### Development Workflow
-
-**Complete workflow details in [CONTRIBUTING.md](../CONTRIBUTING.md)**
-
-- **Git Workflow**: Feature branches → main → production (with release management)
-- **Local Development**: Docker Compose with hot reload for all services
-- **Testing**: Jest + React Testing Library with comprehensive coverage
-- **Code Quality**: ESLint + Prettier with TypeScript strict mode
-- **Release Management**: Semantic versioning with [CHANGELOG.md](../CHANGELOG.md)
-- **Deployment**: Automated AWS deployment via [infrastructure/README.md](../infrastructure/README.md)
-- **Documentation**: Agent-agnostic workflows with service-specific details in READMEs
-
-## 🎯 Best Practices
-
-### When to Use Which Agent
-
-#### Single-Domain Tasks
-
-```markdown
-# Use specific agent for domain-focused work
-
-@frontend-developer: Update user interface styling
-@backend-architect: Add new API validation
-@devops-engineer: Update SSL certificate
-@test-automator: Add unit tests for new feature
-@documentation-expert: Update API documentation
-```
-
-#### Cross-Domain Features
-
-```markdown
-# Coordinate multiple agents for complex features
-
-@backend-architect @frontend-developer: Implement real-time notifications
-
-Coordinated approach using established workflows:
-
-- Reference CONTRIBUTING.md for development setup and git workflow
-- Backend: WebSocket implementation per apps/backend/README.md patterns
-- Frontend: UI components following apps/frontend/README.md guidelines
-- Test Automator: Integration testing for WebSocket communication
-- DevOps: Infrastructure updates per infrastructure/README.md
-- Documentation: Update architecture and API docs
-```
-
-#### Complex Problem Solving
-
-```markdown
-# Use multiple agents for comprehensive analysis
-
-Investigate production performance issues
-
-Coordinated response using documentation resources:
-
-- @devops-engineer: Infrastructure metrics (reference infrastructure/README.md)
-- @backend-architect: Database and API performance (check apps/backend/README.md)
-- @frontend-developer: Client-side performance (reference apps/frontend/README.md)
-- @test-automator: Performance testing and benchmarks
-- @documentation-expert: Update troubleshooting.md with findings
-```
-
-### Agent Interaction Guidelines
-
-1. **Documentation-First Approach**: All agents reference [CONTRIBUTING.md](../CONTRIBUTING.md) for workflows
-2. **Clear Scope Definition**: Each agent focuses on their expertise area
-3. **Service-Specific References**: Use service READMEs for detailed implementation guidance
-4. **Architecture Awareness**: Reference [docs/architecture.md](../docs/architecture.md) for system design decisions
-5. **Problem Resolution**: Use [docs/troubleshooting.md](../docs/troubleshooting.md) for debugging guidance
-6. **Version Management**: Follow [CHANGELOG.md](../CHANGELOG.md) patterns for releases
-7. **Coordination**: Coordinate directly between agents for multi-domain tasks
-
-## 📁 File Organization
-
-```
-.claude/
-├── CLAUDE.md                   # Multi-agent system overview and project documentation
-└── agents/
-    ├── backend.md              # Backend architecture and NestJS development
-    ├── frontend-developer.md   # React/TypeScript development
-    ├── devops-engineer.md      # Infrastructure and deployment
-    ├── test-automator.md       # Testing and quality assurance
-    └── documentation-expert.md # Documentation maintenance
-```
-
-## 🔧 System Evolution
-
-This multi-agent system is built on a solid documentation foundation and designed to evolve:
-
-### Documentation-Driven Development
-- **Single Source of Truth**: [CONTRIBUTING.md](../CONTRIBUTING.md) contains all development workflows
-- **Service-Specific Guidance**: Each service README provides detailed implementation details
-- **Architecture Documentation**: [docs/architecture.md](../docs/architecture.md) captures design decisions
-- **Troubleshooting Knowledge**: [docs/troubleshooting.md](../docs/troubleshooting.md) grows with discovered solutions
-
-### Agent System Evolution
-- **Agent Specialization**: Agents reference established documentation patterns
-- **New Domains**: Additional agents can be added following the same documentation structure
-- **Workflow Consistency**: All agents follow the same development and release processes
-- **Knowledge Maintenance**: Agent knowledge stays current through documentation references
-
-### Scalability Benefits
-- **Human-AI Collaboration**: Documentation works for both human developers and AI agents
-- **Onboarding Efficiency**: New team members (human or AI) follow the same clear processes
-- **Maintenance Reduction**: Updates to workflows happen in one place (CONTRIBUTING.md)
-- **Quality Consistency**: Standardized processes ensure consistent output quality
-
-The goal is to create a powerful, coordinated development environment that leverages Claude's capabilities while maintaining clear separation of concerns, efficient collaboration patterns, and sustainable documentation practices.
+All files MUST conform to their respective templates.

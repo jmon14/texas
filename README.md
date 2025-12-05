@@ -2,41 +2,110 @@
 
 A full-stack poker application with range analysis and visualization tools, featuring an interactive range builder, user authentication, and file management.
 
+## Prerequisites
+
+Before getting started, ensure you have the following installed:
+
+- **Node.js** 16+ 
+- **Docker** and **Docker Compose**
+- **Git**
+
+For production deployment, you'll also need:
+- **AWS CLI** configured
+
 ## 🚀 Quick Start
 
+### 1. Clone the repository
+
 ```bash
-# Clone and start all services
 git clone <repository-url>
 cd texas
-docker-compose up
-
-# Access applications
-# Frontend: http://localhost:8080
-# Backend API: http://localhost:3000
 ```
 
-**New to the project?** See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed setup and development workflow.
+### 2. Start all services
+
+```bash
+docker-compose up
+```
+
+**Note:** Docker will automatically install dependencies and build the services. No local npm install required.
+
+### 3. Verify the setup
+
+Once the services are running, verify everything is working:
+
+- **Frontend**: Open [http://localhost:8080](http://localhost:8080) in your browser
+- **Backend API**: Check [http://localhost:3000/api](http://localhost:3000/api) for Swagger documentation
+- **Health Check**: Visit [http://localhost:3000/health](http://localhost:3000/health) to verify backend status
+
+### Environment Configuration
+
+Environment variables are configured via `.env` files in each service directory:
+- `apps/frontend/.env` - Frontend configuration
+- `apps/backend/.development.env` - Backend API configuration (uses `.${NODE_ENV}.env` format)
+
+### Need help?
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed setup instructions or [Troubleshooting Guide](docs/troubleshooting.md) if you encounter issues.
 
 ## 🏗️ Architecture
 
+### Project Structure
+
 ```
 ├── apps/
-│   ├── frontend/      # React frontend (TypeScript + Material-UI)
-│   └── backend/       # NestJS API (PostgreSQL + MongoDB)
+│   ├── frontend/      # React frontend
+│   └── backend/       # NestJS API
 ├── infrastructure/    # AWS deployment configuration
-└── tools/             # Development tools (MCP server)
+└── tools/             # Development tools
 ```
 
-**Frontend** → **Backend API** → **PostgreSQL** (users, files)
-**Frontend** → **Backend API** → **MongoDB** (ranges)
+### System Overview
+
+The application follows a **two-service architecture** with a unified backend API:
+
+```mermaid
+graph LR
+    Browser[Web Browser]
+    
+    subgraph App[" "]
+        Frontend[Frontend]
+        Backend[Backend API]
+    end
+    
+    subgraph Data[" "]
+        direction TB
+        PostgreSQL[(PostgreSQL<br/>Supabase)]
+        MongoDB[(MongoDB<br/>Atlas)]
+        S3[(AWS S3)]
+    end
+    
+    Browser --> Frontend
+    Frontend -->|API| Backend
+    Backend -->|Users & Auth| PostgreSQL
+    Backend -->|Ranges| MongoDB
+    Backend -->|Files| S3
+    
+    style Browser fill:#1976d2,color:#fff
+    style Frontend fill:#2196f3,color:#fff
+    style Backend fill:#42a5f5,color:#fff
+    style PostgreSQL fill:#388e3c,color:#fff
+    style MongoDB fill:#388e3c,color:#fff
+    style S3 fill:#388e3c,color:#fff
+```
+
+For detailed architecture information, see [System Architecture](docs/architecture.md).
 
 ### 🤖 AI-Assisted Development
 
-This project includes an MCP (Model Context Protocol) server that provides Claude with automatic access to project context. See [tools/texas-mcp-server/](tools/texas-mcp-server/) and `.cursor/mcp.json` for configuration.
+This project includes AI tooling for enhanced development:
+
+- **MCP Server**: Provides Claude with automatic access to project context. See [tools/texas-mcp-server/](tools/texas-mcp-server/) and `.cursor/mcp.json` for configuration.
+- **Multi-Agent System**: Specialized agents for backend, frontend, DevOps, testing, and documentation. See [.claude/claude.md](.claude/claude.md) for details.
 
 ## 📚 Documentation
 
 - **[Contributing Guide](CONTRIBUTING.md)** - Development setup, workflow, and standards
+- **[Changelog](CHANGELOG.md)** - Version history and release notes
 - **[System Architecture](docs/architecture.md)** - Technical design and component interactions
 - **[Infrastructure Guide](infrastructure/README.md)** - Production deployment on AWS
 - **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions

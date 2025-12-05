@@ -9,7 +9,6 @@ import { getAgentInfo } from './tools/get-agent-info.js';
 import { getUserPreferences } from './tools/get-user-preferences.js';
 import { planTaskWithAgents } from './tools/plan-task-with-agents.js';
 import { getAgentContext } from './tools/get-agent-context.js';
-import { trackAgentWork, getWorkLog, clearWorkLog } from './tools/track-agent-work.js';
 
 // Create MCP server
 const server = new Server(
@@ -29,7 +28,7 @@ const TOOLS = [
   {
     name: 'get_project_state',
     description:
-      'Get current project state including git branch, uncommitted files, and running services. Use this to understand the current development context.',
+      'Get current project state including git branch and working tree status, uncommitted files, running Docker services, and unreleased changelog entries with latest version. Use this to understand the current development context.',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -65,7 +64,7 @@ const TOOLS = [
   {
     name: 'plan_task_with_agents',
     description:
-      'Analyze a task and determine which agents should be involved, in what order, and with what workflow. Use this to automatically coordinate multi-agent work.',
+      'Analyze a task and determine which agents should be involved for planning purposes. This is optional and intended for high-level agent selection during planning phases only.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -90,54 +89,6 @@ const TOOLS = [
         },
       },
       required: ['agentName'],
-    },
-  },
-  {
-    name: 'track_agent_work',
-    description: 'Record work done by an agent for coordination and progress tracking.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        agent: {
-          type: 'string',
-          description: 'Name of the agent doing the work',
-        },
-        task: {
-          type: 'string',
-          description: 'Brief description of the task',
-        },
-        status: {
-          type: 'string',
-          enum: ['started', 'in-progress', 'completed', 'blocked'],
-          description: 'Current status of the work',
-        },
-        details: {
-          type: 'string',
-          description: 'Optional details about the work',
-        },
-        filesModified: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Optional list of files modified',
-        },
-      },
-      required: ['agent', 'task', 'status'],
-    },
-  },
-  {
-    name: 'get_work_log',
-    description: 'Get the current work log showing all agent activity in this session.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
-  {
-    name: 'clear_work_log',
-    description: 'Clear the work log and start a new coordination session.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
     },
   },
 ];
@@ -222,49 +173,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: 'text',
               text: JSON.stringify(context, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'track_agent_work': {
-        const { agent, task, status, details, filesModified } = request.params.arguments as {
-          agent: string;
-          task: string;
-          status: 'started' | 'in-progress' | 'completed' | 'blocked';
-          details?: string;
-          filesModified?: string[];
-        };
-        const log = trackAgentWork(agent, task, status, details, filesModified);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(log, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'get_work_log': {
-        const log = getWorkLog();
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(log, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'clear_work_log': {
-        clearWorkLog();
-        return {
-          content: [
-            {
-              type: 'text',
-              text: 'Work log cleared. New session started.',
             },
           ],
         };

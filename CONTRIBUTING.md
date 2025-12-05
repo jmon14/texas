@@ -4,38 +4,15 @@ Thank you for your interest in contributing to the Texas Poker application! This
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Quick Start
 
-- Node.js 16+
-- Docker and Docker Compose
-- Git
-- AWS CLI configured (for production deployment)
+For a quick start guide and prerequisites, see [README.md](README.md#prerequisites). The following sections provide detailed information for developers contributing to the project.
 
-### Initial Setup
+### Development Environment Details
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd texas
-   ```
-
-2. **Start development environment**
-   ```bash
-   docker-compose up
-   ```
-
-3. **Verify setup**
-   - Frontend: http://localhost:8080
-   - Backend API: http://localhost:3000/api
-
-### Detailed Environment Configuration
-
-#### Development Environment
-- **Container Orchestration**: Docker Compose
+#### Container Orchestration
+- **Docker Compose**: All services run in containers
 - **Hot Reload**: All services support live code reloading
-- **Database Setup**:
-  - PostgreSQL: `postgres:5432`
-  - MongoDB: `mongodb:27017`
 - **Networking**: Internal Docker network for service communication
 
 #### Service Startup Order
@@ -43,64 +20,35 @@ Thank you for your interest in contributing to the Texas Poker application! This
 2. Backend service starts and waits for database connections
 3. Frontend starts and connects to Backend API
 
-#### Environment Variables
-Development uses `.env` files in each service directory:
-- `apps/frontend/.env` - Frontend configuration
-- `apps/backend/.env` - Backend API configuration
-
-#### Database Initialization
-- **PostgreSQL**: Automatic migrations via TypeORM on Backend startup
-- **MongoDB**: Automatic connection and collection creation via Mongoose in Backend
+#### Database Configuration
+- **PostgreSQL**: `postgres:5432` - User accounts, authentication, file metadata
+- **MongoDB**: `mongodb:27017` - Poker ranges and scenarios
+- **Database Initialization**:
+  - **PostgreSQL**: Automatic migrations via TypeORM on Backend startup
+  - **MongoDB**: Automatic connection and collection creation via Mongoose in Backend
 
 ### Service-Specific Development
 
 Each service has its own development commands and detailed setup instructions:
 
-- **Frontend**: See [apps/frontend/README.md](apps/frontend/README.md) - React app development, Storybook, testing
+- **Frontend**: See [apps/frontend/README.md](apps/frontend/README.md) - React app development, Storybook, testing, API client generation
 - **Backend API**: See [apps/backend/README.md](apps/backend/README.md) - NestJS backend, database migrations, email testing, range analysis
-
-### Working with Individual Services
-
-#### Isolated Service Development
-You can run services individually for focused development:
-
-```bash
-# Run only databases
-docker-compose up postgres mongodb
-
-# Then run specific services individually (see service READMEs for commands)
-```
-
-#### API Client Generation
-The frontend automatically generates TypeScript clients from backend OpenAPI specs:
-```bash
-cd apps/frontend
-npm run openapi:backend
-```
-
-Run this command whenever backend API interfaces change.
 
 ## 🔧 Development Workflow
 
 ### Branch Strategy
 
-- **`main`**: Stable development branch
+- **`main`**: Development branch - all changes are committed directly here
 - **`production`**: Production deployment branch (auto-deploys to AWS)
-- **Feature branches**: `feature/description` or `fix/description`
 
 ### Making Changes
 
-1. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-2. **Make your changes**
+1. **Make your changes**
    - Follow existing code patterns and conventions
    - Write tests for new functionality
-   - Update documentation as needed
+   - Update documentation as needed (see [Documentation Update Triggers](#documentation-update-triggers))
 
-3. **Test your changes**
+2. **Test your changes**
    ```bash
    # Frontend tests
    cd apps/frontend && npm test
@@ -108,8 +56,10 @@ Run this command whenever backend API interfaces change.
    # Backend tests
    cd apps/backend && npm test
    ```
+   
+   **If tests fail**: Fix the issues and re-run tests until all pass before proceeding.
 
-4. **Lint and format**
+3. **Lint and format**
    ```bash
    # Frontend
    cd apps/frontend && npm run lint && npm run format
@@ -117,176 +67,126 @@ Run this command whenever backend API interfaces change.
    # Backend
    cd apps/backend && npm run lint && npm run format
    ```
+   
+   **If linting fails**: Fix the issues and re-run linting until all pass before proceeding.
 
-5. **Commit changes**
+4. **Update CHANGELOG.md**
+   - Add changes to `CHANGELOG.md` under `## [Unreleased]` section
+   - Only proceed to this step after all tests and linting pass
+
+5. **Commit changes directly to main**
    ```bash
    git add .
    git commit -m "feat: add new feature description"
+   git push origin main
    ```
 
 ## 📝 Code Style Guidelines
 
 ### General Principles
 
-- **Consistency**: Follow existing patterns in each service
-- **Clarity**: Write self-documenting code with clear variable/function names
 - **Security**: Never commit secrets, API keys, or sensitive information
-- **Testing**: Write tests for new features and bug fixes
+- **Error Handling**: Handle errors explicitly and gracefully; avoid silent failures
+- **Type Safety**: Use TypeScript strictly, avoid `any`, prefer explicit types, and avoid type casting when possible
+- **Commit Messages**: Use conventional commits format (feat:, fix:, docs:, etc.)
+- **Async/Await**: Prefer async/await over promise chains
+- **Dead Code**: Remove unused code, imports, and functions
+- **Constants**: Extract magic numbers and hardcoded values to named constants files
 
 ### Frontend
 
-- **Framework**: React with TypeScript
-- **State Management**: Redux Toolkit
-- **UI Library**: Material-UI
-- **Testing**: Jest + React Testing Library
-- **Component Structure**: Follow Atomic Design principles
-
-```typescript
-// Example component structure
-interface Props {
-  title: string;
-  onSubmit: (data: FormData) => void;
-}
-
-export const MyComponent: React.FC<Props> = ({ title, onSubmit }) => {
-  // Component logic here
-};
-```
+- **Component Structure**: Follow Atomic Design principles (atoms → molecules → organisms → pages)
+- **State Management**: Use Redux Toolkit for global state; prefer local state for component-specific data
+- **Component Patterns**: Use functional components with hooks; define props interfaces explicitly
+- **Storybook**: Add Storybook stories for reusable components
 
 ### Backend
 
-- **Framework**: NestJS with TypeScript
-- **Database**: TypeORM with PostgreSQL
-- **Authentication**: JWT with Passport
-- **Testing**: Jest for unit tests, supertest for e2e
-
-```typescript
-// Example service structure
-@Injectable()
-export class MyService {
-  constructor(
-    @InjectRepository(Entity) 
-    private repository: Repository<Entity>
-  ) {}
-
-  async findAll(): Promise<Entity[]> {
-    return this.repository.find();
-  }
-}
-```
+- **Service Structure**: Use NestJS decorators and dependency injection; keep services focused and single-responsibility
+- **Database**: Use TypeORM repositories for PostgreSQL; Mongoose schemas for MongoDB; handle transactions explicitly
+- **API Design**: Use DTOs for request/response validation; add Swagger decorators for documentation
+- **Error Handling**: Use NestJS exception filters; return consistent error response formats
 
 
 ## 🧪 Testing Guidelines
+
+### Test Organization
+
+- **Structure**: Use `describe()` blocks to group related tests; use `it()` for individual test cases
+- **Pattern**: Follow AAA pattern (Arrange, Act, Assert) for readable tests
+- **File Organization**: Co-locate tests in `__tests__/` folders alongside source files
+- **Naming**: Use descriptive test names that explain what is being tested
 
 ### Unit Tests
 
 - Write tests for all new functions and methods
 - Mock external dependencies
 - Test edge cases and error conditions
-- Maintain test coverage above 80%
+- Focus on meaningful coverage of critical paths rather than achieving 100%
 
 ### Integration Tests
 
-- Test API endpoints end-to-end
-- Test database interactions
-- Test authentication flows
+- **Frontend**: Test component interactions, Redux store integration, and API integration (with MSW)
+- **Backend**: Test API endpoints end-to-end, database interactions, and authentication flows
 
-### Manual Testing
+### E2E Testing
 
-- Test in development environment with Docker Compose
-- Verify changes work across all services
-- Test user workflows end-to-end
-
-## 🔍 Code Review Process
-
-### Before Submitting PR
-
-- [ ] All tests pass
-- [ ] Code follows style guidelines
-- [ ] Documentation updated
-- [ ] No console.log or debug statements
-- [ ] No secrets or sensitive data
-
-### PR Guidelines
-
-1. **Clear description**: Explain what the PR does and why
-2. **Small, focused changes**: Keep PRs manageable in size
-3. **Reference issues**: Link to relevant GitHub issues
-4. **Screenshots**: Include screenshots for UI changes
-
-### Review Checklist
-
-- [ ] Code quality and consistency
-- [ ] Proper error handling
-- [ ] Security considerations
-- [ ] Performance implications
-- [ ] Test coverage
+- Use E2E tests for critical user workflows and cross-service integration
+- Prefer unit and integration tests for isolated functionality
 
 ## 🚀 Deployment
 
-### Git Workflow
+### Release to Production
 
-The project uses a two-branch deployment strategy:
+When ready to deploy:
 
-1. **Feature Development**
+1. **Update CHANGELOG.md**
+   - Move items from `## [Unreleased]` to a new version section
+   - Add release date in format `## [X.Y.Z] - YYYY-MM-DD`
+   - Keep `[Unreleased]` section empty for future changes
+
+2. **Update package versions**
+   - Update version in `apps/frontend/package.json`
+   - Update version in `apps/backend/package.json`
+
+3. **Merge main to production**
    ```bash
-   git checkout -b feature/your-feature
-   # Make changes, commit, push
-   git checkout main
-   git merge feature/your-feature
-   git push origin main
-   ```
-
-2. **Release to Production**
-   ```bash
-   # When ready to release
    git checkout production
    git merge main
    git push origin production
-   
-   # Then merge back to main to keep branches in sync
-   git checkout main
-   git merge production
-   git push origin main
    ```
 
-### Environment Details
-
-- **`main`**: Development branch with latest features (tested locally)
-- **`production`**: Production deployment branch (auto-deploys to AWS)
-- **GitHub Actions**: Automatically deploys `production` branch to AWS infrastructure
+4. **Deploy**
+   - GitHub Actions automatically deploys `production` branch to AWS infrastructure
 
 ### Release Checklist
 
-Before merging to production:
+Before deploying to production:
 - [ ] All tests pass on main branch
 - [ ] Features thoroughly tested
 - [ ] CHANGELOG.md updated with version and release date
-- [ ] Version tag created and pushed
+- [ ] Package versions updated in both frontend and backend
 - [ ] Production deployment verified
 - [ ] Health checks passing
 
-## 🐛 Bug Reports
-
-When reporting bugs, include:
-
-- **Environment**: Development/Production
-- **Steps to reproduce**: Clear step-by-step instructions
-- **Expected behavior**: What should happen
-- **Actual behavior**: What actually happens
-- **Screenshots**: If applicable
-- **Browser/System info**: Version details
-
-## 💡 Feature Requests
-
-For new features:
-
-- **Use case**: Describe the problem being solved
-- **Proposed solution**: How should it work
-- **Alternatives considered**: Other approaches
-- **Impact**: Who benefits and how
-
 ## 📚 Documentation
+
+### Documentation Update Triggers
+
+Update documentation in the following scenarios:
+
+**Required Updates:**
+- **New features**: Update relevant README files, add API documentation if applicable
+- **API changes**: Update API documentation (Swagger/OpenAPI), update service READMEs
+- **Breaking changes**: Update all affected documentation, add migration guides if needed
+
+**Optional but Recommended:**
+- **Bug fixes**: Update troubleshooting docs if the fix addresses a documented issue
+- **Performance improvements**: Document significant optimizations
+- **Refactoring**: Update docs if architecture or patterns change significantly
+- **Complex logic**: Add inline code documentation for non-obvious implementations
+
+### Documentation Guidelines
 
 - Update relevant README files for your changes
 - Add inline code documentation for complex logic
@@ -318,11 +218,12 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
    - Add release date in format `## [X.Y.Z] - YYYY-MM-DD`
    - Keep `[Unreleased]` section empty for future changes
 
-3. **Create Release**:
-   ```bash
-   git tag vX.Y.Z
-   git push origin vX.Y.Z
-   ```
+3. **Update Package Versions**:
+   - Update version in `apps/frontend/package.json`
+   - Update version in `apps/backend/package.json`
+
+4. **Merge to Production**:
+   - Follow the [Release to Production](#release-to-production) workflow above
 
 #### Example Changelog Entry Format
 ```markdown
@@ -341,13 +242,6 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
 ## [1.0.0] - 2023-12-01
 ```
 
-## 🔐 Security
-
-- Never commit API keys, passwords, or other secrets
-- Use environment variables for configuration
-- Follow OWASP security guidelines
-- Report security issues privately to maintainers
-
 ## ⚡ Common Development Tasks
 
 ### Adding a new API endpoint
@@ -365,19 +259,3 @@ The project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for
    - Add state management if needed
    - Write tests
    - Update Storybook stories
-
-### Database Changes
-
-1. **PostgreSQL (Backend)**
-   - Update entities
-   - Create migration: `npm run migrate`
-   - Test migration in development
-
-2. **MongoDB (Backend)**
-   - Update Mongoose schemas
-   - Update service logic
-   - Test changes with sample data
-
-## 📄 License
-
-By contributing to this project, you agree that your contributions will be licensed under the MIT License.

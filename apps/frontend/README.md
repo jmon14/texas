@@ -194,6 +194,11 @@ rangesApi.updateRange(id, range);
 scenariosApi.getScenarios(gameType, difficulty, category);
 scenariosApi.getScenarioById(id);
 scenariosApi.getScenariosByCategory(category);
+
+// Reference ranges (GTO solutions) - Available but not yet integrated in UI
+referenceRangesApi.getReferenceRangeByScenarioId(scenarioId);
+referenceRangesApi.importReferenceRangeForScenario(scenarioId);
+referenceRangesApi.importAllReferenceRanges();
 ```
 
 ### Automatic Token Refresh
