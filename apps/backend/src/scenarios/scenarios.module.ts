@@ -7,6 +7,8 @@ import { ReferenceRangesImportService } from './reference-ranges-import.service'
 import { StandardRangesService } from './standard-ranges.service';
 import { ReferenceRangesController } from './reference-ranges.controller';
 import { RangeComparisonService } from './range-comparison.service';
+import { UserRangeAttemptsService } from './user-range-attempts.service';
+import { UserRangeAttemptsController } from './user-range-attempts.controller';
 import {
   Scenario,
   ScenarioSchema,
@@ -28,13 +30,14 @@ import { RangesModule } from '../ranges/ranges.module';
     ConfigModule,
     RangesModule,
   ],
-  controllers: [ScenariosController, ReferenceRangesController],
+  controllers: [ScenariosController, ReferenceRangesController, UserRangeAttemptsController],
   providers: [
     ScenariosService,
     ReferenceRangesService,
     ReferenceRangesImportService,
     StandardRangesService,
     RangeComparisonService,
+    UserRangeAttemptsService,
   ],
   exports: [
     ScenariosService,

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-#### Phase 3: Range Comparison Engine (Task 1)
+#### Phase 3: Range Comparison Engine (Complete)
 - **Range Comparison Service**: Core comparison algorithm for analyzing user ranges against GTO reference ranges
   - Created `RangeComparisonService` with comprehensive comparison logic
   - Compares user ranges to GTO reference ranges and categorizes hands into:
@@ -21,6 +21,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Handles mixed strategies (multiple actions with frequencies per hand)
   - Generates detailed feedback with reasons for missing/extra hands
   - Supports action type comparison (FOLD, CALL, RAISE, CHECK)
+- **User Range Attempts Service**: Service for managing user range attempt history
+  - Created `UserRangeAttemptsService` for CRUD operations on user attempts
+  - Auto-increments attempt number per user/scenario combination
+  - Transforms comparison results to schema-compatible format
+  - Retrieves attempts sorted by attempt number ascending
+  - Isolates attempts by user and scenario
+- **Comparison API Endpoints**: RESTful API endpoints for range comparison
+  - `POST /user-range-attempts/compare` - Compare user range to GTO reference range and save attempt
+    - Requires JWT authentication
+    - Validates user ownership of range before comparison
+    - Returns comparison results with attempt ID and attempt number
+    - Handles errors for missing scenario, range, or reference range
+  - `GET /user-range-attempts/user/:userId/scenario/:scenarioId` - Get attempt history for user and scenario
+    - Requires JWT authentication
+    - Validates user can only access own attempts
+    - Returns attempts sorted by attempt number ascending
+- **Comparison DTOs**: Complete data transfer objects for comparison API
+  - Created `CompareRangesDto` for comparison requests
+  - Created `ComparisonResultDto` with attempt ID, attempt number, and categorized hands
+  - Created `UserRangeAttemptResponseDto` for attempt history responses
+  - All DTOs properly typed with Swagger decorators for API documentation
 - **Comparison Result Interfaces**: Type-safe interfaces for comparison results
   - Created `ComparisonResult` interface with accuracy score and categorized hands
   - Created `CorrectHand`, `MissingHand`, `ExtraHand`, `FrequencyErrorHand` interfaces
@@ -28,14 +49,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Range Comparison Constants**: Centralized constants for comparison logic
   - Created `range-comparison.constants.ts` with `FREQUENCY_THRESHOLD` (5%)
   - Follows project pattern of separate constants files
-- **Comprehensive Test Suite**: Full test coverage for comparison service
-  - 25 passing unit tests covering all comparison scenarios
-  - Tests for correct/missing/extra/frequency error detection
-  - Tests for accuracy score calculation and feedback generation
-  - Edge case tests (empty ranges, perfect match, action mismatches)
+- **Comprehensive Test Suite**: Full test coverage for comparison engine
+  - Unit tests for `RangeComparisonService` (25 tests covering all comparison scenarios)
+  - Unit tests for `UserRangeAttemptsService` (attempt creation, retrieval, attempt number logic)
+  - Controller tests for comparison endpoint (authentication, authorization, error handling)
+  - Controller tests for attempt history endpoint (authentication, authorization, sorting)
+  - Integration tests for full comparison flow (real Mongoose models, multiple attempts)
+- **OpenAPI Documentation**: Complete Swagger documentation for all endpoints
+  - All endpoints documented with `@ApiOperation`, `@ApiResponse`, and `@ApiParam` decorators
+  - All DTOs documented with `@ApiProperty` decorators
+  - Swagger UI displays endpoints correctly with proper request/response types
 - **Module Integration**: Integrated into ScenariosModule
-  - Added `RangeComparisonService` to ScenariosModule providers and exports
-  - Service ready for use by controllers and other services
+  - Added `RangeComparisonService` and `UserRangeAttemptsService` to ScenariosModule providers
+  - Added `UserRangeAttemptsController` to ScenariosModule controllers
+  - Services and controller ready for use
 
 ## [2.2.7] - 2025-01-XX
 

@@ -459,6 +459,26 @@ POST   /reference-ranges/import-all                   # Batch import all referen
 
 **Note:** Reference range endpoints are read-only for public access. Import endpoints require authentication and use TexasSolver to generate GTO solutions.
 
+### User Range Attempts (Range Comparison)
+
+```
+POST   /user-range-attempts/compare                    # Compare user range to GTO reference range and save attempt (authenticated)
+GET    /user-range-attempts/user/:userId/scenario/:scenarioId  # Get attempt history for user and scenario (authenticated)
+```
+
+**Comparison Endpoint (`POST /user-range-attempts/compare`):**
+- Requires JWT authentication
+- Validates user owns the range before comparison
+- Compares user range against GTO reference range for the specified scenario
+- Saves attempt with auto-incrementing attempt number
+- Returns comparison results with accuracy score, categorized hands (correct, missing, extra, frequency errors), and attempt metadata
+
+**Attempt History Endpoint (`GET /user-range-attempts/user/:userId/scenario/:scenarioId`):**
+- Requires JWT authentication
+- Validates user can only access their own attempts
+- Returns attempts sorted by attempt number ascending
+- Includes full comparison results for each attempt
+
 ### Health Check
 
 ```
