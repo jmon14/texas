@@ -1,4 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ActionType } from '../../ranges/enums/action-type.enum';
+
+export class AttemptFrequencyErrorActionDifferenceDto {
+  @ApiProperty({
+    description: 'The action type',
+    enum: ActionType,
+  })
+  type: ActionType;
+
+  @ApiProperty({
+    description: 'User frequency for this action',
+    example: 75,
+  })
+  userFrequency: number;
+
+  @ApiProperty({
+    description: 'GTO frequency for this action',
+    example: 100,
+  })
+  gtoFrequency: number;
+
+  @ApiProperty({
+    description: 'Absolute frequency difference for this action',
+    example: 25,
+  })
+  difference: number;
+}
 
 export class FrequencyErrorDto {
   @ApiProperty({
@@ -8,22 +35,16 @@ export class FrequencyErrorDto {
   hand: string;
 
   @ApiProperty({
-    description: 'User frequency',
-    example: 75,
-  })
-  userFrequency: number;
-
-  @ApiProperty({
-    description: 'GTO frequency',
-    example: 100,
-  })
-  gtoFrequency: number;
-
-  @ApiProperty({
-    description: 'Frequency difference',
+    description: 'Maximum absolute frequency difference across actions',
     example: 25,
   })
-  difference: number;
+  maxDifference: number;
+
+  @ApiProperty({
+    type: [AttemptFrequencyErrorActionDifferenceDto],
+    description: 'Per-action differences',
+  })
+  actions: AttemptFrequencyErrorActionDifferenceDto[];
 }
 
 export class UserRangeAttemptComparisonResultDto {
@@ -49,7 +70,7 @@ export class UserRangeAttemptComparisonResultDto {
 
   @ApiProperty({
     type: [FrequencyErrorDto],
-    description: 'Frequency errors',
+    description: 'Frequency errors with per-action differences',
   })
   frequencyErrors: FrequencyErrorDto[];
 }

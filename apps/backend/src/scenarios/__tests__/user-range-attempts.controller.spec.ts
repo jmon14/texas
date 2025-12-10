@@ -51,7 +51,15 @@ describe('UserRangeAttemptsController', () => {
           hand: 'QQ',
           userAction: [{ type: ActionType.RAISE, frequency: 75 }],
           gtoAction: [{ type: ActionType.RAISE, frequency: 100 }],
-          difference: 25,
+          maxDifference: 25,
+          actions: [
+            {
+              type: ActionType.RAISE,
+              userFrequency: 75,
+              gtoFrequency: 100,
+              difference: 25,
+            },
+          ],
         },
       ],
     },
@@ -195,6 +203,15 @@ describe('UserRangeAttemptsController', () => {
       expect(result.missing).toHaveLength(1);
       expect(result.extra).toHaveLength(1);
       expect(result.frequencyError).toHaveLength(1);
+      expect(result.frequencyError[0].maxDifference).toBe(25);
+      expect(result.frequencyError[0].actions).toEqual([
+        {
+          type: ActionType.RAISE,
+          userFrequency: 75,
+          gtoFrequency: 100,
+          difference: 25,
+        },
+      ]);
       expect(result.overallFeedback).toBe(mockComparisonResult.overallFeedback);
     });
   });
@@ -281,9 +298,15 @@ describe('UserRangeAttemptsController', () => {
           frequencyErrors: [
             {
               hand: 'QQ',
-              userFrequency: 75,
-              gtoFrequency: 100,
-              difference: 25,
+              maxDifference: 25,
+              actions: [
+                {
+                  type: ActionType.RAISE,
+                  userFrequency: 75,
+                  gtoFrequency: 100,
+                  difference: 25,
+                },
+              ],
             },
           ],
         },
@@ -311,9 +334,15 @@ describe('UserRangeAttemptsController', () => {
           frequencyErrors: [
             {
               hand: 'QQ',
-              userFrequency: 75,
-              gtoFrequency: 100,
-              difference: 25,
+              maxDifference: 25,
+              actions: [
+                {
+                  type: ActionType.RAISE,
+                  userFrequency: 75,
+                  gtoFrequency: 100,
+                  difference: 25,
+                },
+              ],
             },
           ],
         },

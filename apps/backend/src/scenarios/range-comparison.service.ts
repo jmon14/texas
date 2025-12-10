@@ -3,12 +3,14 @@ import { ReferenceRangesService } from './reference-ranges.service';
 import { RangesService } from '../ranges/ranges.service';
 import { HandRange } from '../ranges/schemas/hand-range.schema';
 import { Action } from '../ranges/schemas/action.schema';
+import { ActionType } from '../ranges/enums/action-type.enum';
 import {
   ComparisonResult,
   CorrectHand,
   MissingHand,
   ExtraHand,
   FrequencyErrorHand,
+  FrequencyErrorActionDifference,
 } from './interfaces/comparison-result.interface';
 import { FREQUENCY_THRESHOLD } from './constants';
 
@@ -35,8 +37,9 @@ export class RangeComparisonService {
       throw new NotFoundException(`Range with ID ${userRangeId} not found`);
     }
 
-    // 3. Compare ranges
-    return this.compareRangeData(userRange.handsRange, referenceRange.rangeData.handsRange);
+    // 3. Compare ranges and ensure we return plain JSON-safe objects
+    const result = this.compareRangeData(userRange.handsRange, referenceRange.rangeData.handsRange);
+    return this.toPlainComparisonResult(result);
   }
 
   /**
@@ -53,8 +56,13 @@ export class RangeComparisonService {
       frequencyError: [] as FrequencyErrorHand[],
     };
 
-    // Create maps for efficient lookup
-    const userHandsMap = new Map(userHandsRange.map((handRange) => [handRange.label, handRange]));
+    // Filter out empty/zero-frequency user hands and create maps for efficient lookup
+    const validUserHandsRange = userHandsRange.filter((handRange) =>
+      this.hasMeaningfulActions(handRange.actions),
+    );
+    const userHandsMap = new Map(
+      validUserHandsRange.map((handRange) => [handRange.label, handRange]),
+    );
     const gtoHandsMap = new Map(gtoHandsRange.map((handRange) => [handRange.label, handRange]));
 
     // Check all GTO hands
@@ -75,7 +83,7 @@ export class RangeComparisonService {
 
       // If frequency difference is within threshold, it's correct
       // Otherwise, it's a frequency error
-      if (actionMatch.frequencyDifference <= FREQUENCY_THRESHOLD) {
+      if (actionMatch.maxDifference <= FREQUENCY_THRESHOLD) {
         results.correct.push({
           hand: gtoHand.label,
           userAction: userHand.actions,
@@ -86,13 +94,14 @@ export class RangeComparisonService {
           hand: gtoHand.label,
           userAction: userHand.actions,
           gtoAction: gtoHand.actions,
-          difference: actionMatch.frequencyDifference,
+          maxDifference: actionMatch.maxDifference,
+          actions: actionMatch.actions,
         });
       }
     }
 
     // Check for extra hands (in user range but not GTO)
-    for (const userHand of userHandsRange) {
+    for (const userHand of validUserHandsRange) {
       if (!gtoHandsMap.has(userHand.label)) {
         results.extra.push({
           hand: userHand.label,
@@ -116,13 +125,14 @@ export class RangeComparisonService {
 
   /**
    * Compare actions between user and GTO ranges
-   * Returns the maximum frequency difference across all action types
+   * Returns the maximum frequency difference across all action types and per-action deltas
    */
   private compareActions(
     userActions: Action[],
     gtoActions: Action[],
   ): {
-    frequencyDifference: number;
+    maxDifference: number;
+    actions: FrequencyErrorActionDifference[];
   } {
     // Normalize actions: Sum frequencies per action type
     // Example: User has [{type: CALL, frequency: 50}, {type: RAISE, frequency: 50}]
@@ -134,28 +144,102 @@ export class RangeComparisonService {
     const gtoFreqs = this.sumFrequenciesByType(gtoActions);
 
     // Calculate maximum frequency difference across all action types
-    const allActionTypes = new Set([...Object.keys(userFreqs), ...Object.keys(gtoFreqs)]);
+    const allActionTypes = new Set<ActionType>([
+      ...userActions.map((action) => action.type),
+      ...gtoActions.map((action) => action.type),
+    ]);
     let maxDifference = 0;
+    const actions: FrequencyErrorActionDifference[] = [];
 
     for (const actionType of allActionTypes) {
       const userFreq = userFreqs[actionType] || 0;
       const gtoFreq = gtoFreqs[actionType] || 0;
       const difference = Math.abs(userFreq - gtoFreq);
       maxDifference = Math.max(maxDifference, difference);
+      actions.push({
+        type: actionType,
+        userFrequency: userFreq,
+        gtoFrequency: gtoFreq,
+        difference,
+      });
     }
 
-    return { frequencyDifference: maxDifference };
+    return { maxDifference, actions };
+  }
+
+  /**
+   * Convert comparison result to plain objects to avoid class-transformer recursion
+   */
+  private toPlainComparisonResult(result: ComparisonResult): ComparisonResult {
+    const cloneActions = (actions: Action[]): Action[] =>
+      actions.map((action) => ({
+        type: action.type,
+        frequency: action.frequency,
+        ev: action.ev,
+        equity: action.equity,
+      }));
+
+    return {
+      accuracyScore: result.accuracyScore,
+      handsByCategory: {
+        correct: result.handsByCategory.correct.map((hand) => ({
+          hand: hand.hand,
+          userAction: cloneActions(hand.userAction),
+          gtoAction: cloneActions(hand.gtoAction),
+        })),
+        missing: result.handsByCategory.missing.map((hand) => ({
+          hand: hand.hand,
+          gtoAction: cloneActions(hand.gtoAction),
+          reason: hand.reason,
+        })),
+        extra: result.handsByCategory.extra.map((hand) => ({
+          hand: hand.hand,
+          userAction: cloneActions(hand.userAction),
+          reason: hand.reason,
+        })),
+        frequencyError: result.handsByCategory.frequencyError.map((hand) => ({
+          hand: hand.hand,
+          userAction: cloneActions(hand.userAction),
+          gtoAction: cloneActions(hand.gtoAction),
+          maxDifference: hand.maxDifference,
+          actions: hand.actions.map((action) => ({
+            type: action.type,
+            userFrequency: action.userFrequency,
+            gtoFrequency: action.gtoFrequency,
+            difference: action.difference,
+          })),
+        })),
+      },
+      overallFeedback: result.overallFeedback,
+    };
   }
 
   /**
    * Sum frequencies by action type
    */
-  private sumFrequenciesByType(actions: Action[]): Record<string, number> {
-    const result: Record<string, number> = {};
+  private sumFrequenciesByType(actions: Action[]): Partial<Record<ActionType, number>> {
+    const result: Partial<Record<ActionType, number>> = {};
     for (const action of actions) {
       result[action.type] = (result[action.type] || 0) + action.frequency;
     }
     return result;
+  }
+
+  /**
+   * Determine whether a hand has any non-zero action frequencies
+   */
+  private hasMeaningfulActions(actions: Action[]): boolean {
+    if (!actions || actions.length === 0) {
+      return false;
+    }
+    return this.calculateTotalFrequency(actions) > 0;
+  }
+
+  /**
+   * Calculate total frequency from actions array
+   */
+  private calculateTotalFrequency(actions: Action[]): number {
+    return actions.reduce((sum, action) => sum + action.frequency, 0);
   }
 
   /**

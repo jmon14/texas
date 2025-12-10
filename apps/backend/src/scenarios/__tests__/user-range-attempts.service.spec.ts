@@ -43,7 +43,15 @@ describe('UserRangeAttemptsService', () => {
           hand: 'QQ',
           userAction: [{ type: ActionType.RAISE, frequency: 75 }],
           gtoAction: [{ type: ActionType.RAISE, frequency: 100 }],
-          difference: 25,
+          maxDifference: 25,
+          actions: [
+            {
+              type: ActionType.RAISE,
+              userFrequency: 75,
+              gtoFrequency: 100,
+              difference: 25,
+            },
+          ],
         },
       ],
     },
@@ -211,9 +219,15 @@ describe('UserRangeAttemptsService', () => {
           .frequencyErrors[0],
       ).toMatchObject({
         hand: 'QQ',
-        userFrequency: 75,
-        gtoFrequency: 100,
-        difference: 25,
+        maxDifference: 25,
+        actions: [
+          {
+            type: ActionType.RAISE,
+            userFrequency: 75,
+            gtoFrequency: 100,
+            difference: 25,
+          },
+        ],
       });
     });
   });

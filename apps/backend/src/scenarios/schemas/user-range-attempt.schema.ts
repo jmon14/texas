@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { ActionType } from '../../ranges/enums/action-type.enum';
 
 export type UserRangeAttemptDocument = UserRangeAttempt & Document;
 
@@ -12,9 +13,13 @@ interface ComparisonResult {
   extraHands: string[]; // Hands they shouldn't have included
   frequencyErrors: {
     hand: string;
-    userFrequency: number;
-    gtoFrequency: number;
-    difference: number;
+    maxDifference: number;
+    actions: {
+      type: ActionType;
+      userFrequency: number;
+      gtoFrequency: number;
+      difference: number;
+    }[];
   }[];
 }
 
@@ -65,9 +70,18 @@ export class UserRangeAttempt {
         type: [
           {
             hand: { type: String, required: true },
-            userFrequency: { type: Number, required: true },
-            gtoFrequency: { type: Number, required: true },
-            difference: { type: Number, required: true },
+            maxDifference: { type: Number, required: true },
+            actions: {
+              type: [
+                {
+                  type: { type: String, required: true, enum: Object.values(ActionType) },
+                  userFrequency: { type: Number, required: true },
+                  gtoFrequency: { type: Number, required: true },
+                  difference: { type: Number, required: true },
+                },
+              ],
+              required: true,
+            },
           },
         ],
         required: true,

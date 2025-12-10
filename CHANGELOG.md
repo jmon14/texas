@@ -64,6 +64,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `UserRangeAttemptsController` to ScenariosModule controllers
   - Services and controller ready for use
 
+#### Phase 3.5: Range Comparison Fixes
+- **Empty/zero hands handling**: Treat user hands with empty or zero-frequency actions as absent—counted as missing when in GTO and ignored for extras.
+- **Per-action frequency errors**: Frequency errors now include per-action breakdowns with `maxDifference` and `{type, userFrequency, gtoFrequency, difference}` entries.
+- **DTO/schema updates**: Updated comparison DTOs, attempt schema, and responses to surface the new frequency error shape.
+- **Tests**: Added coverage for empty/zero-hand cases, per-action differences, and comparison controller/service flows.
+
 ## [2.2.7] - 2025-01-XX
 
 ### Fixed

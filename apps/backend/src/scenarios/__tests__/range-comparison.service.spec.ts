@@ -289,7 +289,15 @@ describe('RangeComparisonService', () => {
 
       expect(result.handsByCategory.frequencyError).toHaveLength(1);
       expect(result.handsByCategory.frequencyError[0].hand).toBe('AA');
-      expect(result.handsByCategory.frequencyError[0].difference).toBe(10);
+      expect(result.handsByCategory.frequencyError[0].maxDifference).toBe(10);
+      expect(result.handsByCategory.frequencyError[0].actions).toEqual([
+        {
+          type: ActionType.RAISE,
+          userFrequency: 90,
+          gtoFrequency: 100,
+          difference: 10,
+        },
+      ]);
       expect(result.accuracyScore).toBe(0); // No correct hands
     });
 
@@ -319,7 +327,21 @@ describe('RangeComparisonService', () => {
       const result = service['compareRangeData'](userHandsRange, gtoHandsRange);
 
       expect(result.handsByCategory.frequencyError).toHaveLength(1);
-      expect(result.handsByCategory.frequencyError[0].difference).toBe(30);
+      expect(result.handsByCategory.frequencyError[0].maxDifference).toBe(30);
+      expect(result.handsByCategory.frequencyError[0].actions).toEqual([
+        {
+          type: ActionType.RAISE,
+          userFrequency: 80,
+          gtoFrequency: 50,
+          difference: 30,
+        },
+        {
+          type: ActionType.CALL,
+          userFrequency: 20,
+          gtoFrequency: 50,
+          difference: 30,
+        },
+      ]);
     });
   });
 
@@ -401,7 +423,10 @@ describe('RangeComparisonService', () => {
 
       const result = service['compareActions'](userActions, gtoActions);
 
-      expect(result.frequencyDifference).toBe(0);
+      expect(result.maxDifference).toBe(0);
+      expect(result.actions).toEqual([
+        { type: ActionType.RAISE, userFrequency: 100, gtoFrequency: 100, difference: 0 },
+      ]);
     });
 
     it('should calculate frequency difference for different action types', () => {
@@ -410,7 +435,13 @@ describe('RangeComparisonService', () => {
 
       const result = service['compareActions'](userActions, gtoActions);
 
-      expect(result.frequencyDifference).toBe(100); // Max difference across all types
+      expect(result.maxDifference).toBe(100); // Max difference across all types
+      expect(result.actions).toEqual(
+        expect.arrayContaining([
+          { type: ActionType.RAISE, userFrequency: 50, gtoFrequency: 0, difference: 50 },
+          { type: ActionType.CALL, userFrequency: 0, gtoFrequency: 100, difference: 100 },
+        ]),
+      );
     });
 
     it('should sum frequencies by action type for mixed strategies', () => {
@@ -425,7 +456,7 @@ describe('RangeComparisonService', () => {
       // User: RAISE 50%, CALL 50%
       // GTO: RAISE 100%, CALL 0%
       // Max difference: RAISE 50% or CALL 50% = 50%
-      expect(result.frequencyDifference).toBe(50);
+      expect(result.maxDifference).toBe(50);
     });
 
     it('should handle multiple actions of same type', () => {
@@ -439,7 +470,7 @@ describe('RangeComparisonService', () => {
 
       // User: RAISE total = 50%
       // GTO: RAISE total = 50%
-      expect(result.frequencyDifference).toBe(0);
+      expect(result.maxDifference).toBe(0);
     });
   });
 
@@ -495,7 +526,15 @@ describe('RangeComparisonService', () => {
             hand: 'QQ',
             userAction: [{ type: ActionType.RAISE, frequency: 90 }],
             gtoAction: [{ type: ActionType.RAISE, frequency: 100 }],
-            difference: 10,
+            maxDifference: 10,
+            actions: [
+              {
+                type: ActionType.RAISE,
+                userFrequency: 90,
+                gtoFrequency: 100,
+                difference: 10,
+              },
+            ],
           },
         ],
       };
@@ -552,6 +591,110 @@ describe('RangeComparisonService', () => {
       const feedback = service['generateOverallFeedback'](results, 0);
 
       expect(feedback).toContain('Missing 2 hands');
+    });
+  });
+
+  describe('empty or zero-action hands handling', () => {
+    it('should treat user hand with empty actions as missing, not a frequency error', () => {
+      const gtoHandsRange: HandRange[] = [
+        {
+          label: 'AA',
+          carryoverFrequency: 100,
+          actions: [{ type: ActionType.RAISE, frequency: 100 }],
+        },
+      ];
+
+      const userHandsRange: HandRange[] = [
+        {
+          label: 'AA',
+          carryoverFrequency: 100,
+          actions: [],
+        },
+      ];
+
+      const result = service['compareRangeData'](userHandsRange, gtoHandsRange);
+
+      expect(result.handsByCategory.missing).toHaveLength(1);
+      expect(result.handsByCategory.frequencyError).toHaveLength(0);
+      expect(result.accuracyScore).toBe(0);
+    });
+
+    it('should treat user hand with zero total frequency as missing', () => {
+      const gtoHandsRange: HandRange[] = [
+        {
+          label: 'KK',
+          carryoverFrequency: 100,
+          actions: [{ type: ActionType.RAISE, frequency: 100 }],
+        },
+      ];
+
+      const userHandsRange: HandRange[] = [
+        {
+          label: 'KK',
+          carryoverFrequency: 100,
+          actions: [{ type: ActionType.RAISE, frequency: 0 }],
+        },
+      ];
+
+      const result = service['compareRangeData'](userHandsRange, gtoHandsRange);
+
+      expect(result.handsByCategory.missing).toHaveLength(1);
+      expect(result.handsByCategory.frequencyError).toHaveLength(0);
+      expect(result.accuracyScore).toBe(0);
+    });
+
+    it('should ignore empty/zero-action hands when detecting extras', () => {
+      const gtoHandsRange: HandRange[] = [
+        {
+          label: 'AA',
+          carryoverFrequency: 100,
+          actions: [{ type: ActionType.RAISE, frequency: 100 }],
+        },
+      ];
+
+      const userHandsRange: HandRange[] = [
+        {
+          label: '72o',
+          carryoverFrequency: 100,
+          actions: [],
+        },
+        {
+          label: 'AA',
+          carryoverFrequency: 100,
+          actions: [{ type: ActionType.RAISE, frequency: 100 }],
+        },
+      ];
+
+      const result = service['compareRangeData'](userHandsRange, gtoHandsRange);
+
+      expect(result.handsByCategory.extra).toHaveLength(0);
+      expect(result.handsByCategory.correct).toHaveLength(1);
+    });
+
+    it('should report all GTO hands as missing when user hands are empty', () => {
+      const gtoHandsRange: HandRange[] = [
+        {
+          label: 'AA',
+          carryoverFrequency: 100,
+          actions: [{ type: ActionType.RAISE, frequency: 100 }],
+        },
+        {
+          label: 'KK',
+          carryoverFrequency: 100,
+          actions: [{ type: ActionType.RAISE, frequency: 100 }],
+        },
+      ];
+
+      const userHandsRange: HandRange[] = [
+        { label: 'AA', carryoverFrequency: 100, actions: [] },
+        { label: 'KK', carryoverFrequency: 100, actions: [] },
+      ];
+
+      const result = service['compareRangeData'](userHandsRange, gtoHandsRange);
+
+      expect(result.handsByCategory.missing).toHaveLength(2);
+      expect(result.handsByCategory.frequencyError).toHaveLength(0);
+      expect(result.accuracyScore).toBe(0);
     });
   });
 
@@ -612,7 +755,7 @@ describe('RangeComparisonService', () => {
       // RAISE vs CALL: RAISE difference = 100%, CALL difference = 100%
       // Max difference = 100%, which exceeds threshold
       expect(result.handsByCategory.frequencyError).toHaveLength(1);
-      expect(result.handsByCategory.frequencyError[0].difference).toBe(100);
+      expect(result.handsByCategory.frequencyError[0].maxDifference).toBe(100);
     });
   });
 });

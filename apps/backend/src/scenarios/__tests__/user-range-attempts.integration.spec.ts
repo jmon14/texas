@@ -50,7 +50,15 @@ describe('UserRangeAttemptsService Integration', () => {
           hand: 'QQ',
           userAction: [{ type: ActionType.RAISE, frequency: 75 }],
           gtoAction: [{ type: ActionType.RAISE, frequency: 100 }],
-          difference: 25,
+          maxDifference: 25,
+          actions: [
+            {
+              type: ActionType.RAISE,
+              userFrequency: 75,
+              gtoFrequency: 100,
+              difference: 25,
+            },
+          ],
         },
       ],
     },
@@ -128,9 +136,15 @@ describe('UserRangeAttemptsService Integration', () => {
       expect(attempt.comparisonResult.frequencyErrors).toHaveLength(1);
       expect(attempt.comparisonResult.frequencyErrors[0]).toMatchObject({
         hand: 'QQ',
-        userFrequency: 75,
-        gtoFrequency: 100,
-        difference: 25,
+        maxDifference: 25,
+        actions: [
+          {
+            type: ActionType.RAISE,
+            userFrequency: 75,
+            gtoFrequency: 100,
+            difference: 25,
+          },
+        ],
       });
     });
 
@@ -212,9 +226,15 @@ describe('UserRangeAttemptsService Integration', () => {
       expect(savedAttempt?.comparisonResult.frequencyErrors).toHaveLength(1);
       expect(savedAttempt?.comparisonResult.frequencyErrors[0]).toMatchObject({
         hand: 'QQ',
-        userFrequency: 75,
-        gtoFrequency: 100,
-        difference: 25,
+        maxDifference: 25,
+        actions: [
+          {
+            type: ActionType.RAISE,
+            userFrequency: 75,
+            gtoFrequency: 100,
+            difference: 25,
+          },
+        ],
       });
     });
 

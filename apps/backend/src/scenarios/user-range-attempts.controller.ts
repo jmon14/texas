@@ -172,7 +172,8 @@ export class UserRangeAttemptsController {
         hand: hand.hand,
         userAction: hand.userAction,
         gtoAction: hand.gtoAction,
-        difference: hand.difference,
+        maxDifference: hand.maxDifference,
+        actions: hand.actions,
       })),
       overallFeedback: result.overallFeedback,
     };
@@ -201,9 +202,13 @@ export class UserRangeAttemptsController {
         extraHands: attempt.comparisonResult.extraHands,
         frequencyErrors: attempt.comparisonResult.frequencyErrors.map((error) => ({
           hand: error.hand,
-          userFrequency: error.userFrequency,
-          gtoFrequency: error.gtoFrequency,
-          difference: error.difference,
+          maxDifference: error.maxDifference,
+          actions: (error.actions || []).map((action) => ({
+            type: action.type,
+            userFrequency: action.userFrequency,
+            gtoFrequency: action.gtoFrequency,
+            difference: action.difference,
+          })),
         })),
       },
       attemptNumber: attempt.attemptNumber,

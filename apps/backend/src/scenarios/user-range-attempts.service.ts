@@ -72,9 +72,13 @@ export class UserRangeAttemptsService {
     extraHands: string[];
     frequencyErrors: {
       hand: string;
-      userFrequency: number;
-      gtoFrequency: number;
-      difference: number;
+      maxDifference: number;
+      actions: {
+        type: string;
+        userFrequency: number;
+        gtoFrequency: number;
+        difference: number;
+      }[];
     }[];
   } {
     // Extract hand labels from missing hands
@@ -84,18 +88,16 @@ export class UserRangeAttemptsService {
     const extraHands = result.handsByCategory.extra.map((hand) => hand.hand);
 
     // Transform frequency errors to schema format
-    const frequencyErrors = result.handsByCategory.frequencyError.map((error) => {
-      // Calculate user and GTO frequencies from actions
-      const userFrequency = this.calculateTotalFrequency(error.userAction);
-      const gtoFrequency = this.calculateTotalFrequency(error.gtoAction);
-
-      return {
-        hand: error.hand,
-        userFrequency,
-        gtoFrequency,
-        difference: error.difference,
-      };
-    });
+    const frequencyErrors = result.handsByCategory.frequencyError.map((error) => ({
+      hand: error.hand,
+      maxDifference: error.maxDifference,
+      actions: error.actions.map((action) => ({
+        type: action.type,
+        userFrequency: action.userFrequency,
+        gtoFrequency: action.gtoFrequency,
+        difference: action.difference,
+      })),
+    }));
 
     return {
       accuracyScore: result.accuracyScore,
@@ -103,12 +105,5 @@ export class UserRangeAttemptsService {
       extraHands,
       frequencyErrors,
     };
-  }
-
-  /**
-   * Calculate total frequency from actions array
-   */
-  private calculateTotalFrequency(actions: { frequency: number }[]): number {
-    return actions.reduce((sum, action) => sum + action.frequency, 0);
   }
 }

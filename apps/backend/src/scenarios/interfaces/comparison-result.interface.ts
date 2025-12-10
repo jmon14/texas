@@ -1,4 +1,5 @@
 import { Action } from '../../ranges/schemas/action.schema';
+import { ActionType } from '../../ranges/enums/action-type.enum';
 
 /**
  * Comparison result for a single hand in the "correct" category
@@ -34,6 +35,20 @@ export interface FrequencyErrorHand {
   hand: string;
   userAction: Action[];
   gtoAction: Action[];
+  /**
+   * Max absolute difference across all action types
+   */
+  maxDifference: number;
+  /**
+   * Per-action frequency deltas for clarity
+   */
+  actions: FrequencyErrorActionDifference[];
+}
+
+export interface FrequencyErrorActionDifference {
+  type: ActionType;
+  userFrequency: number;
+  gtoFrequency: number;
   difference: number;
 }
 

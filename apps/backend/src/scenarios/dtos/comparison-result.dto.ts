@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ActionDto } from '../../ranges/dtos/action.dto';
+import { ActionType } from '../../ranges/enums/action-type.enum';
 
 export class CorrectHandDto {
   @ApiProperty({
@@ -61,6 +62,32 @@ export class ExtraHandDto {
   reason: string;
 }
 
+export class FrequencyErrorActionDifferenceDto {
+  @ApiProperty({
+    description: 'The action type',
+    enum: ActionType,
+  })
+  type: ActionType;
+
+  @ApiProperty({
+    description: 'User frequency for this action type',
+    example: 75,
+  })
+  userFrequency: number;
+
+  @ApiProperty({
+    description: 'GTO frequency for this action type',
+    example: 100,
+  })
+  gtoFrequency: number;
+
+  @ApiProperty({
+    description: 'Absolute frequency difference for this action type',
+    example: 25,
+  })
+  difference: number;
+}
+
 export class FrequencyErrorHandDto {
   @ApiProperty({
     description: 'The hand label',
@@ -81,10 +108,16 @@ export class FrequencyErrorHandDto {
   gtoAction: ActionDto[];
 
   @ApiProperty({
-    description: 'Frequency difference percentage',
-    example: 15.5,
+    description: 'Maximum absolute frequency difference across actions',
+    example: 25,
   })
-  difference: number;
+  maxDifference: number;
+
+  @ApiProperty({
+    type: [FrequencyErrorActionDifferenceDto],
+    description: 'Per-action frequency differences',
+  })
+  actions: FrequencyErrorActionDifferenceDto[];
 }
 
 export class ComparisonResultDto {
@@ -128,7 +161,7 @@ export class ComparisonResultDto {
 
   @ApiProperty({
     type: [FrequencyErrorHandDto],
-    description: 'Hands with frequency differences exceeding threshold',
+    description: 'Hands with frequency differences exceeding threshold (per-action breakdown)',
   })
   frequencyError: FrequencyErrorHandDto[];
 
