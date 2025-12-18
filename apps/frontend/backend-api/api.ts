@@ -81,6 +81,147 @@ export type ActionDtoTypeEnum = typeof ActionDtoTypeEnum[keyof typeof ActionDtoT
 /**
  *
  * @export
+ * @interface AttemptFrequencyErrorActionDifferenceDto
+ */
+export interface AttemptFrequencyErrorActionDifferenceDto {
+  /**
+   * The action type
+   * @type {string}
+   * @memberof AttemptFrequencyErrorActionDifferenceDto
+   */
+  type: AttemptFrequencyErrorActionDifferenceDtoTypeEnum;
+  /**
+   * User frequency for this action
+   * @type {number}
+   * @memberof AttemptFrequencyErrorActionDifferenceDto
+   */
+  userFrequency: number;
+  /**
+   * GTO frequency for this action
+   * @type {number}
+   * @memberof AttemptFrequencyErrorActionDifferenceDto
+   */
+  gtoFrequency: number;
+  /**
+   * Absolute frequency difference for this action
+   * @type {number}
+   * @memberof AttemptFrequencyErrorActionDifferenceDto
+   */
+  difference: number;
+}
+
+export const AttemptFrequencyErrorActionDifferenceDtoTypeEnum = {
+  Fold: 'fold',
+  Call: 'call',
+  Raise: 'raise',
+  Check: 'check',
+} as const;
+
+export type AttemptFrequencyErrorActionDifferenceDtoTypeEnum =
+  typeof AttemptFrequencyErrorActionDifferenceDtoTypeEnum[keyof typeof AttemptFrequencyErrorActionDifferenceDtoTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface CompareRangesDto
+ */
+export interface CompareRangesDto {
+  /**
+   * The scenario ID to compare against
+   * @type {string}
+   * @memberof CompareRangesDto
+   */
+  scenarioId: string;
+  /**
+   * The user range ID to compare
+   * @type {string}
+   * @memberof CompareRangesDto
+   */
+  userRangeId: string;
+}
+/**
+ *
+ * @export
+ * @interface ComparisonResultDto
+ */
+export interface ComparisonResultDto {
+  /**
+   * The attempt ID
+   * @type {string}
+   * @memberof ComparisonResultDto
+   */
+  attemptId: string;
+  /**
+   * The attempt number for this user/scenario
+   * @type {number}
+   * @memberof ComparisonResultDto
+   */
+  attemptNumber: number;
+  /**
+   * Accuracy score (0-100)
+   * @type {number}
+   * @memberof ComparisonResultDto
+   */
+  accuracyScore: number;
+  /**
+   * Hands that match GTO within frequency threshold
+   * @type {Array<CorrectHandDto>}
+   * @memberof ComparisonResultDto
+   */
+  correct: Array<CorrectHandDto>;
+  /**
+   * Hands in GTO range but not in user range
+   * @type {Array<MissingHandDto>}
+   * @memberof ComparisonResultDto
+   */
+  missing: Array<MissingHandDto>;
+  /**
+   * Hands in user range but not in GTO range
+   * @type {Array<ExtraHandDto>}
+   * @memberof ComparisonResultDto
+   */
+  extra: Array<ExtraHandDto>;
+  /**
+   * Hands with frequency differences exceeding threshold (per-action breakdown)
+   * @type {Array<FrequencyErrorHandDto>}
+   * @memberof ComparisonResultDto
+   */
+  frequencyError: Array<FrequencyErrorHandDto>;
+  /**
+   * Overall feedback summary
+   * @type {string}
+   * @memberof ComparisonResultDto
+   */
+  overallFeedback: string;
+}
+/**
+ *
+ * @export
+ * @interface CorrectHandDto
+ */
+export interface CorrectHandDto {
+  /**
+   * The hand label
+   * @type {string}
+   * @memberof CorrectHandDto
+   */
+  hand: string;
+  /**
+   * User actions for this hand
+   * @type {Array<ActionDto>}
+   * @memberof CorrectHandDto
+   */
+  userAction: Array<ActionDto>;
+  /**
+   * GTO actions for this hand
+   * @type {Array<ActionDto>}
+   * @memberof CorrectHandDto
+   */
+  gtoAction: Array<ActionDto>;
+}
+/**
+ *
+ * @export
  * @interface CreateRangeDto
  */
 export interface CreateRangeDto {
@@ -285,6 +426,31 @@ export type CreateScenarioDtoCategoryEnum =
 /**
  *
  * @export
+ * @interface ExtraHandDto
+ */
+export interface ExtraHandDto {
+  /**
+   * The hand label
+   * @type {string}
+   * @memberof ExtraHandDto
+   */
+  hand: string;
+  /**
+   * User actions for this hand
+   * @type {Array<ActionDto>}
+   * @memberof ExtraHandDto
+   */
+  userAction: Array<ActionDto>;
+  /**
+   * Reason why this hand is extra
+   * @type {string}
+   * @memberof ExtraHandDto
+   */
+  reason: string;
+}
+/**
+ *
+ * @export
  * @interface FileEntity
  */
 export interface FileEntity {
@@ -316,6 +482,110 @@ export interface FileEntity {
 /**
  *
  * @export
+ * @interface FrequencyErrorActionDifferenceDto
+ */
+export interface FrequencyErrorActionDifferenceDto {
+  /**
+   * The action type
+   * @type {string}
+   * @memberof FrequencyErrorActionDifferenceDto
+   */
+  type: FrequencyErrorActionDifferenceDtoTypeEnum;
+  /**
+   * User frequency for this action type
+   * @type {number}
+   * @memberof FrequencyErrorActionDifferenceDto
+   */
+  userFrequency: number;
+  /**
+   * GTO frequency for this action type
+   * @type {number}
+   * @memberof FrequencyErrorActionDifferenceDto
+   */
+  gtoFrequency: number;
+  /**
+   * Absolute frequency difference for this action type
+   * @type {number}
+   * @memberof FrequencyErrorActionDifferenceDto
+   */
+  difference: number;
+}
+
+export const FrequencyErrorActionDifferenceDtoTypeEnum = {
+  Fold: 'fold',
+  Call: 'call',
+  Raise: 'raise',
+  Check: 'check',
+} as const;
+
+export type FrequencyErrorActionDifferenceDtoTypeEnum =
+  typeof FrequencyErrorActionDifferenceDtoTypeEnum[keyof typeof FrequencyErrorActionDifferenceDtoTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface FrequencyErrorDto
+ */
+export interface FrequencyErrorDto {
+  /**
+   * The hand label
+   * @type {string}
+   * @memberof FrequencyErrorDto
+   */
+  hand: string;
+  /**
+   * Maximum absolute frequency difference across actions
+   * @type {number}
+   * @memberof FrequencyErrorDto
+   */
+  maxDifference: number;
+  /**
+   * Per-action differences
+   * @type {Array<AttemptFrequencyErrorActionDifferenceDto>}
+   * @memberof FrequencyErrorDto
+   */
+  actions: Array<AttemptFrequencyErrorActionDifferenceDto>;
+}
+/**
+ *
+ * @export
+ * @interface FrequencyErrorHandDto
+ */
+export interface FrequencyErrorHandDto {
+  /**
+   * The hand label
+   * @type {string}
+   * @memberof FrequencyErrorHandDto
+   */
+  hand: string;
+  /**
+   * User actions for this hand
+   * @type {Array<ActionDto>}
+   * @memberof FrequencyErrorHandDto
+   */
+  userAction: Array<ActionDto>;
+  /**
+   * GTO actions for this hand
+   * @type {Array<ActionDto>}
+   * @memberof FrequencyErrorHandDto
+   */
+  gtoAction: Array<ActionDto>;
+  /**
+   * Maximum absolute frequency difference across actions
+   * @type {number}
+   * @memberof FrequencyErrorHandDto
+   */
+  maxDifference: number;
+  /**
+   * Per-action frequency differences
+   * @type {Array<FrequencyErrorActionDifferenceDto>}
+   * @memberof FrequencyErrorHandDto
+   */
+  actions: Array<FrequencyErrorActionDifferenceDto>;
+}
+/**
+ *
+ * @export
  * @interface HandRangeDto
  */
 export interface HandRangeDto {
@@ -337,6 +607,31 @@ export interface HandRangeDto {
    * @memberof HandRangeDto
    */
   actions: Array<ActionDto>;
+}
+/**
+ *
+ * @export
+ * @interface MissingHandDto
+ */
+export interface MissingHandDto {
+  /**
+   * The hand label
+   * @type {string}
+   * @memberof MissingHandDto
+   */
+  hand: string;
+  /**
+   * GTO actions for this hand
+   * @type {Array<ActionDto>}
+   * @memberof MissingHandDto
+   */
+  gtoAction: Array<ActionDto>;
+  /**
+   * Reason why this hand is missing
+   * @type {string}
+   * @memberof MissingHandDto
+   */
+  reason: string;
 }
 /**
  *
@@ -779,6 +1074,92 @@ export interface UserEntity {
    * @memberof UserEntity
    */
   files: Array<FileEntity>;
+}
+/**
+ *
+ * @export
+ * @interface UserRangeAttemptComparisonResultDto
+ */
+export interface UserRangeAttemptComparisonResultDto {
+  /**
+   * Accuracy score (0-100)
+   * @type {number}
+   * @memberof UserRangeAttemptComparisonResultDto
+   */
+  accuracyScore: number;
+  /**
+   * Hands missing from user range
+   * @type {Array<string>}
+   * @memberof UserRangeAttemptComparisonResultDto
+   */
+  missingHands: Array<string>;
+  /**
+   * Hands extra in user range
+   * @type {Array<string>}
+   * @memberof UserRangeAttemptComparisonResultDto
+   */
+  extraHands: Array<string>;
+  /**
+   * Frequency errors with per-action differences
+   * @type {Array<FrequencyErrorDto>}
+   * @memberof UserRangeAttemptComparisonResultDto
+   */
+  frequencyErrors: Array<FrequencyErrorDto>;
+}
+/**
+ *
+ * @export
+ * @interface UserRangeAttemptResponseDto
+ */
+export interface UserRangeAttemptResponseDto {
+  /**
+   * The unique MongoDB identifier
+   * @type {string}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  _id: string;
+  /**
+   * The user ID
+   * @type {string}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  userId: string;
+  /**
+   * The scenario ID
+   * @type {string}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  scenarioId: string;
+  /**
+   * The range ID
+   * @type {string}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  rangeId: string;
+  /**
+   * Comparison results
+   * @type {UserRangeAttemptComparisonResultDto}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  comparisonResult: UserRangeAttemptComparisonResultDto;
+  /**
+   * The attempt number
+   * @type {number}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  attemptNumber: number;
+  /**
+   * Creation timestamp
+   * @type {string}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  createdAt: string;
+  /**
+   * Last update timestamp
+   * @type {string}
+   * @memberof UserRangeAttemptResponseDto
+   */
+  updatedAt: string;
 }
 
 /**
@@ -3142,6 +3523,256 @@ export const GetScenariosCategoryEnum = {
 } as const;
 export type GetScenariosCategoryEnum =
   typeof GetScenariosCategoryEnum[keyof typeof GetScenariosCategoryEnum];
+
+/**
+ * UserRangeAttemptsApi - axios parameter creator
+ * @export
+ */
+export const UserRangeAttemptsApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     * Compares a user range against the GTO reference range for a scenario and saves the attempt.
+     * @summary Compare user range to GTO reference range
+     * @param {CompareRangesDto} compareRangesDto
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    compareRanges: async (
+      compareRangesDto: CompareRangesDto,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'compareRangesDto' is not null or undefined
+      assertParamExists('compareRanges', 'compareRangesDto', compareRangesDto);
+      const localVarPath = `/user-range-attempts/compare`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        compareRangesDto,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Retrieves all attempts for a specific user and scenario, sorted by attempt number.
+     * @summary Get attempt history for a user and scenario
+     * @param {string} userId The user ID
+     * @param {string} scenarioId The scenario ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getAttemptHistory: async (
+      userId: string,
+      scenarioId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('getAttemptHistory', 'userId', userId);
+      // verify required parameter 'scenarioId' is not null or undefined
+      assertParamExists('getAttemptHistory', 'scenarioId', scenarioId);
+      const localVarPath = `/user-range-attempts/user/{userId}/scenario/{scenarioId}`
+        .replace(`{${'userId'}}`, encodeURIComponent(String(userId)))
+        .replace(`{${'scenarioId'}}`, encodeURIComponent(String(scenarioId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * UserRangeAttemptsApi - functional programming interface
+ * @export
+ */
+export const UserRangeAttemptsApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = UserRangeAttemptsApiAxiosParamCreator(configuration);
+  return {
+    /**
+     * Compares a user range against the GTO reference range for a scenario and saves the attempt.
+     * @summary Compare user range to GTO reference range
+     * @param {CompareRangesDto} compareRangesDto
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async compareRanges(
+      compareRangesDto: CompareRangesDto,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ComparisonResultDto>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.compareRanges(
+        compareRangesDto,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UserRangeAttemptsApi.compareRanges']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Retrieves all attempts for a specific user and scenario, sorted by attempt number.
+     * @summary Get attempt history for a user and scenario
+     * @param {string} userId The user ID
+     * @param {string} scenarioId The scenario ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getAttemptHistory(
+      userId: string,
+      scenarioId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserRangeAttemptResponseDto>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getAttemptHistory(
+        userId,
+        scenarioId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UserRangeAttemptsApi.getAttemptHistory']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * UserRangeAttemptsApi - factory interface
+ * @export
+ */
+export const UserRangeAttemptsApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance,
+) {
+  const localVarFp = UserRangeAttemptsApiFp(configuration);
+  return {
+    /**
+     * Compares a user range against the GTO reference range for a scenario and saves the attempt.
+     * @summary Compare user range to GTO reference range
+     * @param {CompareRangesDto} compareRangesDto
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    compareRanges(
+      compareRangesDto: CompareRangesDto,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ComparisonResultDto> {
+      return localVarFp
+        .compareRanges(compareRangesDto, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Retrieves all attempts for a specific user and scenario, sorted by attempt number.
+     * @summary Get attempt history for a user and scenario
+     * @param {string} userId The user ID
+     * @param {string} scenarioId The scenario ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getAttemptHistory(
+      userId: string,
+      scenarioId: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<Array<UserRangeAttemptResponseDto>> {
+      return localVarFp
+        .getAttemptHistory(userId, scenarioId, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * UserRangeAttemptsApi - object-oriented interface
+ * @export
+ * @class UserRangeAttemptsApi
+ * @extends {BaseAPI}
+ */
+export class UserRangeAttemptsApi extends BaseAPI {
+  /**
+   * Compares a user range against the GTO reference range for a scenario and saves the attempt.
+   * @summary Compare user range to GTO reference range
+   * @param {CompareRangesDto} compareRangesDto
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserRangeAttemptsApi
+   */
+  public compareRanges(compareRangesDto: CompareRangesDto, options?: RawAxiosRequestConfig) {
+    return UserRangeAttemptsApiFp(this.configuration)
+      .compareRanges(compareRangesDto, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Retrieves all attempts for a specific user and scenario, sorted by attempt number.
+   * @summary Get attempt history for a user and scenario
+   * @param {string} userId The user ID
+   * @param {string} scenarioId The scenario ID
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserRangeAttemptsApi
+   */
+  public getAttemptHistory(userId: string, scenarioId: string, options?: RawAxiosRequestConfig) {
+    return UserRangeAttemptsApiFp(this.configuration)
+      .getAttemptHistory(userId, scenarioId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
 
 /**
  * UsersApi - axios parameter creator

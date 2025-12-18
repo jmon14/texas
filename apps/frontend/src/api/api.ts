@@ -10,6 +10,7 @@ import {
   RangesApi,
   ScenariosApi,
   ReferenceRangesApi,
+  UserRangeAttemptsApi,
 } from '../../backend-api/api';
 
 // Create new axios instance
@@ -73,6 +74,12 @@ export const scenariosApi = new ScenariosApi(
   backendInstance,
 );
 export const referenceRangesApi = new ReferenceRangesApi(
+  undefined,
+  process.env.REACT_APP_BACKEND_API_URL,
+  backendInstance,
+);
+
+export const userRangeAttemptsApi = new UserRangeAttemptsApi(
   undefined,
   process.env.REACT_APP_BACKEND_API_URL,
   backendInstance,
