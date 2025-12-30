@@ -1,13 +1,8 @@
 # Texas MCP Server
 
-This MCP (Model Context Protocol) server provides structured, deterministic access to project state, agents, and orchestration context for the Texas Poker Application.
+This MCP (Model Context Protocol) server provides structured access to project state for the Texas Poker Application.
 
-It is designed to support a dual-AI workflow:
-
-- **Claude Code** → Planning, phase creation, ClickUp syncing, orchestration.
-- **Cursor** → Implementation, code changes, tests, and documentation.
-
-This server acts as the shared context layer between both.
+It is designed to support a lightweight MCP workflow focused on deterministic project state queries.
 
 ---
 
@@ -22,26 +17,13 @@ The Texas MCP Server provides:
 - Unreleased changelog entries and latest version
 
 ### Codebase Summary
-- Project structure
-- Technology stack
-- Services overview
-- Structured extraction from:
-  - `README.md`
-  - `docs/architecture.md`
-  - Service READMEs
-
-### Agent System Access
-- List of available agents
-- Load full agent definitions from `.claude/agents/*.md`
-- Agents MUST conform to `.claude/templates/agent-template.md`
+- Project structure (services + paths)
+- Pointers to key documentation (README, architecture, troubleshooting, service READMEs)
+- Note: intentionally excludes any `.claude/*` persona definitions
 
 ### User Preferences
-- Coding standards
-- Workflow preferences
-- Addressing preferences
-
-### Optional Planning Support
-- High-level agent selection for new features (planning only)
+- Lightweight workflow preferences (e.g., commit policy and validation expectations)
+- Note: intentionally excludes any persona-based workflow
 
 ---
 

@@ -5,10 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { getProjectState } from './tools/get-project-state.js';
 import { getCodebaseSummary } from './tools/get-codebase-summary.js';
-import { getAgentInfo } from './tools/get-agent-info.js';
 import { getUserPreferences } from './tools/get-user-preferences.js';
-import { planTaskWithAgents } from './tools/plan-task-with-agents.js';
-import { getAgentContext } from './tools/get-agent-context.js';
 
 // Create MCP server
 const server = new Server(
@@ -37,16 +34,7 @@ const TOOLS = [
   {
     name: 'get_codebase_summary',
     description:
-      'Get a summary of the codebase structure including key directories, services, and technology stack. Use this to understand the project architecture.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
-  {
-    name: 'get_agent_info',
-    description:
-      'Get information about available agents, their roles, and capabilities. Use this to understand which agents to coordinate for specific tasks.',
+      'Get a summary of the codebase structure including key directories, services, and documentation pointers. This tool does not load any `.claude/*` persona definitions.',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -55,40 +43,10 @@ const TOOLS = [
   {
     name: 'get_user_preferences',
     description:
-      'Get user preferences including how to address them, coding standards, and workflow preferences. ALWAYS call this first when starting a conversation.',
+      'Get lightweight user workflow preferences (e.g., commit policy and validation expectations). This tool does not include any persona-based workflow.',
     inputSchema: {
       type: 'object',
       properties: {},
-    },
-  },
-  {
-    name: 'plan_task_with_agents',
-    description:
-      'Analyze a task and determine which agents should be involved for planning purposes. This is optional and intended for high-level agent selection during planning phases only.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        taskDescription: {
-          type: 'string',
-          description: 'Description of the task to plan',
-        },
-      },
-      required: ['taskDescription'],
-    },
-  },
-  {
-    name: 'get_agent_context',
-    description:
-      'Load the complete context and instructions for a specific agent. Use this to adopt an agent persona and follow their patterns.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        agentName: {
-          type: 'string',
-          description: 'Name of the agent (e.g., "backend-architect", "frontend-developer")',
-        },
-      },
-      required: ['agentName'],
     },
   },
 ];
@@ -128,18 +86,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      case 'get_agent_info': {
-        const agentInfo = await getAgentInfo();
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(agentInfo, null, 2),
-            },
-          ],
-        };
-      }
-
       case 'get_user_preferences': {
         const preferences = await getUserPreferences();
         return {
@@ -147,32 +93,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: 'text',
               text: JSON.stringify(preferences, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'plan_task_with_agents': {
-        const { taskDescription } = request.params.arguments as { taskDescription: string };
-        const plan = planTaskWithAgents(taskDescription);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(plan, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'get_agent_context': {
-        const { agentName } = request.params.arguments as { agentName: string };
-        const context = getAgentContext(agentName);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(context, null, 2),
             },
           ],
         };

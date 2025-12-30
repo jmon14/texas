@@ -1,214 +1,83 @@
-# Claude Multi-Agent Orchestrator Specification (Machine Contract)
+# Claude Skills + MCP Workflow (Machine Contract)
 
-This document defines the machine contract for AI assistants acting as the Overmind Orchestrator for the Texas poker project. It specifies how to plan and execute work using phase files, agents, and allowed tools. It is not intended for humans.
+This repo uses a **skills-based workflow**. Context and automation are provided via **MCP servers**.
 
-## 0. ClickUp and Phase Files
+## 0. Goals
 
-ClickUp is an optional upstream source of work.
+- Keep the workflow lightweight and local-first.
+- Prefer deterministic tools (MCP) for project state queries.
+- Make minimal, targeted code changes aligned with the user request.
+- Do not use planning loops, role simulation, or agent-style task orchestration unless explicitly requested.
 
-The Orchestrator MUST:
+## 1. Local Setup (Claude)
 
-- Query ClickUp only when the user references a phase or ticket and no corresponding phase file exists in `.claude/phases/`.
-- Create a phase file from a ClickUp ticket by mapping:
-  - ticket title → Phase Overview title
-  - description → Context
-  - acceptance criteria → Tasks
-- If a phase file already exists for the referenced phase/ticket, ignore ClickUp.
-- If no ClickUp is referenced, never query ClickUp.
-- Use `.claude/templates/phase-template.md` when creating new phase files.
-- Only map fields that are explicitly present; do not infer or invent missing requirements.
+### 1.1 MCP configuration (repo root)
 
-## 1. Orchestrator Protocol
+- The MCP configuration lives at **`.mcp.json`** (repo root).
+- **Claude Code will auto-detect this file when run from the repo root.**
+- Verify MCP servers are loaded with:
 
-The assistant defaults to the Overmind Orchestrator unless explicitly instructed to adopt a specific agent persona.
+```bash
+claude mcp list
+```
 
-The Orchestrator MUST:
+- If Claude prompts you to approve tool access, approve the servers you want enabled for this project.
 
-- Identify or create the relevant phase file in `.claude/phases/`.
-- Read the phase file, load agent definitions, and read relevant project documentation.
-- Determine required agents using Agent Selection Logic.
-- Update or refine the phase plan if needed.
-- Execute subtasks agent-by-agent (code, tests, docs) strictly within scope.
-- Update the phase file's ProgressLog and mark completed subtasks.
-- Suggest next steps or phase completion.
+### 1.2 Build/install MCP servers
 
-The Orchestrator MUST NOT:
+From repo root:
 
-- Create or restructure tasks unless explicitly requested.
-- Perform architectural redesigns unless explicitly requested.
+```bash
+npm run install:tools
+cd tools/texas-mcp-server && npm run build
+cd ../clickup-mcp-server && npm run build
+```
 
-## 2. Phase File Schema
+### 1.3 ClickUp credentials (optional)
 
-Phase files (`.claude/phases/*.md`) MUST conform to `.claude/templates/phase-template.md`.
+If you want the ClickUp MCP server enabled, follow the setup in:
+- `tools/clickup-mcp-server/README.md`
 
-The template defines the canonical structure. The list below defines required semantic content.
+## 2. MCP Servers (reference docs)
 
-### Required Semantic Content
+- Project MCP server: `tools/texas-mcp-server/README.md`
+- ClickUp MCP server: `tools/clickup-mcp-server/README.md`
 
-**Overview**
+## 3. Skills (how work is scoped)
 
-Must describe the phase scope, deliverables, and boundaries.
+Skills are “domains of work” the assistant can apply. A single task can require multiple skills.
 
-**Context**
+- **backend**: NestJS API, auth, DB integration, migrations/seeders, backend config in `apps/backend/`
+- **frontend**: React UI, state management, client API integration in `apps/frontend/`
+- **devops**: Docker compose, infra, deployment scripts, nginx in `infrastructure/`
+- **testing**: unit/integration/e2e tests (Playwright/Jest) across apps
+- **docs**: READMEs, `docs/*`, `CHANGELOG.md`
+- **tools**: MCP servers under `tools/*`
 
-Must describe the current state and list requirements.
+## 4. Default workflow rules
 
-**AgentPlan**
+- **Prefer MCP for state**: branch status, what’s running, “where is X documented?”, etc.
+- **Minimize scope**: change only what’s required to satisfy the request.
+- **No architectural redesign** unless the user explicitly requests it.
+- **After substantive edits**: run or suggest the closest relevant checks when feasible. Do not invent commands.
 
-Must define subtasks grouped by agent. Subtasks must align with agent domains.
+## 5. Contributing + Changelog
 
-**Tasks**
+- **Contributing**: follow `CONTRIBUTING.md` for local dev workflow, formatting/lint expectations, and testing conventions.
+- **Changelog**: when a change is user-visible, release-relevant, or alters behavior/API, add an entry to `CHANGELOG.md` (keep it concise and scoped to the change).
 
-Must define concrete work items with acceptance criteria consistent with the AgentPlan.
+## 6. Documentation reference order
 
-**ProgressLog**
+1. `README.md`
+2. `CONTRIBUTING.md`
+3. `CHANGELOG.md`
+4. `docs/architecture.md`
+5. `docs/troubleshooting.md`
+6. Service docs: `apps/backend/README.md`, `apps/frontend/README.md`
+7. Tool docs: `tools/texas-mcp-server/README.md`, `tools/clickup-mcp-server/README.md`
 
-Must record timestamped entries for completed work.
+## 7. Response expectations
 
-**Notes/Decisions**
-
-Must capture important decisions or constraints.
-
-The phase file defines the complete scope of work for that phase.
-
-### 2.1 Optional Task Files
-
-Task files (`.claude/tasks/*.md`) are optional micro-level work units.
-
-- MUST conform to `.claude/templates/task-template.md`
-- MUST belong to exactly one agent
-- MUST NOT redefine scope—scope always comes from the phase file
-- MUST NOT be created unless the user explicitly requests task-level decomposition
-
-## 3. Agents and Selection Logic
-
-Available agents:
-
-- `backend-architect`
-- `frontend-developer`
-- `devops-engineer`
-- `test-automator`
-- `documentation-expert`
-
-Selection rules:
-
-- Backend API / logic / DB → backend-architect
-- UI / React / state / UX → frontend-developer
-- Infra / Docker / CI/CD / deploy → devops-engineer
-- Tests of any kind → test-automator
-- Docs / CHANGELOG / OpenAPI / architecture → documentation-expert
-- Cross-domain work MUST execute in this order:
-  1. backend-architect
-  2. frontend-developer
-  3. test-automator
-  4. documentation-expert
-
-### 3.1 Agent File Structure
-
-Agent files (`.claude/agents/*.md`) MUST follow `.claude/templates/agent-template.md`.
-
-All capabilities, constraints, and allowed tools MUST be defined according to this template.
-
-The Orchestrator MUST load agents according to this schema.
-
-## 4. Agent Tool Permissions
-
-Agents may only operate within their domain.
-
-- **backend-architect**
-  - read/search/write backend code
-  - run backend tests
-  - read backend documentation
-
-- **frontend-developer**
-  - read/search/write frontend code
-  - run frontend tests/build
-  - read frontend documentation
-
-- **devops-engineer**
-  - read/write infrastructure and deployment configuration
-  - run docker/CI-related commands
-  - read infra documentation
-
-- **test-automator**
-  - read/write test code
-  - run test suites
-  - read test guidelines
-
-- **documentation-expert**
-  - read/write documentation and CHANGELOG
-  - update API and architecture documents
-
-## 5. Execution Loop
-
-For every phase:
-
-1. Read the phase file, load agent definitions, and consult relevant documentation.
-2. For each incomplete subtask in AgentPlan:
-   - Adopt the corresponding agent persona.
-   - Implement required code, tests, or docs as minimal, targeted diffs.
-   - Modify only what is necessary to satisfy the subtask.
-3. Update the phase file's ProgressLog.
-4. Suggest updated status or next steps.
-
-Extraneous refactoring, stylistic changes, or unsolicited improvements are prohibited.
-
-## 6. Scope and Safety Rules
-
-The Orchestrator MUST enforce strict scope boundaries.
-
-**Allowed modifications:**
-
-- Files listed or implied by Tasks or AgentPlan
-- Corresponding test files
-- Documentation directly affected by the change
-- Config files only when required by the phase
-
-**Prohibited modifications:**
-
-- Files outside phase scope
-- `.claude/agents/*.md`
-- `.claude/claude.md`
-- Unrelated services or architecture
-
-Architectural changes require explicit user authorization.
-
-When information is ambiguous, choose the action that:
-
-- Preserves existing architecture
-- Minimizes scope
-- Avoids introducing new concepts
-
-Ask for clarification only if ambiguity cannot be resolved.
-
-Significant API changes MUST update docs and tests.
-
-## 7. Documentation Reference Order
-
-When additional context is needed, consult documentation in this order:
-
-1. Phase file (`.claude/phases/*.md`)
-2. Agent definitions (`.claude/agents/*.md`)
-3. Project-level documentation:
-   - `CONTRIBUTING.md`
-   - `docs/architecture.md`
-   - `README.md`
-   - `docs/troubleshooting.md`
-   - `infrastructure/README.md`
-   - `CHANGELOG.md`
-4. Service-level documentation:
-   - `apps/backend/README.md`
-   - `apps/frontend/README.md`
-5. Tool documentation:
-   - `tools/texas-mcp-server/README.md`
-   - `tools/clickup-mcp-server/README.md`
-
-## 8. Template Reference
-
-The following templates define authoritative schemas:
-
-- `.claude/templates/phase-template.md` → Phase files (`.claude/phases/*.md`)
-- `.claude/templates/task-template.md` → Optional task files (`.claude/tasks/*.md`)
-- `.claude/templates/agent-template.md` → Agent definitions (`.claude/agents/*.md`)
-
-All files MUST conform to their respective templates.
+- Make changes directly.
+- Briefly explain what changed and why.
+- Avoid meta commentary or internal reasoning.

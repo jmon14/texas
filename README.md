@@ -100,7 +100,6 @@ For detailed architecture information, see [System Architecture](docs/architectu
 This project includes AI tooling for enhanced development:
 
 - **MCP Server**: Provides Claude with automatic access to project context. See [tools/texas-mcp-server/](tools/texas-mcp-server/) and `.cursor/mcp.json` for configuration.
-- **Multi-Agent System**: Specialized agents for backend, frontend, DevOps, testing, and documentation. See [.claude/claude.md](.claude/claude.md) for details.
 
 ## 📚 Documentation
 

@@ -39,9 +39,9 @@ Stabilize the range comparison outputs from Phase 3 by (1) treating hands with z
 
 ---
 
-## AgentPlan
+## Plan
 
-### backend-architect
+### Backend changes
 
 - Adjust comparison algorithm to:
   - Skip user hands with no actions or total frequency 0.
@@ -51,7 +51,7 @@ Stabilize the range comparison outputs from Phase 3 by (1) treating hands with z
 - Propagate shape changes through interfaces and controller DTOs.
 - Handle backward compatibility for existing stored attempts (either via migration note or tolerant read/response mapping).
 
-### test-automator
+### Testing
 
 - Add unit coverage for:
   - Empty/zero-action user hands → missing, not frequency error.
@@ -60,7 +60,7 @@ Stabilize the range comparison outputs from Phase 3 by (1) treating hands with z
 - Update controller tests to assert the new response shape.
 - Add regression test for the reported sample scenario (user all-empty vs. populated GTO).
 
-### documentation-expert
+### Documentation
 
 - Update OpenAPI DTO annotations for the new frequency error structure.
 - Note behavior change in CHANGELOG (Phase 3.5) and emphasize the empty-hand handling rule.
@@ -70,7 +70,6 @@ Stabilize the range comparison outputs from Phase 3 by (1) treating hands with z
 ## Tasks
 
 ### Task 1: Comparison logic fixes
-**Agent:** backend-architect  
 **Files:** `apps/backend/src/scenarios/range-comparison.service.ts`, `apps/backend/src/scenarios/interfaces/comparison-result.interface.ts`, `apps/backend/src/scenarios/constants.ts` (if thresholds clarified)  
 **Details:**
 - Filter user hands with no actions or total frequency 0 from consideration.
@@ -79,7 +78,6 @@ Stabilize the range comparison outputs from Phase 3 by (1) treating hands with z
 - Ensure compareActions returns both max difference and per-action diffs.
 
 ### Task 2: Frequency error shape & persistence
-**Agent:** backend-architect  
 **Files:** `apps/backend/src/scenarios/interfaces/comparison-result.interface.ts`, `apps/backend/src/scenarios/dtos/comparison-result.dto.ts`, `apps/backend/src/scenarios/schemas/user-range-attempt.schema.ts`, `apps/backend/src/scenarios/user-range-attempts.service.ts`  
 **Details:**
 - Redefine frequency error item to include an actions array: `{ hand, actions: [{ type, userFrequency, gtoFrequency, difference }], maxDifference }`.
@@ -87,7 +85,6 @@ Stabilize the range comparison outputs from Phase 3 by (1) treating hands with z
 - Consider adding a lightweight response mapper that tolerates legacy shape for existing attempts.
 
 ### Task 3: Tests
-**Agent:** test-automator  
 **Files:** `apps/backend/src/scenarios/__tests__/range-comparison.service.spec.ts`, `apps/backend/src/scenarios/__tests__/user-range-attempts.controller.spec.ts` (and related)  
 **Details:**
 - Add cases: empty user actions → missing; extra ignores empty; per-action diffs asserted.
@@ -95,7 +92,6 @@ Stabilize the range comparison outputs from Phase 3 by (1) treating hands with z
 - Update controller tests to assert the new frequency error schema.
 
 ### Task 4: Documentation
-**Agent:** documentation-expert  
 **Files:** `apps/backend/src/scenarios/user-range-attempts.controller.ts`, `CHANGELOG.md`  
 **Details:**
 - Update Swagger DTOs to document the new frequency error shape.

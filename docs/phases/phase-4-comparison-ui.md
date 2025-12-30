@@ -60,6 +60,13 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 - Authentication with JWT tokens implemented
 - React + TypeScript setup with testing infrastructure
 
+**OpenAPI Client Status (Phase 4 prerequisite):**
+- The frontend OpenAPI client has already been regenerated manually via `npm run openapi:backend`
+- Verified: `apps/frontend/backend-api/api.ts` contains `UserRangeAttemptsApi` with:
+  - `POST /user-range-attempts/compare`
+  - `GET /user-range-attempts/user/{userId}/scenario/{scenarioId}`
+- Remaining wiring: add a `userRangeAttemptsApi` instance to `apps/frontend/src/api/api.ts` (it is not currently instantiated there)
+
 **Data Flow:**
 - User selects scenario → builds range → submits for comparison
 - Frontend calls POST /user-range-attempts/compare with scenarioId + userRangeId
@@ -69,27 +76,30 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ### Requirements
 
-1. Create ComparisonView component as main container for displaying comparison results
-2. Create HandDiffGrid component to display 13x13 poker hand grid with color-coded indicators
-3. Implement color coding: 🟢 correct, 🔴 missing, 🟡 extra, 🟠 frequency error, ⚪ not in range
-4. Create FeedbackPanel component for detailed explanations of errors and suggestions
-5. Create AccuracyScore component showing progress indicator for score visualization
-6. Implement legend explaining color meanings
-7. Create ScenarioPractice component as main container for practice flow
-8. Integrate scenario selection, range building, and comparison into cohesive flow
-9. Implement "Try Again" functionality (retry same scenario with fresh range)
-10. Implement "Next Scenario" functionality (progress to next scenario)
-11. Update frontend API client (OpenAPI/SDK layer) to call Phase 3 endpoints: POST /user-range-attempts/compare and GET /user-range-attempts/user/:userId/scenario/:scenarioId
-12. Handle loading states during API calls (comparison, scenario loading)
-13. Write component tests for all new components
-14. Write E2E tests for complete practice flow using Playwright
+1. Regenerate frontend API client (OpenAPI/SDK layer) from backend OpenAPI spec using the frontend script (`npm run openapi:backend`) and verify Phase 3 endpoints exist in `apps/frontend/backend-api/api.ts`
+2. Wire the generated `UserRangeAttemptsApi` into `apps/frontend/src/api/api.ts` (export a `userRangeAttemptsApi` instance, similar to other APIs)
+3. Create ComparisonView component as main container for displaying comparison results
+4. Create HandDiffGrid component to display 13x13 poker hand grid with color-coded indicators
+5. Implement color coding: 🟢 correct, 🔴 missing, 🟡 extra, 🟠 frequency error, ⚪ not in range
+6. Create FeedbackPanel component for detailed explanations of errors and suggestions
+7. Create AccuracyScore component showing progress indicator for score visualization
+8. Implement legend explaining color meanings
+9. Create ScenarioPractice component as main container for practice flow
+10. Integrate scenario selection, range building, and comparison into cohesive flow
+11. Implement "Try Again" functionality (retry same scenario with fresh range)
+12. Implement "Next Scenario" functionality (progress to next scenario)
+13. Handle loading states during API calls (comparison, scenario loading)
+14. Write component tests for all new components
+15. Write E2E tests for complete practice flow using Playwright
 
 ---
 
-## AgentPlan
+## Plan
 
-### frontend-developer
+### Frontend work
 
+- [x] OpenAPI prerequisite: regenerate via `npm run openapi:backend` and verify `UserRangeAttemptsApi` exists (**already done manually**)
+- [x] Add `userRangeAttemptsApi` to `apps/frontend/src/api/api.ts` (instantiate `UserRangeAttemptsApi` from `../../backend-api/api`)
 - [ ] Create ComparisonView component structure and layout
 - [ ] Implement HandDiffGrid component with 13x13 grid and color logic
 - [ ] Implement FeedbackPanel component for detailed feedback display
@@ -99,12 +109,11 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 - [ ] Integrate range builder with scenario practice flow
 - [ ] Implement "Try Again" flow logic
 - [ ] Implement "Next Scenario" flow logic
-- [ ] Update frontend API client/SDK to call POST /user-range-attempts/compare and GET /user-range-attempts/user/:userId/scenario/:scenarioId and expose hooks/services for ScenarioPractice
 - [ ] Add loading states and error handling
 - [ ] Connect components to comparison API endpoints
 - [ ] Update Redux state management for practice flow
 
-### test-automator
+### Testing
 
 - [ ] Write unit tests for ComparisonView component
 - [ ] Write unit tests for HandDiffGrid component
@@ -116,7 +125,7 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 - [ ] Write E2E tests for "Next Scenario" flow
 - [ ] Test loading states and error scenarios
 
-### documentation-expert
+### Documentation
 
 - [ ] Update CHANGELOG with Phase 4 completion
 - [ ] Document component props and usage patterns
@@ -126,9 +135,28 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ## Tasks
 
-### Task 1: Create ComparisonView Component
+### Task 0: OpenAPI Prerequisite + API Wiring
 
-**Agent:** frontend-developer
+**Files Affected:**
+- apps/frontend/backend-api/api.ts (generated; already updated by manual run)
+- apps/frontend/src/api/api.ts
+
+**Requirements:**
+
+- Ensure the frontend OpenAPI client has been regenerated via `npm run openapi:backend` (**already done manually**)
+- Verify `UserRangeAttemptsApi` exists in `apps/frontend/backend-api/api.ts` with:
+  - `compareRanges` → `POST /user-range-attempts/compare`
+  - `getAttemptHistory` → `GET /user-range-attempts/user/{userId}/scenario/{scenarioId}`
+- Add `userRangeAttemptsApi` to `apps/frontend/src/api/api.ts` by instantiating `UserRangeAttemptsApi` with the shared `backendInstance`
+
+**Acceptance Criteria:**
+
+- [x] `apps/frontend/src/api/api.ts` exports a `userRangeAttemptsApi` instance for Phase 4 components to consume
+- [ ] Scenario practice flow can call compare + attempt history via the generated client without direct axios usage
+
+---
+
+### Task 1: Create ComparisonView Component
 
 **Files Affected:**
 - apps/frontend/src/components/ComparisonView/ComparisonView.tsx (new)
@@ -137,27 +165,42 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 **Requirements:**
 
-- Create ComparisonView functional component accepting ComparisonResult prop
-- Design responsive layout container for comparison results
-- Include HandDiffGrid, FeedbackPanel, and AccuracyScore as child components
-- Pass categorized hands data to HandDiffGrid
-- Pass feedback data to FeedbackPanel
-- Pass accuracy score to AccuracyScore component
-- Style with CSS modules for scoped styling
-- Ensure proper TypeScript typing for all props
+- Create `ComparisonView` as the Wizard-like “results screen” shown after submitting a range for comparison.
+- Inputs must be sufficient to render **two grids**:
+  - **Yours**: the submitted user range (from local state or the saved `RangeResponseDto`)
+  - **Target (GTO)**: the reference/GTO actions returned by the comparison endpoint (per-hand `gtoAction`)
+- Use the existing range UI primitives where possible (e.g. `RangeGrid` / `RangeCell`) instead of inventing a new 13x13 renderer.
+- Layout (responsive):
+  - Header area: title + attempt number (if available) + navigation actions (e.g. “Try Again”, “Next Scenario” wired later in Task 6/7)
+  - Main content: side-by-side grids (**Yours** / **Target**) on desktop, stacked on narrow screens
+  - Side panel (or top section on mobile): `AccuracyScore` + category breakdown + legend
+- Provide an always-visible legend and category filter controls:
+  - 🟢 correct
+  - 🔴 missing
+  - 🟡 extra
+  - 🟠 frequency error
+  - ⚪ not in range / neutral
+- Hover behavior (minimum viable):
+  - Show hand label + category
+  - Show user and GTO action distributions (frequencies per action type) when present
+  - For frequency errors, also show per-action differences when available from the API
+- Styling:
+  - Follow existing frontend patterns (MUI `sx`/theme or CSS modules if needed); do not require a full CSS-module styling rewrite if it conflicts with current component style.
+- TypeScript:
+  - Strongly type props using generated OpenAPI types (`ComparisonResultDto`, `RangeResponseDto`, etc.) and local UI models where appropriate.
 
 **Acceptance Criteria:**
 
-- [ ] ComparisonView renders all child components correctly
-- [ ] Layout is responsive and visually appealing
-- [ ] Props properly typed with TypeScript
-- [ ] CSS modules applied without style conflicts
+- [ ] `ComparisonView` renders **two** range grids labeled **Yours** and **Target**
+- [ ] Category coloring/legend is present and consistent across the view
+- [ ] Category filters (e.g. Missing/Extra/Frequency error) visually highlight the corresponding hands across both grids
+- [ ] Hover tooltip shows action frequencies for the hand (user + GTO where applicable) and shows per-action diffs for frequency errors
+- [ ] Layout is responsive (side-by-side on desktop; stacked on small screens) and matches the intended Wizard-like UX
+- [ ] Props are properly typed with TypeScript and compile in strict mode
 
 ---
 
 ### Task 2: Implement HandDiffGrid Component
-
-**Agent:** frontend-developer
 
 **Files Affected:**
 - apps/frontend/src/components/ComparisonView/HandDiffGrid.tsx (new)
@@ -190,8 +233,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ### Task 3: Create FeedbackPanel Component
 
-**Agent:** frontend-developer
-
 **Files Affected:**
 - apps/frontend/src/components/ComparisonView/FeedbackPanel.tsx (new)
 - apps/frontend/src/components/ComparisonView/FeedbackPanel.module.css (new)
@@ -220,8 +261,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ### Task 4: Implement AccuracyScore Component
 
-**Agent:** frontend-developer
-
 **Files Affected:**
 - apps/frontend/src/components/ComparisonView/AccuracyScore.tsx (new)
 - apps/frontend/src/components/ComparisonView/AccuracyScore.module.css (new)
@@ -249,8 +288,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ### Task 5: Create Color Legend Component
 
-**Agent:** frontend-developer
-
 **Files Affected:**
 - apps/frontend/src/components/ComparisonView/ColorLegend.tsx (new)
 - apps/frontend/src/components/ComparisonView/ColorLegend.module.css (new)
@@ -275,8 +312,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 ---
 
 ### Task 6: Create ScenarioPractice Component
-
-**Agent:** frontend-developer
 
 **Files Affected:**
 - apps/frontend/src/components/ScenarioPractice/ScenarioPractice.tsx (new)
@@ -313,8 +348,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ### Task 7: Implement Flow Navigation Logic
 
-**Agent:** frontend-developer
-
 **Files Affected:**
 - apps/frontend/src/components/ScenarioPractice/ScenarioPractice.tsx
 - apps/frontend/src/store/slices/practice-slice.ts (new)
@@ -345,8 +378,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 ---
 
 ### Task 8: Add Loading States and Error Handling
-
-**Agent:** frontend-developer
 
 **Files Affected:**
 - apps/frontend/src/components/ScenarioPractice/ScenarioPractice.tsx
@@ -383,8 +414,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ### Task 9: Write Component Unit Tests
 
-**Agent:** test-automator
-
 **Files Affected:**
 - apps/frontend/src/components/ComparisonView/ComparisonView.test.tsx (new)
 - apps/frontend/src/components/ComparisonView/HandDiffGrid.test.tsx (new)
@@ -416,8 +445,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 ---
 
 ### Task 10: Write E2E Tests for Practice Flow
-
-**Agent:** test-automator
 
 **Files Affected:**
 - apps/frontend/tests/e2e/scenario-practice.spec.ts (new)
@@ -452,8 +479,6 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ### Task 11: Update CHANGELOG
 
-**Agent:** documentation-expert
-
 **Files Affected:**
 - CHANGELOG.md
 
@@ -478,9 +503,15 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 
 ## ProgressLog
 
-- 2025-12-06 - orchestrator - Created Phase 4 phase file from ClickUp tasks
+- 2025-12-06 - Created Phase 4 phase file from ClickUp tasks
   - Files created: .claude/phases/phase-4.md
   - Source: ClickUp tasks 869b0v5k1 (Build Scenario Practice Flow) and 869b0v5j7 (Build Comparison View Components)
+
+- 2025-12-18 - Confirmed OpenAPI client already regenerated + endpoints present
+  - Verified `apps/frontend/backend-api/api.ts` includes `UserRangeAttemptsApi` with:
+    - `POST /user-range-attempts/compare`
+    - `GET /user-range-attempts/user/{userId}/scenario/{scenarioId}`
+  - Remaining: wire `UserRangeAttemptsApi` into `apps/frontend/src/api/api.ts`
 
 ---
 
@@ -510,7 +541,7 @@ Build the complete frontend user flow for scenario practice, from scenario selec
 - Response includes categorized hands (correct, missing, extra, frequencyError)
 - Accuracy score calculated by backend: (correctHands / totalGtoHands) * 100
 - Frontend displays results, does not recalculate
-- Frontend API client/SDK updated to Phase 3 endpoints and exposed to ScenarioPractice
+- Frontend API client/SDK regenerated from backend OpenAPI spec via the frontend script (`npm run openapi:backend`), updated to Phase 3 endpoints, and exposed to ScenarioPractice
 
 **Testing Strategy:**
 - Unit tests for individual components with mocked dependencies
