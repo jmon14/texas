@@ -426,6 +426,19 @@ export type CreateScenarioDtoCategoryEnum =
 /**
  *
  * @export
+ * @interface EmailDto
+ */
+export interface EmailDto {
+  /**
+   * User email address
+   * @type {string}
+   * @memberof EmailDto
+   */
+  email: string;
+}
+/**
+ *
+ * @export
  * @interface ExtraHandDto
  */
 export interface ExtraHandDto {
@@ -454,6 +467,12 @@ export interface ExtraHandDto {
  * @interface FileEntity
  */
 export interface FileEntity {
+  /**
+   *
+   * @type {string}
+   * @memberof FileEntity
+   */
+  uuid: string;
   /**
    *
    * @type {string}
@@ -607,6 +626,25 @@ export interface HandRangeDto {
    * @memberof HandRangeDto
    */
   actions: Array<ActionDto>;
+}
+/**
+ *
+ * @export
+ * @interface LoginDto
+ */
+export interface LoginDto {
+  /**
+   * Username
+   * @type {string}
+   * @memberof LoginDto
+   */
+  username: string;
+  /**
+   * Password (min 8 chars)
+   * @type {string}
+   * @memberof LoginDto
+   */
+  password: string;
 }
 /**
  *
@@ -787,9 +825,40 @@ export interface ReferenceRangeResponseDto {
 /**
  *
  * @export
+ * @interface RegisterDto
+ */
+export interface RegisterDto {
+  /**
+   * Username
+   * @type {string}
+   * @memberof RegisterDto
+   */
+  username: string;
+  /**
+   * Password (min 8 chars)
+   * @type {string}
+   * @memberof RegisterDto
+   */
+  password: string;
+  /**
+   * Email address
+   * @type {string}
+   * @memberof RegisterDto
+   */
+  email: string;
+}
+/**
+ *
+ * @export
  * @interface ResetPwdDto
  */
 export interface ResetPwdDto {
+  /**
+   * JWT token
+   * @type {string}
+   * @memberof ResetPwdDto
+   */
+  token: string;
   /**
    *
    * @type {string}
@@ -1022,6 +1091,19 @@ export interface SolveParametersDto {
 /**
  *
  * @export
+ * @interface TokenDto
+ */
+export interface TokenDto {
+  /**
+   * JWT token
+   * @type {string}
+   * @memberof TokenDto
+   */
+  token: string;
+}
+/**
+ *
+ * @export
  * @interface UpdateRangeDto
  */
 export interface UpdateRangeDto {
@@ -1050,6 +1132,12 @@ export interface UpdateRangeDto {
  * @interface UserEntity
  */
 export interface UserEntity {
+  /**
+   *
+   * @type {string}
+   * @memberof UserEntity
+   */
+  uuid: string;
   /**
    *
    * @type {string}
@@ -1170,13 +1258,16 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
   return {
     /**
      *
-     * @param {object} body Use username and password for authentication and return user
+     * @param {LoginDto} loginDto Use username and password for authentication and return user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    login: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      assertParamExists('login', 'body', body);
+    login: async (
+      loginDto: LoginDto,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'loginDto' is not null or undefined
+      assertParamExists('login', 'loginDto', loginDto);
       const localVarPath = `/auth/login`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1199,7 +1290,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        body,
+        loginDto,
         localVarRequestOptions,
         configuration,
       );
@@ -1273,16 +1364,16 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
     },
     /**
      *
-     * @param {object} body Resend email verification link
+     * @param {EmailDto} emailDto Resend email verification link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     resendVerificationEmail: async (
-      body: object,
+      emailDto: EmailDto,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      assertParamExists('resendVerificationEmail', 'body', body);
+      // verify required parameter 'emailDto' is not null or undefined
+      assertParamExists('resendVerificationEmail', 'emailDto', emailDto);
       const localVarPath = `/auth/resend-verification`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1305,7 +1396,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        body,
+        emailDto,
         localVarRequestOptions,
         configuration,
       );
@@ -1317,16 +1408,16 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
     },
     /**
      *
-     * @param {object} body Send email with reset password link
+     * @param {EmailDto} emailDto Send email with reset password link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     sendResetEmail: async (
-      body: object,
+      emailDto: EmailDto,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      assertParamExists('sendResetEmail', 'body', body);
+      // verify required parameter 'emailDto' is not null or undefined
+      assertParamExists('sendResetEmail', 'emailDto', emailDto);
       const localVarPath = `/auth/reset`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1349,7 +1440,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        body,
+        emailDto,
         localVarRequestOptions,
         configuration,
       );
@@ -1371,15 +1462,15 @@ export const AuthApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {object} body Use username and password for authentication and return user
+     * @param {LoginDto} loginDto Use username and password for authentication and return user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async login(
-      body: object,
+      loginDto: LoginDto,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserEntity>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.login(body, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.login(loginDto, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['AuthApi.login']?.[localVarOperationServerIndex]?.url;
@@ -1433,16 +1524,16 @@ export const AuthApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {object} body Resend email verification link
+     * @param {EmailDto} emailDto Resend email verification link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async resendVerificationEmail(
-      body: object,
+      emailDto: EmailDto,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.resendVerificationEmail(
-        body,
+        emailDto,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -1458,15 +1549,15 @@ export const AuthApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {object} body Send email with reset password link
+     * @param {EmailDto} emailDto Send email with reset password link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async sendResetEmail(
-      body: object,
+      emailDto: EmailDto,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.sendResetEmail(body, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.sendResetEmail(emailDto, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['AuthApi.sendResetEmail']?.[localVarOperationServerIndex]?.url;
@@ -1494,12 +1585,12 @@ export const AuthApiFactory = function (
   return {
     /**
      *
-     * @param {object} body Use username and password for authentication and return user
+     * @param {LoginDto} loginDto Use username and password for authentication and return user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    login(body: object, options?: RawAxiosRequestConfig): AxiosPromise<UserEntity> {
-      return localVarFp.login(body, options).then((request) => request(axios, basePath));
+    login(loginDto: LoginDto, options?: RawAxiosRequestConfig): AxiosPromise<UserEntity> {
+      return localVarFp.login(loginDto, options).then((request) => request(axios, basePath));
     },
     /**
      *
@@ -1519,23 +1610,28 @@ export const AuthApiFactory = function (
     },
     /**
      *
-     * @param {object} body Resend email verification link
+     * @param {EmailDto} emailDto Resend email verification link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    resendVerificationEmail(body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+    resendVerificationEmail(
+      emailDto: EmailDto,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
       return localVarFp
-        .resendVerificationEmail(body, options)
+        .resendVerificationEmail(emailDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {object} body Send email with reset password link
+     * @param {EmailDto} emailDto Send email with reset password link
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    sendResetEmail(body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-      return localVarFp.sendResetEmail(body, options).then((request) => request(axios, basePath));
+    sendResetEmail(emailDto: EmailDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+      return localVarFp
+        .sendResetEmail(emailDto, options)
+        .then((request) => request(axios, basePath));
     },
   };
 };
@@ -1549,14 +1645,14 @@ export const AuthApiFactory = function (
 export class AuthApi extends BaseAPI {
   /**
    *
-   * @param {object} body Use username and password for authentication and return user
+   * @param {LoginDto} loginDto Use username and password for authentication and return user
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AuthApi
    */
-  public login(body: object, options?: RawAxiosRequestConfig) {
+  public login(loginDto: LoginDto, options?: RawAxiosRequestConfig) {
     return AuthApiFp(this.configuration)
-      .login(body, options)
+      .login(loginDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -1586,27 +1682,27 @@ export class AuthApi extends BaseAPI {
 
   /**
    *
-   * @param {object} body Resend email verification link
+   * @param {EmailDto} emailDto Resend email verification link
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AuthApi
    */
-  public resendVerificationEmail(body: object, options?: RawAxiosRequestConfig) {
+  public resendVerificationEmail(emailDto: EmailDto, options?: RawAxiosRequestConfig) {
     return AuthApiFp(this.configuration)
-      .resendVerificationEmail(body, options)
+      .resendVerificationEmail(emailDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @param {object} body Send email with reset password link
+   * @param {EmailDto} emailDto Send email with reset password link
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AuthApi
    */
-  public sendResetEmail(body: object, options?: RawAxiosRequestConfig) {
+  public sendResetEmail(emailDto: EmailDto, options?: RawAxiosRequestConfig) {
     return AuthApiFp(this.configuration)
-      .sendResetEmail(body, options)
+      .sendResetEmail(emailDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -3782,13 +3878,16 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
   return {
     /**
      *
-     * @param {object} body Confirm email by decoding token and updating user in DB
+     * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    confirm: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      assertParamExists('confirm', 'body', body);
+    confirm: async (
+      tokenDto: TokenDto,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'tokenDto' is not null or undefined
+      assertParamExists('confirm', 'tokenDto', tokenDto);
       const localVarPath = `/users/confirm`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3811,7 +3910,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        body,
+        tokenDto,
         localVarRequestOptions,
         configuration,
       );
@@ -3823,13 +3922,16 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
-     * @param {object} body Create user from payload, send verification email and return created user
+     * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUser: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      assertParamExists('createUser', 'body', body);
+    createUser: async (
+      registerDto: RegisterDto,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'registerDto' is not null or undefined
+      assertParamExists('createUser', 'registerDto', registerDto);
       const localVarPath = `/users/create`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3852,7 +3954,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        body,
+        registerDto,
         localVarRequestOptions,
         configuration,
       );
@@ -4048,15 +4150,15 @@ export const UsersApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {object} body Confirm email by decoding token and updating user in DB
+     * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async confirm(
-      body: object,
+      tokenDto: TokenDto,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.confirm(body, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.confirm(tokenDto, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['UsersApi.confirm']?.[localVarOperationServerIndex]?.url;
@@ -4070,15 +4172,15 @@ export const UsersApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {object} body Create user from payload, send verification email and return created user
+     * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createUser(
-      body: object,
+      registerDto: RegisterDto,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserEntity>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(body, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(registerDto, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['UsersApi.createUser']?.[localVarOperationServerIndex]?.url;
@@ -4210,21 +4312,26 @@ export const UsersApiFactory = function (
   return {
     /**
      *
-     * @param {object} body Confirm email by decoding token and updating user in DB
+     * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    confirm(body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-      return localVarFp.confirm(body, options).then((request) => request(axios, basePath));
+    confirm(tokenDto: TokenDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+      return localVarFp.confirm(tokenDto, options).then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {object} body Create user from payload, send verification email and return created user
+     * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUser(body: object, options?: RawAxiosRequestConfig): AxiosPromise<UserEntity> {
-      return localVarFp.createUser(body, options).then((request) => request(axios, basePath));
+    createUser(
+      registerDto: RegisterDto,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<UserEntity> {
+      return localVarFp
+        .createUser(registerDto, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
@@ -4280,27 +4387,27 @@ export const UsersApiFactory = function (
 export class UsersApi extends BaseAPI {
   /**
    *
-   * @param {object} body Confirm email by decoding token and updating user in DB
+   * @param {TokenDto} tokenDto Confirm email by decoding token and updating user in DB
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UsersApi
    */
-  public confirm(body: object, options?: RawAxiosRequestConfig) {
+  public confirm(tokenDto: TokenDto, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
-      .confirm(body, options)
+      .confirm(tokenDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @param {object} body Create user from payload, send verification email and return created user
+   * @param {RegisterDto} registerDto Create user from payload, send verification email and return created user
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UsersApi
    */
-  public createUser(body: object, options?: RawAxiosRequestConfig) {
+  public createUser(registerDto: RegisterDto, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
-      .createUser(body, options)
+      .createUser(registerDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

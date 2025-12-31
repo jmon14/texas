@@ -1,5 +1,5 @@
 // NestJS
-import { ApiHideProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 // External libraries
 import { Exclude } from 'class-transformer';
@@ -10,6 +10,7 @@ import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'type
  */
 export abstract class AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
+  @ApiProperty({ format: 'uuid' })
   public uuid: string;
 
   @CreateDateColumn()
