@@ -1,6 +1,3 @@
-// Redux
-import { configureStore } from '@reduxjs/toolkit';
-
 // Slice
 import rangeReducer, {
   createRange,
@@ -14,6 +11,9 @@ import rangeReducer, {
   RangeState,
 } from '../range-slice';
 
+// Store
+import { setupStore } from '../../store';
+
 // MSW
 import { server } from '../../../msw/server';
 import { rangeErrorHandlers, mockRange, mockRanges } from '../../../msw/handlers';
@@ -22,14 +22,7 @@ import { rangeErrorHandlers, mockRange, mockRanges } from '../../../msw/handlers
 import { FetchStatus } from '../../../constants';
 
 // Helper to create test store
-const createTestStore = (preloadedState?: { range: RangeState }) => {
-  return configureStore({
-    reducer: {
-      range: rangeReducer,
-    },
-    preloadedState,
-  });
-};
+const createTestStore = (preloadedState?: { range: RangeState }) => setupStore(preloadedState);
 
 describe('range-slice', () => {
   describe('reducers', () => {
@@ -76,7 +69,7 @@ describe('range-slice', () => {
     it('should select range state', () => {
       const store = createTestStore();
 
-      const rangeState = selectRange(store.getState() as any);
+      const rangeState = selectRange(store.getState());
       expect(rangeState.status).toBe(FetchStatus.IDDLE);
       expect(rangeState.currentRange).toBeNull();
       expect(rangeState.ranges).toEqual([]);
@@ -204,8 +197,7 @@ describe('range-slice', () => {
     });
 
     describe('updateRange', () => {
-      // TODO: Fix type mismatch in range-slice.ts updateRange thunk (passes RangeResponseDto instead of UpdateRangeDto)
-      it.skip('should update range successfully', async () => {
+      it('should update range successfully', async () => {
         const store = createTestStore();
 
         await store.dispatch(
@@ -214,7 +206,7 @@ describe('range-slice', () => {
             range: {
               name: 'Updated Range',
               handsRange: mockRange.handsRange,
-            } as any, // Type mismatch in slice implementation - casting for test
+            },
             userId: 'user-123',
           }),
         );

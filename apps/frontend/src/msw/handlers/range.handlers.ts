@@ -2,7 +2,12 @@
 import { http, HttpResponse } from 'msw';
 
 // Interfaces
-import { CreateRangeDto, RangeResponseDto, UpdateRangeDto } from '../../../backend-api/api';
+import {
+  ActionDtoTypeEnum,
+  CreateRangeDto,
+  RangeResponseDto,
+  UpdateRangeDto,
+} from '../../../backend-api/api';
 
 // Mock data
 const mockRange: RangeResponseDto = {
@@ -13,7 +18,7 @@ const mockRange: RangeResponseDto = {
     {
       carryoverFrequency: 50,
       label: 'RAISE',
-      actions: [{ type: 'RAISE' as any, frequency: 50 }],
+      actions: [{ type: ActionDtoTypeEnum.Raise, frequency: 50 }],
     },
   ],
 };
@@ -28,7 +33,7 @@ const mockRanges: RangeResponseDto[] = [
       {
         carryoverFrequency: 30,
         label: 'CALL',
-        actions: [{ type: 'CALL' as any, frequency: 30 }],
+        actions: [{ type: ActionDtoTypeEnum.Call, frequency: 30 }],
       },
     ],
   },
@@ -75,8 +80,8 @@ export const rangeHandlers = [
     return HttpResponse.json(newRange, { status: 201 });
   }),
 
-  // PATCH /ranges/:id - Update range
-  http.patch<{ id: string }, UpdateRangeDto>(
+  // PUT /ranges/:id - Update range
+  http.put<{ id: string }, UpdateRangeDto>(
     'http://localhost:3000/ranges/:id',
     async ({ params, request }) => {
       const { id } = params;
@@ -132,7 +137,7 @@ export const rangeErrorHandlers = {
   }),
 
   // Update range - Not found
-  updateRangeNotFound: http.patch('http://localhost:3000/ranges/:id', () => {
+  updateRangeNotFound: http.put('http://localhost:3000/ranges/:id', () => {
     return new HttpResponse(JSON.stringify({ message: 'Range not found' }), {
       status: 404,
       headers: {

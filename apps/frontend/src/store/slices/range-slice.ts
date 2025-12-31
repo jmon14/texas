@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RangeResponseDto } from '../../../backend-api/api';
+import { RangeResponseDto, UpdateRangeDto } from '../../../backend-api/api';
 import { FetchStatus } from '../../constants';
 import { AxiosError } from 'axios';
 import { RootState } from '../store';
@@ -56,12 +56,10 @@ export const getRangeById = createAsyncThunk(
 );
 
 // Async thunk for updating range
-// TODO: Fix type mismatch - should accept UpdateRangeDto instead of Omit<RangeResponseDto, '_id'>
-// Currently passing extra fields (userId) that backend doesn't expect
 export const updateRange = createAsyncThunk(
   'range/update',
   async (
-    { id, range, userId }: { id: string; range: Omit<RangeResponseDto, '_id'>; userId: string },
+    { id, range, userId }: { id: string; range: UpdateRangeDto; userId: string },
     { rejectWithValue },
   ) => {
     try {
