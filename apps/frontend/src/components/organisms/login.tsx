@@ -17,11 +17,62 @@ import useUser from '../../hooks/useUser';
 // Utils
 import { getLoginConfigForm, LoginControls, InitialValue } from '../../utils/form-utils';
 
+/**
+ * Props for the Login component
+ * @interface LoginProps
+ */
 type LoginProps = {
+  /** Optional initial form values for email and password fields */
   initialValues?: InitialValue<LoginControls>;
 };
 
-// Login form component
+/**
+ * Login component - User authentication form with email and password.
+ *
+ * Provides a complete login interface with form validation, error handling,
+ * and navigation links to registration and password reset. Integrates with
+ * Redux for authentication state management. Shows loading states and error
+ * messages from the authentication API.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Basic usage in auth route
+ * <Route path="/auth/login" element={<Login />} />
+ * ```
+ *
+ * @example
+ * With initial values (e.g., for testing)
+ * ```tsx
+ * <Login
+ *   initialValues={{
+ *     email: 'test@example.com',
+ *     password: 'password123'
+ *   }}
+ * />
+ * ```
+ *
+ * @example
+ * In auth layout
+ * ```tsx
+ * <AuthLayout title="Sign In">
+ *   <Login />
+ * </AuthLayout>
+ * ```
+ *
+ * @param {LoginProps} props - The component props
+ * @param {Object} [props.initialValues] - Initial form field values
+ * @returns {JSX.Element} Rendered login form with navigation links
+ *
+ * @remarks
+ * Features:
+ * - Email and password validation
+ * - Shows error messages from failed login attempts
+ * - Links to registration page for new users
+ * - Link to password reset page
+ * - Loading state during authentication
+ * - Automatic redirect to home on successful login
+ */
 const Login = ({ initialValues = {} }: LoginProps) => {
   const [dispatch, { error, status }] = useUser();
 

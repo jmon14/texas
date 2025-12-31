@@ -17,10 +17,65 @@ import useUser from '../../hooks/useUser';
 // Utils
 import { getRegisterConfigForm, InitialValue, RegisterControls } from '../../utils/form-utils';
 
+/**
+ * Props for the Register component
+ * @interface RegisterProps
+ */
 type RegisterProps = {
+  /** Optional initial form values for registration fields */
   initialValues?: InitialValue<RegisterControls>;
 };
 
+/**
+ * Register component - User registration form for new account creation.
+ *
+ * Provides a complete registration interface with form validation, error handling,
+ * and navigation link to login. Integrates with Redux for user signup and state
+ * management. Includes fields for email, username, password, and password confirmation.
+ * Shows loading states and error messages from the registration API.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Basic usage in auth route
+ * <Route path="/auth/register" element={<Register />} />
+ * ```
+ *
+ * @example
+ * With initial values (e.g., for testing)
+ * ```tsx
+ * <Register
+ *   initialValues={{
+ *     email: 'test@example.com',
+ *     username: 'testuser',
+ *     password: 'password123',
+ *     passwordConfirmation: 'password123'
+ *   }}
+ * />
+ * ```
+ *
+ * @example
+ * In auth layout
+ * ```tsx
+ * <AuthLayout title="Create Account">
+ *   <Register />
+ * </AuthLayout>
+ * ```
+ *
+ * @param {RegisterProps} props - The component props
+ * @param {Object} [props.initialValues] - Initial form field values
+ * @returns {JSX.Element} Rendered registration form with navigation link
+ *
+ * @remarks
+ * Features:
+ * - Email, username, and password validation
+ * - Password confirmation matching
+ * - Shows error messages from failed registration attempts
+ * - Link to login page for existing users
+ * - Loading state during account creation
+ * - Automatic redirect to validation page on successful signup
+ * - Requires email verification after registration
+ */
 const Register = ({ initialValues }: RegisterProps) => {
   const [dispatch, { error, status }] = useUser();
 

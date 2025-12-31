@@ -24,7 +24,10 @@ export type FormV2Props<TFormFields extends FieldValues> = {
   error?: string;
   success?: string;
   submitButtonText?: string;
-} & Omit<DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>, 'onSubmit'>;
+} & Omit<
+  DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>,
+  'onSubmit' | 'title'
+>;
 
 // ! Warning: This component is not yet fully implemented.
 const FormV2 = <TFormFields extends FieldValues>({

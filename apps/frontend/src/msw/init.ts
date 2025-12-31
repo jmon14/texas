@@ -23,7 +23,4 @@ export async function initMSW(): Promise<void> {
   await worker.start({
     onUnhandledRequest: 'bypass',
   });
-
-  // eslint-disable-next-line no-console
-  console.log('[MSW] Browser worker started for E2E tests');
 }

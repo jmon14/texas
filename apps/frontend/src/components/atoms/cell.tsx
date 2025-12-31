@@ -45,7 +45,7 @@ export type CellProps = React.DOMAttributes<Element> &
  *     { type: 'Raise', frequency: 60 },
  *     { type: 'Call', frequency: 40 }
  *   ]}
- *   onClick={() => console.log('Cell clicked')}
+ *   onClick={() => {}}
  * />
  * ```
  *

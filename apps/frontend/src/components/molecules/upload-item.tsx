@@ -40,7 +40,7 @@ type UploadItemProps = {
  * <UploadItem
  *   url="/api/files/upload"
  *   file={selectedFile}
- *   onRemove={(file) => console.log('Remove', file.name)}
+ *   onRemove={(_file) => {}}
  * />
  * ```
  *

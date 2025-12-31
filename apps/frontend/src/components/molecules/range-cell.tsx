@@ -41,7 +41,7 @@ type RangeCellProps = CellProps & {
  *     { type: 'Raise', frequency: 80 },
  *     { type: 'Call', frequency: 20 }
  *   ]}
- *   onClick={() => console.log('Cell clicked')}
+ *   onClick={() => {}}
  * />
  * ```
  *

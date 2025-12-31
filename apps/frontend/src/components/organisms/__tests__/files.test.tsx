@@ -23,7 +23,7 @@ describe('Files', () => {
     const uuidElements = screen.getAllByText('uuid');
     expect(uuidElements.length).toBeGreaterThan(0);
     expect(screen.getByText('test url')).toBeInTheDocument();
-    expect(screen.getByText('test key')).toBeInTheDocument();
+    expect(screen.getByText('test name')).toBeInTheDocument();
   });
 
   it('should render table headers', () => {
@@ -34,7 +34,7 @@ describe('Files', () => {
     expect(thead).toBeInTheDocument();
     expect(thead).toHaveTextContent('uuid');
     expect(thead).toHaveTextContent('url');
-    expect(thead).toHaveTextContent('key');
+    expect(thead).toHaveTextContent('name');
   });
 
   it('should render in centered layout', () => {

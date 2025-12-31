@@ -51,7 +51,7 @@ type ActionProps = {
  * Basic usage with raise action
  * <ActionComponent
  *   initialAction={{ type: 'Raise', frequency: 60 }}
- *   onChange={(updated) => console.log('New frequency:', updated.frequency)}
+ *   onChange={(updated) => {}}
  * />
  * ```
  *

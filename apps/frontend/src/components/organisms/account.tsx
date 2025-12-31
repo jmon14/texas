@@ -24,8 +24,63 @@ import { selectAuthenticatedUser, resendVerification, reset } from '../../store/
 // Constants
 import { FetchStatus } from '../../constants';
 
+/**
+ * Props for the Account component
+ * @interface AccountProps
+ */
 type AccountProps = Record<string, never>;
 
+/**
+ * Account component - User account management and settings page.
+ *
+ * Displays user account information and provides access to account management
+ * actions including email verification, password reset, and account deletion.
+ * Shows user profile with avatar, email, username, and account status. Includes
+ * loading states and success/error alerts for all actions. Uses confirmation
+ * dialog for destructive actions.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Basic usage in route
+ * <Route path="/account" element={<Account />} />
+ * ```
+ *
+ * @example
+ * In protected route with authentication
+ * ```tsx
+ * <ProtectedRoute>
+ *   <Route path="/settings" element={<Account />} />
+ * </ProtectedRoute>
+ * ```
+ *
+ * @example
+ * In layout with navigation
+ * ```tsx
+ * <DashboardLayout>
+ *   <Account />
+ * </DashboardLayout>
+ * ```
+ *
+ * @param {AccountProps} props - The component props (currently empty)
+ * @returns {JSX.Element} Rendered account settings page with user actions
+ *
+ * @remarks
+ * Features:
+ * - Displays user profile information (email, username, avatar)
+ * - Shows account verification status
+ * - Resend verification email (for unverified accounts)
+ * - Request password reset email
+ * - Delete account (with confirmation dialog)
+ * - Loading states for all async operations
+ * - Success/error alerts with descriptive messages
+ * - Confirmation dialog prevents accidental account deletion
+ *
+ * Account Actions:
+ * 1. **Resend Verification** - Only shown if account not verified
+ * 2. **Reset Password** - Sends password reset link to user's email
+ * 3. **Delete Account** - Shows confirmation dialog (TODO: Not yet implemented)
+ */
 const Account = ({}: AccountProps) => {
   const user = useAppSelector(selectAuthenticatedUser);
   const dispatch = useAppDispatch();
