@@ -20,6 +20,53 @@ import {
 import RangeSelector from './range-selector';
 import { RangeControls } from '../../utils/form-utils';
 
+/**
+ * RangeBuilder component - Main interface for building and managing poker hand ranges.
+ *
+ * Provides a complete poker range building workflow with:
+ * - Interactive 13x13 hand range grid for selecting hands
+ * - Action list editor for setting bet/call/fold frequencies
+ * - Range selector dropdown to load saved ranges
+ * - Range form for creating/updating/deleting ranges
+ * - Enforces 10-range limit per user
+ * - Integrates with Redux for state management and API persistence
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Basic usage (typically in a route)
+ * <Route path="/range" element={<RangeBuilder />} />
+ * ```
+ *
+ * @example
+ * In a page component
+ * ```tsx
+ * function RangePage() {
+ *   return (
+ *     <Box sx={{ p: 3 }}>
+ *       <Typography variant="h4">Build Your Range</Typography>
+ *       <RangeBuilder />
+ *     </Box>
+ *   );
+ * }
+ * ```
+ *
+ * @returns {JSX.Element} Rendered range builder interface with grid, actions, and form controls
+ *
+ * @remarks
+ * This component manages complex state including:
+ * - Current range being edited (hands, actions, metadata)
+ * - User's saved ranges (fetched on mount)
+ * - Action frequencies that get applied to selected cells
+ * - Create/update/delete operations via Redux thunks
+ *
+ * Features:
+ * - Click individual cells to apply current actions
+ * - Drag to select multiple cells at once
+ * - Switch between saved ranges via dropdown
+ * - Auto-saves changes when form is submitted
+ * - Prevents creating more than 10 ranges per user
+ */
 const RangeBuilder = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectAuthenticatedUser);

@@ -16,11 +16,48 @@ const Cell = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.grey[600],
 }));
 
+/**
+ * Props for the Cell component
+ * @interface CellProps
+ * @extends {React.DOMAttributes<Element>}
+ * @extends {HandRangeDto}
+ */
 export type CellProps = React.DOMAttributes<Element> &
   HandRangeDto & {
+    /** Optional click handler for cell interactions */
     onClick?: () => void;
   };
 
+/**
+ * Cell component for displaying poker hand ranges with visual action frequencies.
+ *
+ * Displays a poker hand (e.g., "AA", "KK") with a visual representation of action frequencies
+ * (bet, call, fold, etc.) shown as colored bars. The height of the bar represents the
+ * carryover frequency (0-100%).
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <DummyCell
+ *   label="AA"
+ *   carryoverFrequency={75}
+ *   actions={[
+ *     { type: 'Raise', frequency: 60 },
+ *     { type: 'Call', frequency: 40 }
+ *   ]}
+ *   onClick={() => console.log('Cell clicked')}
+ * />
+ * ```
+ *
+ * @param {CellProps} props - The component props
+ * @param {number} props.carryoverFrequency - Frequency percentage (0-100) for visual bar height
+ * @param {ActionDto[]} props.actions - Array of actions with type and frequency
+ * @param {string} props.label - Hand label to display (e.g., "AA", "AKs")
+ * @param {Function} [props.onMouseOver] - Mouse over event handler
+ * @param {Function} [props.onMouseLeave] - Mouse leave event handler
+ * @param {Function} [props.onClick] - Click event handler
+ * @returns {JSX.Element} Rendered cell component
+ */
 const DummyCell = forwardRef(
   ({ carryoverFrequency, actions, label, onMouseOver, onMouseLeave, onClick }: CellProps, ref) => {
     const theme = useTheme();

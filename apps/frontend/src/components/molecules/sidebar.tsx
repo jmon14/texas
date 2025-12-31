@@ -10,11 +10,60 @@ import { useTheme } from '@mui/material/styles';
 import { BarChart, ChevronLeft, List as ListIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
+/**
+ * Props for the Sidebar component
+ * @interface SidebarProps
+ */
 type SidebarProps = {
+  /** Whether the sidebar is expanded or collapsed */
   open: boolean;
+  /** Callback to collapse/toggle the sidebar */
   collapseSidebar: () => void;
 };
 
+/**
+ * Sidebar component providing navigation menu with collapsible behavior.
+ *
+ * Displays application navigation links with smooth text fade transitions when
+ * collapsed. Includes a collapse toggle button and navigation items for Range Builder
+ * and Scenarios sections. Text labels fade out when collapsed while icons remain visible.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Basic usage with collapse handler
+ * const [sidebarOpen, setSidebarOpen] = useState(true);
+ *
+ * <Sidebar
+ *   open={sidebarOpen}
+ *   collapseSidebar={() => setSidebarOpen(false)}
+ * />
+ * ```
+ *
+ * @example
+ * In a layout with drawer
+ * ```tsx
+ * <Drawer variant="permanent" open={open}>
+ *   <Sidebar open={open} collapseSidebar={handleDrawerClose} />
+ * </Drawer>
+ * ```
+ *
+ * @example
+ * Controlled sidebar state
+ * ```tsx
+ * const [open, setOpen] = useState(true);
+ *
+ * <Sidebar
+ *   open={open}
+ *   collapseSidebar={() => setOpen(!open)}
+ * />
+ * ```
+ *
+ * @param {SidebarProps} props - The component props
+ * @param {boolean} props.open - Whether sidebar is expanded
+ * @param {Function} props.collapseSidebar - Sidebar collapse handler
+ * @returns {JSX.Element} Rendered sidebar navigation component
+ */
 const Sidebar = ({ open, collapseSidebar }: SidebarProps) => {
   const theme = useTheme();
 

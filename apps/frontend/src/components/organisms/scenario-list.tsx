@@ -17,7 +17,9 @@ import { fetchScenarios, selectScenario } from '../../store/slices/scenario-slic
 import { FetchStatus } from '../../constants';
 import ScenarioCard from '../molecules/scenario-card';
 
-// Internal styled components
+/**
+ * Styled container for filter sections
+ */
 const StyledFiltersContainer = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   display: 'flex',
@@ -25,8 +27,14 @@ const StyledFiltersContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
+/**
+ * Styled wrapper for individual filter section
+ */
 const StyledFilterSection = styled(Box)({});
 
+/**
+ * Styled container for filter chips with wrapping
+ */
 const StyledFilterChips = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -34,6 +42,57 @@ const StyledFilterChips = styled(Box)(({ theme }) => ({
   flexWrap: 'wrap',
 }));
 
+/**
+ * ScenarioList component - Browse and filter poker training scenarios.
+ *
+ * Displays a filterable grid of poker scenarios with three filter dimensions:
+ * - Game Type (Cash, Tournament)
+ * - Difficulty (Beginner, Intermediate, Advanced)
+ * - Category (Opening Ranges, 3-Betting, Defending BB, Calling Ranges)
+ *
+ * Fetches all scenarios on mount and performs client-side filtering for instant
+ * response. Shows loading states, error states, and empty states. Each scenario
+ * card is clickable and navigates to the scenario detail page.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Basic usage in route
+ * <Route path="/scenarios" element={<ScenarioList />} />
+ * ```
+ *
+ * @example
+ * In a page with header
+ * ```tsx
+ * function ScenariosPage() {
+ *   return (
+ *     <Container>
+ *       <Typography variant="h3">Training Scenarios</Typography>
+ *       <ScenarioList />
+ *     </Container>
+ *   );
+ * }
+ * ```
+ *
+ * @returns {JSX.Element} Rendered scenario list with filters and card grid
+ *
+ * @remarks
+ * Key features:
+ * - Fetches all scenarios once on mount
+ * - Client-side filtering with useMemo for performance
+ * - Toggle filters by clicking chips (click again to clear)
+ * - Multiple filters work with AND logic (must match all selected)
+ * - Responsive grid layout (12 cols on xs, 6 on sm, 4 on md+)
+ * - Loading spinner during fetch
+ * - Error alert on fetch failure
+ * - Empty state when no scenarios match filters
+ *
+ * Filter behavior:
+ * - Default: All filters cleared (shows all scenarios)
+ * - Click a chip: Apply that filter
+ * - Click same chip again: Clear that filter
+ * - Multiple filters: Results must match ALL selected filters
+ */
 const ScenarioList = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();

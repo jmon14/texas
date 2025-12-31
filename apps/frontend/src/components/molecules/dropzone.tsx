@@ -7,15 +7,28 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { alpha, styled } from '@mui/material/styles';
 
+/**
+ * Props for the Dropzone component
+ * @interface Props
+ */
 type Props = {
+  /** Callback function invoked when files are dropped or selected */
   onDrop: (acceptedFiles: File[]) => void;
+  /** Optional configuration for file upload behavior */
   config?: {
+    /** Allow multiple file selection */
     multiple?: boolean;
+    /** Accepted file types in react-dropzone format */
     accept?: Accept;
+    /** Maximum file size in bytes */
     maxSize?: number;
   };
 };
 
+/**
+ * Default configuration for the dropzone
+ * Single CSV file up to 1024 bytes by default
+ */
 const defaultConfig: Required<Props['config']> = {
   multiple: false,
   accept: { 'text/csv': ['.csv'] },
@@ -45,6 +58,45 @@ const MyDropzone = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' }
   }),
 );
 
+/**
+ * Dropzone component for drag-and-drop or click-to-upload file functionality.
+ *
+ * Provides a user-friendly interface for file uploads with visual feedback during
+ * drag operations. Supports file type validation, size limits, and single/multiple
+ * file selection. Wraps react-dropzone with Material-UI styling.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Single CSV file upload
+ * <Dropzone
+ *   onDrop={(files) => handleUpload(files)}
+ *   config={{
+ *     accept: { 'text/csv': ['.csv'] },
+ *     maxSize: 5 * 1024 * 1024, // 5MB
+ *     multiple: false
+ *   }}
+ * />
+ * ```
+ *
+ * @example
+ * Multiple image upload
+ * ```tsx
+ * <Dropzone
+ *   onDrop={(files) => uploadImages(files)}
+ *   config={{
+ *     accept: { 'image/*': ['.png', '.jpg', '.jpeg'] },
+ *     maxSize: 10 * 1024 * 1024, // 10MB
+ *     multiple: true
+ *   }}
+ * />
+ * ```
+ *
+ * @param {Props} props - The component props
+ * @param {Function} props.onDrop - Callback with accepted files
+ * @param {Object} [props.config] - Upload configuration
+ * @returns {JSX.Element} Rendered dropzone component
+ */
 const Dropzone = ({ onDrop, config }: Props) => {
   const { accept, multiple, maxSize } = {
     ...defaultConfig,

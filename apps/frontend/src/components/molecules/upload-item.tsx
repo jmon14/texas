@@ -12,12 +12,67 @@ import Typography from '@mui/material/Typography';
 import { useUploadForm } from '../../hooks/useUploadForm';
 import { FetchStatus } from '../../constants';
 
+/**
+ * Props for the UploadItem component
+ * @interface UploadItemProps
+ */
 type UploadItemProps = {
+  /** API endpoint URL for file upload */
   url: string;
+  /** File object to upload */
   file: File;
+  /** Callback when remove button is clicked */
   onRemove: (file: File) => void;
 };
 
+/**
+ * UploadItem component for displaying file upload progress and status.
+ *
+ * Automatically initiates file upload on mount using the provided URL. Displays
+ * file information including name, size, upload progress bar, and current status.
+ * Shows remove button (disabled during upload). Color-codes status - primary for
+ * normal states, error for failed uploads.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * Basic file upload
+ * <UploadItem
+ *   url="/api/files/upload"
+ *   file={selectedFile}
+ *   onRemove={(file) => console.log('Remove', file.name)}
+ * />
+ * ```
+ *
+ * @example
+ * Multiple file uploads
+ * ```tsx
+ * {files.map((file) => (
+ *   <UploadItem
+ *     key={file.name}
+ *     url="/api/upload"
+ *     file={file}
+ *     onRemove={handleRemoveFile}
+ *   />
+ * ))}
+ * ```
+ *
+ * @example
+ * With custom endpoint
+ * ```tsx
+ * <UploadItem
+ *   url={`/api/users/${userId}/avatar`}
+ *   file={avatarFile}
+ *   onRemove={handleRemove}
+ * />
+ * ```
+ *
+ * @param {UploadItemProps} props - The component props
+ * @param {string} props.url - Upload endpoint URL
+ * @param {File} props.file - File to upload
+ * @param {Function} props.onRemove - Remove handler
+ * @returns {JSX.Element} Rendered upload item with progress indicator
+ */
 const UploadItem = ({ url, file, onRemove }: UploadItemProps) => {
   const { uploadForm, state, progress } = useUploadForm(url);
   const stateLabel = state[0].toUpperCase() + state.slice(1);
