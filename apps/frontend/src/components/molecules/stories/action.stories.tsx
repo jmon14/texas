@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import Action from '../action';
 import { ActionDtoTypeEnum } from '../../../../backend-api/api';
 import { action } from '@storybook/addon-actions';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 
 const meta: Meta<typeof Action> = {
   title: 'Molecules/Action',

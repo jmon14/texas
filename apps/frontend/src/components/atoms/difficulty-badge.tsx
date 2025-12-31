@@ -1,4 +1,4 @@
-import { Chip, ChipProps } from '@mui/material';
+import Chip, { ChipProps } from '@mui/material/Chip';
 import { ScenarioResponseDtoDifficultyEnum } from '../../../backend-api/api';
 
 type DifficultyBadgeProps = {

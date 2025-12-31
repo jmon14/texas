@@ -1,4 +1,5 @@
-import { Box, Tooltip } from '@mui/material';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
 
 import Cell, { CellProps } from '../atoms/cell';

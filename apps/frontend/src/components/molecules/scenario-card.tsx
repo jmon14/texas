@@ -1,4 +1,10 @@
-import { Card, CardContent, CardActionArea, Typography, Box, Chip, styled } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActionArea from '@mui/material/CardActionArea';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import { styled } from '@mui/material/styles';
 import { ScenarioResponseDto } from '../../../backend-api/api';
 import DifficultyBadge from '../atoms/difficulty-badge';
 

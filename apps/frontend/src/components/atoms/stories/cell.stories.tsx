@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 
 import { ActionDtoTypeEnum } from '../../../../backend-api/api';
 import DummyCell from '../cell';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 
 const meta: Meta<typeof DummyCell> = {
   title: 'Atoms/Cell',

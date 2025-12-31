@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
-import { Box, styled, useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
+import { styled, useTheme } from '@mui/material/styles';
 import { blueGrey } from '@mui/material/colors';
 import { HandRangeDto } from '../../../backend-api/api';
 import { ActionColor } from '../../constants';

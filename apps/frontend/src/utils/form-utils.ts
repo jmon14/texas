@@ -13,7 +13,7 @@ import {
   Validate,
   Path,
 } from 'react-hook-form';
-import { TypographyProps } from '@mui/material';
+import { TypographyProps } from '@mui/material/Typography';
 import { RangeResponseDto } from '../../backend-api/api';
 
 // Constants

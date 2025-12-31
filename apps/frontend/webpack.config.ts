@@ -3,6 +3,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import CompressionPlugin from 'compression-webpack-plugin';
 import 'webpack-dev-server';
 
 // External libraries
@@ -58,10 +59,39 @@ const config = (env: WebpackEnv = {}): Configuration => {
     entry: path.resolve(__dirname, 'src', 'index.tsx'),
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: 'main.js',
+      filename: '[name].[contenthash].js',
+      chunkFilename: '[name].[contenthash].js',
       publicPath: '/',
+      clean: true,
     },
     mode: environment || 'development',
+    optimization: {
+      moduleIds: 'deterministic',
+      runtimeChunk: 'single',
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: 10,
+            reuseExistingChunk: true,
+          },
+          mui: {
+            test: /[\\/]node_modules[\\/]@mui[\\/]/,
+            name: 'mui',
+            priority: 20,
+            reuseExistingChunk: true,
+          },
+          common: {
+            minChunks: 2,
+            priority: 5,
+            reuseExistingChunk: true,
+            enforce: true,
+          },
+        },
+      },
+    },
     module: {
       rules: [
         {
@@ -88,6 +118,16 @@ const config = (env: WebpackEnv = {}): Configuration => {
         ],
       }),
       new DefinePlugin(envKeys),
+      ...(environment === 'production'
+        ? [
+            new CompressionPlugin({
+              algorithm: 'gzip',
+              test: /\.(js|css|html|svg)$/,
+              threshold: 10240,
+              minRatio: 0.8,
+            }),
+          ]
+        : []),
     ],
     devServer: {
       port: 8080,

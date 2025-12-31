@@ -2,7 +2,8 @@
 import { ReactNode } from 'react';
 
 // External libraries
-import { Paper, SxProps, Theme } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import { SxProps, Theme } from '@mui/material/styles';
 
 type PanelProps = {
   children: ReactNode;

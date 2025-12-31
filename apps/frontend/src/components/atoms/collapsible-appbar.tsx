@@ -1,5 +1,5 @@
 // External libraries
-import { styled } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 export type CollapsibleAppBarProps = MuiAppBarProps & {

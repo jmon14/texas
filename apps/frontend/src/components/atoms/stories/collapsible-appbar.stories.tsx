@@ -1,5 +1,5 @@
 // External libraries
-import { Toolbar } from '@mui/material';
+import Toolbar from '@mui/material/Toolbar';
 import { Meta, StoryObj } from '@storybook/react';
 
 // Components

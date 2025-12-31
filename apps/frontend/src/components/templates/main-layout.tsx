@@ -2,7 +2,8 @@
 import { useState, ReactNode } from 'react';
 
 // External libraries
-import { Box, Toolbar } from '@mui/material';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
 
 // Components
 import CollapsibleAppbar from '../atoms/collapsible-appbar';

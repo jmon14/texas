@@ -1,4 +1,5 @@
-import { Switch as MuiSwitch, SwitchProps, Box } from '@mui/material';
+import MuiSwitch, { SwitchProps } from '@mui/material/Switch';
+import Box from '@mui/material/Box';
 import { ReactNode } from 'react';
 
 interface CustomSwitchProps extends SwitchProps {

@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useState, useCallback, useEffect } from 'react';
 import { RangeResponseDto } from '../../../backend-api/api';
 import RangeCell from '../molecules/range-cell';

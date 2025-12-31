@@ -2,7 +2,10 @@
 import { memo } from 'react';
 import { Accept, useDropzone } from 'react-dropzone';
 import { UploadFile } from '@mui/icons-material';
-import { alpha, Box, BoxProps, Link, styled, Typography } from '@mui/material';
+import Box, { BoxProps } from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { alpha, styled } from '@mui/material/styles';
 
 type Props = {
   onDrop: (acceptedFiles: File[]) => void;

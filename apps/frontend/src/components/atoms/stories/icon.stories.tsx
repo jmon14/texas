@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { Icon } from '@mui/material';
+import Icon from '@mui/material/Icon';
 import { Home, Settings, AccountCircle } from '@mui/icons-material';
 
 const meta: Meta<typeof Icon> = {

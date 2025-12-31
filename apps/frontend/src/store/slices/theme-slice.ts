@@ -1,8 +1,10 @@
 // External libraries
-import { PaletteMode } from '@mui/material';
+import { Palette } from '@mui/material/styles';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const THEME_STORAGE_KEY = 'theme';
+
+type PaletteMode = Palette['mode'];
 
 type ThemeState = {
   mode: PaletteMode;

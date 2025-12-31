@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 // External libraries
 import { useSearchParams } from 'react-router-dom';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 // Store
 import { validate } from '../../store/slices/user-slice';

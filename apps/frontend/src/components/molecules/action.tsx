@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Box, debounce, styled, TextField, Typography, useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { styled, useTheme } from '@mui/material/styles';
+import { debounce } from '@mui/material/utils';
 import { ActionDto } from '../../../backend-api/api';
 import { ActionColor } from '../../constants';
 import { blueGrey, grey } from '@mui/material/colors';

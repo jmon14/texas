@@ -3,7 +3,10 @@ import { useEffect } from 'react';
 
 // External libraries
 import { Close, UploadFile } from '@mui/icons-material';
-import { Box, IconButton, LinearProgress, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
 
 // Hooks
 import { useUploadForm } from '../../hooks/useUploadForm';

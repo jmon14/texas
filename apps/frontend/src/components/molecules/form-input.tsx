@@ -1,6 +1,6 @@
 // External libraries
 import { FieldValues, RegisterOptions } from 'react-hook-form';
-import { TextField, TextFieldProps } from '@mui/material';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 
 // Utils
 import { buildValidate, isCustomValidation, WithFormProps } from '../../utils/form-utils';

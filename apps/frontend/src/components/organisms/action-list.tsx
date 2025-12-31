@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import { ActionDto } from '../../../backend-api/api';
 import ActionComponent from '../molecules/action';
 import Panel from '../atoms/panel';

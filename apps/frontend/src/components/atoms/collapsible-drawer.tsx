@@ -1,6 +1,6 @@
 // External libraries
 import MuiDrawer, { DrawerProps as MuiDrawerProps } from '@mui/material/Drawer';
-import { styled } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 export type CollapsibleDrawerProps = MuiDrawerProps & {
   open: boolean;

@@ -1,6 +1,7 @@
 // External libraries
 import { BrowserRouter } from 'react-router-dom';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
 
 // Components
 import Loading from './components/molecules/loading';

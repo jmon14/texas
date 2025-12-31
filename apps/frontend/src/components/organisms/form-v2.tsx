@@ -3,7 +3,9 @@ import { DetailedHTMLProps, FormHTMLAttributes } from 'react';
 
 // External libraries
 import { FieldValues, SubmitHandler, UseFormReturn } from 'react-hook-form';
-import { Button, styled, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
 
 // Styled form component
 const MyForm = styled('form')`

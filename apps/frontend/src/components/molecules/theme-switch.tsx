@@ -5,7 +5,8 @@ import { setTheme } from '../../store/slices/theme-slice';
 
 // Components
 import Switch from '../atoms/switch';
-import { SwitchProps, SxProps, Theme } from '@mui/material';
+import { SwitchProps } from '@mui/material/Switch';
+import { SxProps, Theme } from '@mui/material/styles';
 
 type ThemeSwitchProps = SwitchProps & {
   sx?: SxProps<Theme>;

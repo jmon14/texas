@@ -1,5 +1,5 @@
 // MUI
-import { Components, Theme, createTheme } from '@mui/material';
+import { Theme, createTheme, Components } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 
 declare module '@mui/material/Switch' {

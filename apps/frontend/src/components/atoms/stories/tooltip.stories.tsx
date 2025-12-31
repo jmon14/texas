@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import Tooltip from '@mui/material/Tooltip';
-import { Button } from '@mui/material';
+import Button from '@mui/material/Button';
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Atoms/Tooltip',

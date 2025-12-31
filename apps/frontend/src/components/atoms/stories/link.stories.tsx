@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { Link } from '@mui/material';
+import Link from '@mui/material/Link';
 
 // TODO - Find out why cursor: pointer is not set a:-webkit-any-link
 const meta: Meta<typeof Link> = {
