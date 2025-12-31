@@ -1,17 +1,14 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  CircularProgress,
-  Alert,
-  Chip,
-  Divider,
-  styled,
-} from '@mui/material';
-import { SxProps, Theme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import { styled, SxProps, Theme } from '@mui/material/styles';
 import { ArrowBack, PlayArrow } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../hooks/store-hooks';
 import { fetchScenarioById, selectScenario } from '../../store/slices/scenario-slice';

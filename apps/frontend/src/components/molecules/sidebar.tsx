@@ -1,14 +1,12 @@
 // External libraries
-import {
-  List,
-  Divider,
-  IconButton,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  useTheme,
-} from '@mui/material';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Toolbar from '@mui/material/Toolbar';
+import { useTheme } from '@mui/material/styles';
 import { BarChart, ChevronLeft, List as ListIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 

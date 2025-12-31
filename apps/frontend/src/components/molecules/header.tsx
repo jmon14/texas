@@ -2,15 +2,13 @@
 import { useState } from 'react';
 
 import { AccountCircle, Logout, Menu as MenuIcon, Person } from '@mui/icons-material';
-import {
-  Divider,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Menu,
-  Avatar,
-} from '@mui/material';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Avatar from '@mui/material/Avatar';
 import { Link } from 'react-router-dom';
 
 // Store

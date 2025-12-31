@@ -1,12 +1,9 @@
 // External libraries
 import { FieldValues, RegisterOptions } from 'react-hook-form';
-import {
-  Select as MuiSelect,
-  SelectProps as MuiSelectProps,
-  MenuItem,
-  FormControl,
-  InputLabel,
-} from '@mui/material';
+import MuiSelect, { SelectProps as MuiSelectProps } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 // Utils
 import { buildValidate, isCustomValidation, WithFormProps } from '../../utils/form-utils';

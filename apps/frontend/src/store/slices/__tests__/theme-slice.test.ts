@@ -5,7 +5,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import themeReducer, { setTheme } from '../theme-slice';
 
 // Types
-import type { PaletteMode } from '@mui/material';
+import type { Palette } from '@mui/material/styles';
+
+type PaletteMode = Palette['mode'];
 
 // Helper to create test store
 const createTestStore = (preloadedState?: { theme: { mode: PaletteMode } }) => {

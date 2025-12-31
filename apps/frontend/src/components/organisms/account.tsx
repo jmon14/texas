@@ -2,21 +2,19 @@
 import { useState } from 'react';
 
 // External libraries
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  Avatar,
-  Divider,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
+import Alert from '@mui/material/Alert';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContentText from '@mui/material/DialogContentText';
 import { Person, Email, Security, Delete, Email as EmailIcon } from '@mui/icons-material';
 
 // Store
