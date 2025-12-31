@@ -142,9 +142,7 @@ describe('Account Component', () => {
     });
   });
 
-  it('handles delete account confirmation', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-
+  it('handles delete account confirmation', async () => {
     renderWithProviders(<Account />);
 
     const deleteButton = screen.getByRole('button', { name: /delete account/i });
@@ -154,8 +152,11 @@ describe('Account Component', () => {
     const confirmDeleteButtons = screen.getAllByRole('button', { name: /delete account/i });
     fireEvent.click(confirmDeleteButtons[confirmDeleteButtons.length - 1]);
 
-    expect(consoleSpy).toHaveBeenCalledWith('Delete account functionality to be implemented');
-
-    consoleSpy.mockRestore();
+    // Dialog should close after confirmation (since handleDeleteAccount closes it)
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/are you sure you want to delete your account/i),
+      ).not.toBeInTheDocument();
+    });
   });
 });

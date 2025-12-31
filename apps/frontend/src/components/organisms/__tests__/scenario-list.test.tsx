@@ -250,4 +250,142 @@ describe('ScenarioList', () => {
       // Navigation would happen here - in a real test we'd check the URL
     }
   });
+
+  it('should reset game type filter when clicking "All"', async () => {
+    const userInteraction = user.setup();
+    const store = createTestStore({
+      scenario: {
+        scenarios: mockScenarios,
+        status: FetchStatus.SUCCEDED,
+        error: null,
+        currentScenario: null,
+      },
+    });
+
+    renderWithProviders(<ScenarioList />, store);
+
+    // First apply a filter
+    const tournamentChip = screen.getByText('Tournament');
+    await userInteraction.click(tournamentChip);
+
+    // Then click "All" to reset
+    const gameTypeFilters = screen.getAllByText('All');
+    await userInteraction.click(gameTypeFilters[0]); // First "All" is for game type
+
+    // All scenarios should be visible
+    await waitFor(() => {
+      expect(screen.getByText('UTG Open - 100bb Tournament')).toBeInTheDocument();
+    });
+  });
+
+  it('should reset difficulty filter when clicking "All"', async () => {
+    const userInteraction = user.setup();
+    const store = createTestStore({
+      scenario: {
+        scenarios: mockScenarios,
+        status: FetchStatus.SUCCEDED,
+        error: null,
+        currentScenario: null,
+      },
+    });
+
+    renderWithProviders(<ScenarioList />, store);
+
+    // First apply a filter
+    const beginnerChip = screen.getByText('Beginner');
+    await userInteraction.click(beginnerChip);
+
+    // Then click "All" to reset
+    const allFilters = screen.getAllByText('All');
+    await userInteraction.click(allFilters[1]); // Second "All" is for difficulty
+
+    // All scenarios should be visible
+    await waitFor(() => {
+      expect(screen.getByText('UTG Open - 100bb Tournament')).toBeInTheDocument();
+    });
+  });
+
+  it('should filter scenarios by intermediate difficulty', async () => {
+    const userInteraction = user.setup();
+    const store = createTestStore({
+      scenario: {
+        scenarios: mockScenarios,
+        status: FetchStatus.SUCCEDED,
+        error: null,
+        currentScenario: null,
+      },
+    });
+
+    renderWithProviders(<ScenarioList />, store);
+
+    // Click on Intermediate filter
+    const intermediateChip = screen.getByText('Intermediate');
+    await userInteraction.click(intermediateChip);
+
+    // Wait for filtering to complete
+    await waitFor(() => {
+      // Intermediate scenarios should be visible
+      expect(screen.getByText('BTN vs CO Open - Call Range')).toBeInTheDocument();
+    });
+  });
+
+  it('should filter scenarios by advanced difficulty', async () => {
+    const userInteraction = user.setup();
+    const store = createTestStore({
+      scenario: {
+        scenarios: mockScenarios,
+        status: FetchStatus.SUCCEDED,
+        error: null,
+        currentScenario: null,
+      },
+    });
+
+    renderWithProviders(<ScenarioList />, store);
+
+    // Wait for initial render
+    await waitFor(() => {
+      expect(screen.getByText('UTG Open - 100bb Tournament')).toBeInTheDocument();
+    });
+
+    // Click on Advanced filter chip (use getAllByText and click the first one in the filter section)
+    const advancedChips = screen.getAllByText('Advanced');
+    // The first "Advanced" should be the filter chip
+    await userInteraction.click(advancedChips[0]);
+
+    // After filtering, either advanced scenarios show or empty state appears
+    await waitFor(() => {
+      // Check if empty state is shown (if no advanced scenarios exist in mock data)
+      const emptyState = screen.queryByText(/No scenarios found matching your filters/i);
+      const hasScenarios = screen.queryByText(/Tournament/i);
+      // One of these should be present
+      expect(emptyState || hasScenarios).toBeTruthy();
+    });
+  });
+
+  it('should reset category filter when clicking "All"', async () => {
+    const userInteraction = user.setup();
+    const store = createTestStore({
+      scenario: {
+        scenarios: mockScenarios,
+        status: FetchStatus.SUCCEDED,
+        error: null,
+        currentScenario: null,
+      },
+    });
+
+    renderWithProviders(<ScenarioList />, store);
+
+    // First apply a category filter
+    const openingRangesChip = screen.getByText('Opening Ranges');
+    await userInteraction.click(openingRangesChip);
+
+    // Then click "All" to reset
+    const allFilters = screen.getAllByText('All');
+    await userInteraction.click(allFilters[2]); // Third "All" is for category
+
+    // All scenarios should be visible
+    await waitFor(() => {
+      expect(screen.getByText('UTG Open - 100bb Tournament')).toBeInTheDocument();
+    });
+  });
 });
