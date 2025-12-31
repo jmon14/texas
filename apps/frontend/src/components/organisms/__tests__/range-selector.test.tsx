@@ -1,12 +1,18 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import RangeSelector from '../range-selector';
 import rangeReducer from '../../../store/slices/range-slice';
 import { mockRanges } from '../../../msw/handlers';
+import { FetchStatus } from '../../../constants';
+
+// Test store state type
+type TestStoreState = {
+  range: ReturnType<typeof rangeReducer>;
+};
 
 // Helper to create test store
-const createTestStore = (preloadedState?: any) => {
+const createTestStore = (preloadedState?: PreloadedState<TestStoreState>) => {
   return configureStore({
     reducer: {
       range: rangeReducer,
@@ -20,7 +26,7 @@ describe('RangeSelector', () => {
     const store = createTestStore({
       range: {
         ranges: mockRanges,
-        status: 'succeeded',
+        status: FetchStatus.SUCCEDED,
         error: null,
         currentRange: null,
       },
@@ -42,7 +48,7 @@ describe('RangeSelector', () => {
     const store = createTestStore({
       range: {
         ranges: mockRanges,
-        status: 'succeeded',
+        status: FetchStatus.SUCCEDED,
         error: null,
         currentRange: null,
       },
@@ -66,7 +72,7 @@ describe('RangeSelector', () => {
     const store = createTestStore({
       range: {
         ranges: mockRanges,
-        status: 'succeeded',
+        status: FetchStatus.SUCCEDED,
         error: null,
         currentRange: null,
       },
@@ -90,7 +96,7 @@ describe('RangeSelector', () => {
     const store = createTestStore({
       range: {
         ranges: [],
-        status: 'succeeded',
+        status: FetchStatus.SUCCEDED,
         error: null,
         currentRange: null,
       },
@@ -111,7 +117,7 @@ describe('RangeSelector', () => {
     const store = createTestStore({
       range: {
         ranges: [],
-        status: 'failed',
+        status: FetchStatus.FAILED,
         error: 'Failed to load ranges',
         currentRange: null,
       },

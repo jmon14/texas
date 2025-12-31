@@ -1,49 +1,97 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import user from '@testing-library/user-event';
 import RangeBuilder from '../range-builder';
 import rangeReducer from '../../../store/slices/range-slice';
 import userReducer from '../../../store/slices/user-slice';
 import { mockRanges } from '../../../msw/handlers';
+import { FetchStatus } from '../../../constants';
+
+// Test store state type
+type TestStoreState = {
+  range: ReturnType<typeof rangeReducer>;
+  user: ReturnType<typeof userReducer>;
+};
+
+type StateOverrides = Partial<{
+  user: Partial<TestStoreState['user']>;
+  range: Partial<TestStoreState['range']>;
+}>;
+
+const DEFAULT_TEST_USER: TestStoreState['user']['user'] = {
+  uuid: 'user-123',
+  username: 'testuser',
+  active: true,
+  files: [],
+  email: 'test@example.com',
+};
+
+const DEFAULT_USER_STATE: TestStoreState['user'] = {
+  status: FetchStatus.SUCCEDED,
+  user: DEFAULT_TEST_USER,
+  error: null,
+  resendVerificationStatus: FetchStatus.IDDLE,
+  resendVerificationError: null,
+  resetPasswordStatus: FetchStatus.IDDLE,
+  resetPasswordError: null,
+};
+
+const DEFAULT_RANGE_STATE: TestStoreState['range'] = {
+  ranges: mockRanges,
+  status: FetchStatus.IDDLE,
+  error: null,
+  currentRange: null,
+};
+
+const buildPreloadedState = (overrides?: StateOverrides): PreloadedState<TestStoreState> => {
+  const userOverrides = overrides?.user;
+  const userEntityOverrides = userOverrides?.user as
+    | Partial<TestStoreState['user']['user']>
+    | undefined;
+
+  return {
+    user: {
+      ...DEFAULT_USER_STATE,
+      ...userOverrides,
+      user: {
+        ...DEFAULT_USER_STATE.user,
+        ...userEntityOverrides,
+      } as TestStoreState['user']['user'],
+    },
+    range: {
+      ...DEFAULT_RANGE_STATE,
+      ...overrides?.range,
+    },
+  };
+};
 
 // Helper to create test store with user and range state
-const createTestStore = (preloadedState?: any) => {
+const createTestStore = (overrides?: StateOverrides) => {
   return configureStore({
     reducer: {
       range: rangeReducer,
       user: userReducer,
     },
-    preloadedState: {
-      user: {
-        status: 'succeeded',
-        isAuthenticated: true,
-        user: {
-          uuid: 'user-123',
-          email: 'test@example.com',
-        },
-        error: null,
-      },
-      range: {
-        ranges: mockRanges,
-        status: 'idle',
-        error: null,
-        currentRange: null,
-      },
-      ...preloadedState,
-    },
+    preloadedState: buildPreloadedState(overrides),
   });
+};
+
+const renderRangeBuilder = (store = createTestStore()) => {
+  render(
+    <Provider store={store}>
+      <RangeBuilder />
+    </Provider>,
+  );
+
+  return { store };
 };
 
 describe('RangeBuilder', () => {
   it('should render range builder components', () => {
     const store = createTestStore();
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Should render main components - checking for save button
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
@@ -52,11 +100,7 @@ describe('RangeBuilder', () => {
   it('should fetch ranges on mount', async () => {
     const store = createTestStore();
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Wait for ranges to be fetched
     await waitFor(() => {
@@ -68,11 +112,7 @@ describe('RangeBuilder', () => {
   it('should render default range initially', () => {
     const store = createTestStore();
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Should render successfully
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
@@ -82,11 +122,7 @@ describe('RangeBuilder', () => {
     const userEvent = user.setup();
     const store = createTestStore();
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Find the name input (first textbox is the range name)
     const nameInput = screen.getAllByRole('textbox')[0];
@@ -109,18 +145,12 @@ describe('RangeBuilder', () => {
     const userEvent = user.setup();
     const store = createTestStore({
       range: {
-        ranges: mockRanges,
-        status: 'succeeded',
-        error: null,
+        status: FetchStatus.SUCCEDED,
         currentRange: mockRanges[0],
       },
     });
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Type in the name field (first textbox is the range name)
     const nameInput = screen.getAllByRole('textbox')[0];
@@ -142,18 +172,12 @@ describe('RangeBuilder', () => {
     const userEvent = user.setup();
     const store = createTestStore({
       range: {
-        ranges: mockRanges,
-        status: 'succeeded',
-        error: null,
+        status: FetchStatus.SUCCEDED,
         currentRange: mockRanges[0],
       },
     });
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Find delete button if present
     const deleteButton = screen.queryByRole('button', { name: /delete/i });
@@ -185,11 +209,7 @@ describe('RangeBuilder', () => {
   it('should handle action list changes', () => {
     const store = createTestStore();
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Component should render successfully with action list
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
@@ -198,18 +218,12 @@ describe('RangeBuilder', () => {
   it('should handle range selector changes', async () => {
     const store = createTestStore({
       range: {
-        ranges: mockRanges,
-        status: 'succeeded',
-        error: null,
+        status: FetchStatus.SUCCEDED,
         currentRange: null,
       },
     });
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Wait for component to render
     await waitFor(() => {
@@ -221,11 +235,7 @@ describe('RangeBuilder', () => {
     const userEvent = user.setup();
     const store = createTestStore();
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Find the name input by label (Range Name)
     const nameInput = screen.getByLabelText(/range name/i) as HTMLInputElement;
@@ -241,17 +251,13 @@ describe('RangeBuilder', () => {
     const store = createTestStore({
       range: {
         ranges: [],
-        status: 'failed',
+        status: FetchStatus.FAILED,
         error: 'Failed to load ranges',
         currentRange: null,
       },
     });
 
-    render(
-      <Provider store={store}>
-        <RangeBuilder />
-      </Provider>,
-    );
+    renderRangeBuilder(store);
 
     // Component should still render
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();

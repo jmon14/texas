@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { useForm } from 'react-hook-form';
+import { useForm, RegisterOptions, FieldValues } from 'react-hook-form';
 import FormSelect, { SelectOption } from '../form-select';
 
 // Test wrapper component with form context
@@ -12,7 +12,7 @@ const TestWrapper = ({
   selectOptions: SelectOption[];
   initialValue?: string;
   label?: string;
-  validation?: any;
+  validation?: RegisterOptions<FieldValues>;
 }) => {
   const {
     register,

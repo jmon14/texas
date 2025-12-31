@@ -1,12 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import user from '@testing-library/user-event';
 import RangeForm from '../range-form';
 import rangeReducer from '../../../store/slices/range-slice';
+import { FetchStatus } from '../../../constants';
+
+// Test store state type
+type TestStoreState = {
+  range: ReturnType<typeof rangeReducer>;
+};
 
 // Helper to create test store
-const createTestStore = (preloadedState?: any) => {
+const createTestStore = (preloadedState?: PreloadedState<TestStoreState>) => {
   return configureStore({
     reducer: {
       range: rangeReducer,
@@ -152,7 +158,7 @@ describe('RangeForm', () => {
     const store = createTestStore({
       range: {
         ranges: [],
-        status: 'failed',
+        status: FetchStatus.FAILED,
         error: 'Failed to save range',
         currentRange: null,
       },

@@ -11,6 +11,7 @@ import {
   Divider,
   styled,
 } from '@mui/material';
+import { SxProps, Theme } from '@mui/material/styles';
 import { ArrowBack, PlayArrow } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../hooks/store-hooks';
 import { fetchScenarioById, selectScenario } from '../../store/slices/scenario-slice';
@@ -49,7 +50,7 @@ const ScenarioDetail = () => {
     navigate('/scenarios');
   };
 
-  const BackButton = ({ sx }: { sx?: any }) => (
+  const BackButton = ({ sx }: { sx?: SxProps<Theme> }) => (
     <Button startIcon={<ArrowBack />} onClick={handleBack} sx={sx}>
       Back to Scenarios
     </Button>

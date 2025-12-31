@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ScenarioList from '../scenario-list';
@@ -11,8 +11,13 @@ import { FetchStatus } from '../../../constants';
 
 const theme = createTheme();
 
+// Test store state type
+type TestStoreState = {
+  scenario: ReturnType<typeof scenarioReducer>;
+};
+
 // Helper to create test store
-const createTestStore = (preloadedState?: any) => {
+const createTestStore = (preloadedState?: PreloadedState<TestStoreState>) => {
   return configureStore({
     reducer: {
       scenario: scenarioReducer,
