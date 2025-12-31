@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import DropzoneComp from '../dropzone';
 
 const meta: Meta<typeof DropzoneComp> = {
@@ -20,6 +21,6 @@ type Story = StoryObj<typeof DropzoneComp>;
 
 export const Dropzone: Story = {
   args: {
-    onDrop: (acceptedFiles) => console.log(acceptedFiles),
+    onDrop: action('files-dropped'),
   },
 };

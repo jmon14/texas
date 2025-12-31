@@ -44,7 +44,6 @@ const Account = ({}: AccountProps) => {
 
   const handleDeleteAccount = () => {
     // TODO: Implement account deletion logic
-    console.log('Delete account functionality to be implemented');
     setDeleteDialogOpen(false);
   };
 

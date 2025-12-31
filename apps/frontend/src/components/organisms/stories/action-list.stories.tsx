@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 
 import { ActionDtoTypeEnum } from '../../../../backend-api/api';
 import ActionList from '../action-list';
@@ -19,6 +20,6 @@ export const Default: Story = {
       { type: ActionDtoTypeEnum.Call, frequency: 30 },
       { type: ActionDtoTypeEnum.Raise, frequency: 20 },
     ],
-    onActionChange: (actions) => console.log('Actions changed:', actions),
+    onActionChange: action('actions-changed'),
   },
 };
