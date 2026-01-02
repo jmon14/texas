@@ -252,7 +252,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      NODE_ENV: test
+      # NOTE: NODE_ENV is NOT set here - webpack dev server needs 'development'
+      # Backend steps below will use NODE_ENV=test when needed
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
       POSTGRES_USER: admin
@@ -311,10 +312,14 @@ jobs:
 
       - name: Run database migrations
         working-directory: apps/backend
+        env:
+          NODE_ENV: test
         run: npm run migrate
 
       - name: Start backend server
         working-directory: apps/backend
+        env:
+          NODE_ENV: test
         run: |
           npm run start:dev &
           BACKEND_PID=$!
