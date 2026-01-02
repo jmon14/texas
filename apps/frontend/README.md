@@ -227,22 +227,131 @@ referenceRangesApi.importAllReferenceRanges();
 ### Testing Stack
 
 ```bash
-# Unit tests
+# Unit & Integration tests
 npm test
 
 # Coverage report
 npm run test:coverage
 
-# Storybook (component development)
+# E2E tests (Playwright)
+npm run test:e2e
+
+# E2E with UI mode
+npm run test:e2e:ui
+
+# Component development
 npm run storybook
 ```
 
+### Testing Approach
+
+The frontend uses a **multi-layered testing strategy**:
+
+#### **1. Unit & Integration Tests** (Jest + React Testing Library)
+- Component behavior and user interactions
+- Redux state management
+- Form validation
+- Utility functions
+- **Uses MSW** for API mocking (fast, isolated)
+
+#### **2. E2E Tests** (Playwright)
+- Complete user flows across the application
+- Authentication flows (register → login → protected routes)
+- Critical business paths
+- **Uses real backend** at `localhost:3000` (true integration testing)
+
+#### **3. Component Documentation** (Storybook)
+- Interactive component library
+- Visual testing and documentation
+- Accessibility checks
+
 ### Testing Tools
 
-- **Jest**: Unit testing framework
-- **React Testing Library**: Component testing
-- **MSW**: API mocking for tests
-- **Storybook**: Component development and documentation
+- **Jest 29**: Unit test runner with coverage reporting
+- **React Testing Library 13**: Component testing with user-centric queries
+- **Playwright 1.56**: E2E testing with real browser automation
+- **MSW 2.3**: API mocking for unit/integration tests only
+- **Storybook 8.6**: Component development and documentation
+
+### E2E Testing Details
+
+#### Architecture Decision: Real Backend vs MSW
+
+**Frontend E2E tests use the real backend** (`REACT_APP_ENABLE_MSW: 'false'` in `playwright.config.ts`):
+
+**Why real backend:**
+- ✅ True end-to-end integration testing
+- ✅ Catches API contract mismatches
+- ✅ Tests actual authentication flows with JWT
+- ✅ Validates database operations
+- ✅ MSW is stateless (can't persist registrations)
+
+**MSW is used for:**
+- Unit tests (Jest + RTL)
+- Component tests
+- Storybook stories
+
+#### Running E2E Tests
+
+```bash
+# Prerequisites: Backend must be running on localhost:3000
+cd apps/backend && npm run start:dev
+
+# Run E2E tests (headless)
+cd apps/frontend
+npm run test:e2e
+
+# Run with UI mode (visual test runner)
+npm run test:e2e:ui
+
+# Run in debug mode
+npm run test:e2e:debug
+
+# Run specific test file
+npx playwright test e2e/complete-auth-flow.spec.ts
+
+# Generate HTML report
+npx playwright show-report
+```
+
+#### E2E Test Example
+
+```typescript
+// apps/frontend/e2e/complete-auth-flow.spec.ts
+test('should complete register → login → protected route flow', async ({ page }) => {
+  // Unique test user per run
+  const timestamp = Date.now();
+  const testUser = {
+    username: `e2euser${timestamp}`,
+    email: `e2e${timestamp}@test.com`,
+    password: 'Test123!@#',
+  };
+
+  // Register with real backend
+  await page.goto('/auth/register');
+  // ... fill form and submit
+
+  // Clear session to test login separately
+  await page.context().clearCookies();
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  // Login with registered credentials
+  await page.goto('/auth/login');
+  // ... login and verify protected routes
+});
+```
+
+#### E2E Best Practices
+
+1. **Unique test data**: Use timestamps to avoid conflicts
+2. **Real backend**: Disable MSW in `playwright.config.ts`
+3. **Clean state**: Clear cookies/storage between test phases
+4. **Semantic selectors**: Use `getByRole`, `getByLabel` instead of CSS
+5. **Explicit waits**: Use `waitForLoadState('networkidle')` not `waitForTimeout()`
+6. **Error resilience**: Use `.catch(() => false)` for optional elements
 
 ## 📚 Development Tools
 

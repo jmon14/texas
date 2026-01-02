@@ -41,7 +41,7 @@ export default defineConfig({
     timeout: 120 * 1000,
     env: {
       REACT_APP_BACKEND_API_URL: 'http://localhost:3000',
-      REACT_APP_ENABLE_MSW: 'true', // Enable MSW for E2E tests
+      REACT_APP_ENABLE_MSW: 'false',
     },
   },
 });
