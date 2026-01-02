@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [production]
+    branches: [production, main]  # Run tests on main, deploy only on production
   workflow_dispatch:
 
 env:
@@ -213,6 +213,51 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-changes, frontend-quality]
     if: needs.detect-changes.outputs.frontend-changed == 'true'
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: texas_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      NODE_ENV: test
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: texas_test
+      MONGODB_URI: mongodb://localhost:27017/texas_test
+      JWT_SECRET: test_jwt_secret
+      JWT_EXPIRATION_TIME: 3600
+      JWT_REFRESH_SECRET: test_jwt_refresh_secret
+      JWT_REFRESH_EXPIRATION_TIME: 18000
+      JWT_EMAIL_SECRET: test_jwt_email_secret
+      JWT_EMAIL_EXPIRATION_TIME: 1800
+      EMAIL_FROM: test@allinrange.com
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test_access_key
+      AWS_SECRET_ACCESS_KEY: test_secret_key
+      AWS_PUBLIC_BUCKET_NAME: test_bucket
+      PORT: 3000
+      DOMAIN: localhost
+      UI_URL: http://localhost:8080
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -230,6 +275,47 @@ jobs:
         working-directory: apps/frontend
         run: npm test -- --passWithNoTests
 
+      - name: Install backend dependencies
+        working-directory: apps/backend
+        run: npm ci || npm install --no-audit --no-fund
+
+      - name: Wait for PostgreSQL
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          echo "Waiting for PostgreSQL to be ready on localhost..."
+          for i in {1..10}; do
+            if pg_isready -h localhost -p 5432 -U admin > /dev/null 2>&1; then
+              echo "PostgreSQL is ready!"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL... ($i/10)"
+            sleep 2
+          done
+          echo "PostgreSQL failed to become ready in time"
+          exit 1
+
+      - name: Run database migrations
+        working-directory: apps/backend
+        run: npm run migrate
+
+      - name: Start backend server
+        working-directory: apps/backend
+        run: |
+          npm run start:dev &
+          BACKEND_PID=$!
+          echo "BACKEND_PID=$BACKEND_PID" >> $GITHUB_ENV
+          echo "Waiting for backend to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:3000/health > /dev/null 2>&1; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          echo "Backend failed to start in time"
+          exit 1
+
       - name: Install Playwright browsers
         working-directory: apps/frontend
         run: npx playwright install --with-deps chromium
@@ -237,6 +323,13 @@ jobs:
       - name: Run E2E tests
         working-directory: apps/frontend
         run: npm run test:e2e
+
+      - name: Stop backend server
+        if: always()
+        run: |
+          if [ -n "$BACKEND_PID" ]; then
+            kill $BACKEND_PID || true
+          fi
 
       - name: Upload Playwright report
         if: failure()
@@ -256,7 +349,7 @@ jobs:
   backend-build:
     runs-on: ubuntu-latest
     needs: [detect-changes, backend-quality, backend-test]
-    if: needs.detect-changes.outputs.backend-changed == 'true'
+    if: github.ref == 'refs/heads/production' && needs.detect-changes.outputs.backend-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -284,7 +377,7 @@ jobs:
   frontend-build:
     runs-on: ubuntu-latest
     needs: [detect-changes, frontend-quality, frontend-test]
-    if: needs.detect-changes.outputs.frontend-changed == 'true'
+    if: github.ref == 'refs/heads/production' && needs.detect-changes.outputs.frontend-changed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -326,7 +419,8 @@ jobs:
         frontend-test,
         frontend-build,
       ]
-    if: always() && needs.detect-changes.result == 'success' && (needs.infra-terraform.result == 'success' || needs.infra-terraform.result == 'skipped') && (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') && (needs.backend-test.result == 'success' || needs.backend-test.result == 'skipped') && (needs.backend-build.result == 'success' || needs.backend-build.result == 'skipped') && (needs.frontend-quality.result == 'success' || needs.frontend-quality.result == 'skipped') && (needs.frontend-test.result == 'success' || needs.frontend-test.result == 'skipped') && (needs.frontend-build.result == 'success' || needs.frontend-build.result == 'skipped')
+    # Only deploy on production branch, skip on main
+    if: github.ref == 'refs/heads/production' && always() && needs.detect-changes.result == 'success' && (needs.infra-terraform.result == 'success' || needs.infra-terraform.result == 'skipped') && (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') && (needs.backend-test.result == 'success' || needs.backend-test.result == 'skipped') && (needs.backend-build.result == 'success' || needs.backend-build.result == 'skipped') && (needs.frontend-quality.result == 'success' || needs.frontend-quality.result == 'skipped') && (needs.frontend-test.result == 'success' || needs.frontend-test.result == 'skipped') && (needs.frontend-build.result == 'success' || needs.frontend-build.result == 'skipped')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
